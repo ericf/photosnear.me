@@ -1,5 +1,5 @@
-Photos Near Me
-==============
+PhotosNear.me
+=============
 
 A JavaScript web application built on top of the YUI 3.4 App Framework, YQL, and Flickr.
 
