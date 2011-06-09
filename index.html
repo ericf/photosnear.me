@@ -18,16 +18,22 @@
 
 <body>
     
-    <h1>Photos Near Me</h1>
+    <div id="content">
     
-    <script src="http://yui.yahooapis.com/combo?3.3.0/build/yui/yui.js&3.3.0/build/loader/loader.js"></script>
-    <script src="lib/app/app.js"></script>
-    <script src="photosnearme.js"></script>
+        <p>Loading…</p>
+    
+    </div>
+    
+    <script src="http://fuji.jetpants.com/yui/combo/yui3?build/yui/yui.js&build/loader/loader.js"></script>
+    <script src="/lib/app/app.js"></script>
+    <script src="/photosnearme.js"></script>
     <script>
     YUI({
-    
-        filter  : 'RAW',
-        gallery : 'gallery-2011.06.01-20-18'
+        comboBase   : 'http://fuji.jetpants.com/yui/combo/yui3?',
+        combine     : true,
+        root        : 'build/',
+        filter      : 'RAW',
+        gallery     : 'gallery-2011.06.01-20-18'
     
     }).use('photosnearme', function(Y){
     
