@@ -1,0 +1,32 @@
+#content {
+    padding: 20px;
+}
+
+#photos ul {
+    margin: 20px 0;
+}
+#photos .photo {
+    margin-left: 5px;
+    margin-right: 5px;
+    -webkit-box-shadow: 0 0 2px rgba(0,0,0, 0.40);
+    -moz-box-shadow: 0 0 2px rgba(0,0,0, 0.40);
+    box-shadow: 0 0 2px rgba(0,0,0, 0.40);
+    padding: 2px;
+}
+#photos .photo a,
+#photos .photo img {
+    display: block;
+}
+
+#lightbox {}
+#lightbox .photo {
+    text-align: center;
+}
+#lightbox .photo img {
+    display: block;
+    margin: 0 auto;
+    -webkit-box-shadow: 0 4px 20px rgba(0,0,0, 0.40);
+    -moz-box-shadow: 0 4px 20px rgba(0,0,0, 0.40);
+    box-shadow: 0 4px 20px rgba(0,0,0, 0.40);
+}
+

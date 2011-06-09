@@ -164,7 +164,7 @@ YUI.add('photosnearme', function(Y){
     GridView = Y.Base.create('gridView', Y.View, [], {
     
         container       : '<div id="photos" />',
-        template        : '<h1>Photos Near: {locality}, {admin}, {country}</h1><p>Photos: {size}</p><ul></ul>',
+        template        : '<h1>Photos Near: {locality}, {admin}, {country}</h1><p>Photos: {size}</p><ul class="layout"></ul>',
         photoTemplate   : '<li class="photo"><a href="{pageUrl}"><img src="{thumbUrl}" /></a></li>',
         events          : {
             '.photo' : { 'click': 'select' }
@@ -218,7 +218,8 @@ YUI.add('photosnearme', function(Y){
     
     PhotoView = Y.Base.create('photoView', Y.View, [], {
     
-        template    : '<h1>{title}</h1><p>{description}</p><p><img src="{largeUrl}" /></p>',
+        container   : '<div id="lightbox" />',
+        template    : '<h1>{title}</h1><p>{description}</p><p class="photo"><img src="{largeUrl}" /></p>',
         
         render : function () {
             var photo = this.model;
