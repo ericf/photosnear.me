@@ -1,14 +1,14 @@
 YUI.add('photosnearme', function(Y){
 
-    var Photo,
-        Photos,
+    var PhotosNearMe,
+        
         Place,
+        Photo,
+        Photos,
         
         LocatingView,
         GridView,
         PhotoView,
-        
-        PhotosNearMe,
         
         YQLSync,
         
@@ -77,8 +77,8 @@ YUI.add('photosnearme', function(Y){
         imgUrl  : 'http://farm{farm}.static.flickr.com/{server}/{id}_{secret}_{size}.jpg',
         pageUrl : 'http://www.flickr.com/photos/{user}/{id}/',
         
-        parse : function (response) {
-            var photo = response.photo;
+        parse : function (results) {
+            return results ? results.photo : null;
         },
         
         getImgUrl : function (size) {
@@ -107,7 +107,7 @@ YUI.add('photosnearme', function(Y){
             },
             largeUrl    : {
                 getter : function(){
-                    return this.getImgUrl('b');
+                    return this.getImgUrl('z');
                 }
             },
             pageUrl     : {
@@ -128,7 +128,7 @@ YUI.add('photosnearme', function(Y){
         
         model : Photo,
         query : 'SELECT * FROM flickr.photos.search({start},{num}) ' +
-                'WHERE woe_id="{woeid}" AND radius_units="mi" AND sort="interestingness-desc"',
+                'WHERE woe_id="{woeid}" AND radius_units="mi" AND sort="interestingness-desc" AND extras="path_alias"',
         
         buildQuery : function (options) {
             return sub(this.query, {
@@ -139,7 +139,7 @@ YUI.add('photosnearme', function(Y){
         },
         
         parse : function (results) {
-            return results.photo;
+            return results ? results.photo : null;
         }
     
     });
@@ -163,15 +163,20 @@ YUI.add('photosnearme', function(Y){
     
     GridView = Y.Base.create('gridView', Y.View, [], {
     
-        container       : Y.one('#content'),
-        template        : '<h1>Photos Near: {locality}, {admin}, {country}</h1><p>Photos: {size}</p><ul id="photos"></ul>',
-        photoTemplate   : '<li><img src="{thumbUrl}" /></li>',
+        container       : '<div id="photos" />',
+        template        : '<h1>Photos Near: {locality}, {admin}, {country}</h1><p>Photos: {size}</p><ul></ul>',
+        photoTemplate   : '<li class="photo"><a href="{pageUrl}"><img src="{thumbUrl}" /></a></li>',
+        events          : {
+            '.photo' : { 'click': 'select' }
+        },
         
         initializer : function (config) {
             config || (config = {});
             
             this.place  = config.place;
             this.photos = config.photos;
+            
+            this.publish('select', { preventable: false });
             
             this.photos.after(['refresh', 'add', 'remove'], this.render, this);
             this.photos.after('refresh', this.refresh, this);
@@ -197,7 +202,14 @@ YUI.add('photosnearme', function(Y){
                 fragment.append(sub(photoTemplate, model.toJSON()));
             });
     
-            this.container.one('#photos').setContent(fragment);
+            this.container.one('ul').setContent(fragment);
+        },
+        
+        select : function (e) {
+            e.preventDefault();
+            
+            var index = this.container.all('.photo').indexOf(e.currentTarget);
+            this.fire('select', { photo: this.photos.item(index) });
         }
     
     });
@@ -206,11 +218,16 @@ YUI.add('photosnearme', function(Y){
     
     PhotoView = Y.Base.create('photoView', Y.View, [], {
     
-        container   : Y.one('#content'),
-        template    : '<p>Photo…</p>',
+        template    : '<h1>{title}</h1><p>{description}</p><p><img src="{largeUrl}" /></p>',
         
         render : function () {
-            this.container.setContent(this.template);
+            var photo = this.model;
+            
+            this.container.setContent(sub(this.template, {
+                title       : photo.get('title') || 'Photo',
+                description : photo.get('description') || '',
+                largeUrl    : photo.get('largeUrl')
+            }));
             
             return this;
         }
@@ -241,6 +258,11 @@ YUI.add('photosnearme', function(Y){
         initializer : function () {
             this.place  = new Place();
             this.photos = new Photos();
+            
+            this.on('gridView:select', function(e){
+                var photo = e.photo;
+                this.save('/photo/' + photo.get('id') + '/', photo.toJSON());
+            });
         },
         
         locate : function (req) {
@@ -260,21 +282,54 @@ YUI.add('photosnearme', function(Y){
         },
         
         showPlace : function (req) {
-            var place   = this.place,
-                photos  = this.photos;
+            var place       = this.place,
+                photos      = this.photos
+                photoView   = this.photoView,
+                gridView    = this.gridView;
+                       
+            if (photoView) {
+                photoView.removeTarget(this);
+                photoView.destroy();
+            }
             
             if (place.isNew()) {
                 place.setAttrs(req.params).load(Y.bind(function(){
                     Y.config.doc.title = sub(this.titles.place, place.toJSON());
-                    new GridView({ place: place, photos: photos }).render();
+                    
+                    gridView = this.gridView = new GridView({
+                        place           : place,
+                        photos          : photos,
+                        bubbleTargets   : this
+                    }).render();
+                    
+                    Y.one('#content').setContent(gridView.container);
                 }, this));
+                
                 this.photos.load({ place: place });
-            } else {
-                new GridView({ place: place, photos: photos }).render();
-            }            
+            } else if (gridView) {
+                Y.one('#content').setContent(gridView.container);
+            }
         },
         
-        showPhoto : function (req) {}
+        showPhoto : function (req) {
+            var photo = this.photos.getById(req.params.id) || new Photo(req.params);
+            
+            photo.load(Y.bind(function(){
+                this.photoView = new PhotoView({
+                    model           : photo,
+                    bubbleTargets   : this
+                }).render();
+                
+                if (this.gridView) {
+                    // retrain rendered grid
+                    this.gridView.remove();
+                    this.photoView.container.appendTo('#content');
+                } else {
+                    // started on photo page
+                    Y.one('#content').setContent(this.photoView.container);
+                }
+            }, this));
+        }
     
     });
 
