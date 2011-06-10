@@ -641,7 +641,7 @@ Y.Model = Y.extend(Model, Y.Base, {
     validate: function (/* attributes */) {},
 
     // -- Protected Methods ----------------------------------------------------
-    
+
     /**
     Duckpunches the `addAttr` method provided by `Y.Attribute` to keep the
     `id` attribute’s value and a custom id attribute’s (if provided) value
