@@ -239,6 +239,8 @@ YUI.add('photosnearme', function(Y){
     
     PhotosNearMe = Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.Controller, [], {
     
+        dispatchOnInit : true,
+        
         routes : [
             { path: '/',            callback: 'locate' },
             { path: '/place/:id/',  callback: 'showPlace' },
@@ -246,7 +248,8 @@ YUI.add('photosnearme', function(Y){
         ],
         
         titles : {
-            place : 'Photos Near: {locality}, {admin} {country}'
+            place   : 'Photos Near: {locality}, {admin} {country}',
+            photo   : 'Photo: {title}'
         },
         
         queries : {
@@ -262,7 +265,7 @@ YUI.add('photosnearme', function(Y){
             
             this.on('gridView:select', function(e){
                 var photo = e.photo;
-                this.save('/photo/' + photo.get('id') + '/', photo.toJSON());
+                this.save('/photo/' + photo.get('id') + '/');
             });
         },
         
@@ -277,7 +280,7 @@ YUI.add('photosnearme', function(Y){
                 
                 Y.YQL(sub(this.queries.woeid, res.coords), Y.bind(function(r){
                     var placeData = r.query && r.query.results ? r.query.results.places.place : {}
-                    this.replace('/place/' + placeData.woeid + '/', placeData);
+                    this.replace('/place/' + placeData.woeid + '/');
                 }, this));
             }, this));
         },
@@ -316,6 +319,8 @@ YUI.add('photosnearme', function(Y){
             var photo = this.photos.getById(req.params.id) || new Photo(req.params);
             
             photo.load(Y.bind(function(){
+                Y.config.doc.title = sub(this.titles.photo, { title: photo.get('title') });
+                
                 this.photoView = new PhotoView({
                     model           : photo,
                     bubbleTargets   : this
