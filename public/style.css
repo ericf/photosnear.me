@@ -256,9 +256,9 @@ h1 {
     -webkit-transform: translate(0);
     -moz-transform: translate(0);
     transform: translate(0);
-    -webkit-transition: -webkit-transform 0.25s;
-    -moz-transition: -moz-transform 0.25s;
-    transition: transform 0.25s;
+    -webkit-transition: -webkit-transform ease-out 0.25s;
+    -moz-transition: -moz-transform ease-out 0.25s;
+    transition: transform ease-out 0.25s;
 }
 
 #location { font-weight: 400; }
