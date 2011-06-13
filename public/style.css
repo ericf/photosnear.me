@@ -36,8 +36,8 @@ textarea {
 }
 
 img {
-    border: 0; /* 1 */
-    -ms-interpolation-mode: bicubic; /* 2 */
+    border: 0;
+    -ms-interpolation-mode: bicubic;
 }
 
 a {
@@ -80,8 +80,8 @@ pre,
 code,
 kbd,
 samp {
-    font-family: monospace, monospace; /* 1 */
-    _font-family: 'courier new', monospace; /* 2 */
+    font-family: monospace, monospace;
+    _font-family: 'courier new', monospace;
     font-size: 1em;
 }
 
@@ -150,24 +150,24 @@ button,
 input,
 select,
 textarea {
-    font-size: 100%; /* 1 */
-    margin: 0; /* 2 */
-    vertical-align: baseline; /* 3 */
-    *vertical-align: middle; /* 3 */
+    font-size: 100%;
+    margin: 0;
+    vertical-align: baseline;
+    *vertical-align: middle;
 }
 
 button,
 input {
-    line-height: normal; /* 1 */
-    *overflow: visible;  /* 2 */
+    line-height: normal;
+    *overflow: visible;
 }
 
 button,
 input[type="button"], 
 input[type="reset"], 
 input[type="submit"] {
-    cursor: pointer; /* 1 */
-    -webkit-appearance: button; /* 2 */
+    cursor: pointer;
+    -webkit-appearance: button;
 }
 
 input[type="checkbox"],
@@ -192,8 +192,8 @@ input::-moz-focus-inner {
 }
 
 textarea {
-    overflow: auto; /* 1 */
-    vertical-align: top; /* 2 */
+    overflow: auto;
+    vertical-align: top;
 }
 
 
