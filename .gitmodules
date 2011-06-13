@@ -1,3 +1,0 @@
-[submodule "public/lib/basecss"]
-	path = public/lib/basecss
-	url = git://github.com/ericf/basecss.git
