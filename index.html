@@ -9,34 +9,86 @@
     
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <title>Photos Near Me</title>
     <meta name="description" content="Photos Near Me" />
     <meta name="author" content="Eric Ferraiuolo" />
-    
-    <link rel="stylesheet" href="/lib/basecss/reset.css" />
+
     <link rel="stylesheet" href="/lib/basecss/base.css" />
     <link rel="stylesheet" href="/style.css" />
+    
+    <script src="http://use.typekit.com/wkh7ffm.js"></script>
+    <script>try{Typekit.load();}catch(e){}</script>
     
 </head>
 
 <body>
     
-    <div id="content">
+    <h1>
+        <span id="logo">
+            <span></span>
+            <a href="/"></a>
+        </span>
+        Photos Near <span id="location">Me</span>
+    </h1>
     
-        <p>Loading…</p>
+    <div id="content"></div>
     
-    </div>
+    <script>
+    (function(win, doc) {
+        /**
+        iOS portrait » landscape scaling fix
+        
+        By @mathias, @cheeaun and @jdalton
+        https://gist.github.com/901295
+        **/
+        function scaleFix () {
+            var addEvent    = 'addEventListener',
+                type        = 'gesturestart',
+                qsa         = 'querySelectorAll',
+                scales      = [1, 1],
+                meta        = qsa in doc ? doc[qsa]('meta[name=viewport]') : [];
+        
+            function fix() {
+                meta.content = 'width=device-width,minimum-scale=' + scales[0] + ',maximum-scale=' + scales[1];
+                doc.removeEventListener(type, fix, true);
+            }
+        
+            if ((meta = meta[meta.length - 1]) && addEvent in doc) {
+                fix();
+                scales = [.25, 1.6];
+                doc[addEvent](type, fix, true);
+            }
+        }
+        
+        /**
+        Hide URL Bar for iOS
+        
+        http://remysharp.com/2010/08/05/doing-it-right-skipping-the-iphone-url-bar/
+        **/
+        function hideUrlBar () {
+            /iPhone/.test(navigator.userAgent) && !location.hash && setTimeout(function () {
+                pageYOffset || win.scrollTo(0, 1);
+            }, 1000);
+        }
+        
+        scaleFix();
+        hideUrlBar();
+    }(this, document));
+    </script>
     
     <script src="http://fuji.jetpants.com/yui/combo/yui3?build/yui/yui.js&build/loader/loader.js"></script>
     
-    <!-- Component Overrides -->
+    <!-- Component Overrides
     <script src="/lib/app/app.js"></script>
     <script src="/lib/history/history.js"></script>
+     -->
     
     <script src="/photosnearme.js"></script>
     <script>
     YUI({
+    
         comboBase   : 'http://fuji.jetpants.com/yui/combo/yui3?',
         combine     : true,
         root        : 'build/',
@@ -45,7 +97,8 @@
     
     }).use('photosnearme', function(Y){
     
-        new Y.PhotosNearMe();
+        // new Y.PhotosNearMe();
+        Y.one('body').addClass('located');
     
     });
     </script>
