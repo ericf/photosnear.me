@@ -1,3 +1,7 @@
+/**
+PhotosNear.me Style
+**/
+
 article,
 aside,
 details,
@@ -21,10 +25,15 @@ html {
 
 body {
     margin: 0 20px;
-    min-height: 1000px;
     height: 100%;
-    background: #F8FFFF;
     color: #2D2930;
+    background: #F8FFFF url(img/bg.png);
+    background: url(img/bg.png), -moz-linear-gradient(left, #f1f7fa 0%, #f8ffff 25%, #f8ffff 75%, #f1f7fa 100%);
+    background: url(img/bg.png), -webkit-gradient(linear, left top, right top, color-stop(0%,#f1f7fa), color-stop(25%,#f8ffff), color-stop(75%,#f8ffff), color-stop(100%,#f1f7fa));
+    background: url(img/bg.png), -webkit-linear-gradient(left, #f1f7fa 0%, #f8ffff 25%, #f8ffff 75%, #f1f7fa 100%);
+    background: url(img/bg.png), -o-linear-gradient(left, #f1f7fa 0%, #f8ffff 25%, #f8ffff 75%, #f1f7fa 100%);
+    background: url(img/bg.png), -ms-linear-gradient(left, #f1f7fa 0%, #f8ffff 25%, #f8ffff 75%, #f1f7fa 100%);
+    background: url(img/bg.png), linear-gradient(left, #f1f7fa 0%, #f8ffff 25%, #f8ffff 75%, #f1f7fa 100%);
 }
 
 body,
@@ -300,10 +309,17 @@ h1 {
 only screen and (-webkit-min-device-pixel-ratio: 1.5),
 only screen and (-o-min-device-pixel-ratio: 3/2),
 only screen and (min-device-pixel-ratio: 1.5) {
+
+    body {
+        background: #F8FFFF url(img/bg.png);
+        background-size: 50px 50px;
+    }
+    
     #content {
         background-image: url(img/spinner-2x.gif);
         background-size: 32px 32px;
     }
+    
     #logo {
         background-image: url(img/cross_hair-2x.png);
         background-size: 42px 25px;
@@ -316,4 +332,5 @@ only screen and (min-device-pixel-ratio: 1.5) {
         background-image: url(img/pin_shadow-2x.png);
         background-size: 32px 22px;
     }
+    
 }
