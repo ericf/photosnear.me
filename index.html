@@ -15,7 +15,6 @@
     <meta name="description" content="Photos Near Me" />
     <meta name="author" content="Eric Ferraiuolo" />
 
-    <link rel="stylesheet" href="/lib/basecss/base.css" />
     <link rel="stylesheet" href="/style.css" />
     
     <script src="http://use.typekit.com/wkh7ffm.js"></script>
@@ -34,6 +33,24 @@
     </h1>
     
     <div id="content"></div>
+    
+    <script id="grid-template" type="text/x-handlebars-template">
+        <h1>Photos Near: {{place.locality}}, {{place.admin}}, {{place.country}}</h1>
+        <p>Photos: {{size}}</p>
+        <ul class="layout"></ul>
+    </script>
+    
+    <script id="grid-photo-template" type="text/x-handlebars-template">
+        {{#each photos}}
+            <li class="photo"><a href="{{pageUrl}}"><img src="{{thumbUrl}}" /></a></li>
+        {{/each}}
+    </script>
+    
+    <script id="lightbox-template" type="text/x-handlebars-template">
+        <h1>{{title}}</h1>
+        <p>{{{description}}}</p>
+        <p class="photo"><img src="{{largeUrl}}" /></p>
+    </script>
     
     <script>
     (function(win, doc) {
@@ -75,10 +92,11 @@
         
         scaleFix();
         hideUrlBar();
-    }(this, document));
+    }(window, document));
     </script>
     
     <script src="http://fuji.jetpants.com/yui/combo/yui3?build/yui/yui.js&build/loader/loader.js"></script>
+    <script src="/handlebars.js"></script>
     <script src="/photosnearme.js"></script>
     <script>
     YUI({
@@ -91,8 +109,7 @@
     
     }).use('photosnearme', function(Y){
     
-        // new Y.PhotosNearMe();
-        Y.one('body').addClass('located');
+        new Y.PhotosNearMe;
     
     });
     </script>

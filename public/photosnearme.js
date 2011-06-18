@@ -164,8 +164,8 @@ YUI.add('photosnearme', function(Y){
     GridView = Y.Base.create('gridView', Y.View, [], {
     
         container       : '<div id="photos" />',
-        template        : '<h1>Photos Near: {locality}, {admin}, {country}</h1><p>Photos: {size}</p><ul class="layout"></ul>',
-        photoTemplate   : '<li class="photo"><a href="{pageUrl}"><img src="{thumbUrl}" /></a></li>',
+        template        : Handlebars.compile(Y.one('#grid-template').getContent()),
+        photoTemplate   : Handlebars.compile(Y.one('#grid-photo-template').getContent()),
         events          : {
             '.photo' : { 'click': 'select' }
         },
@@ -183,11 +183,8 @@ YUI.add('photosnearme', function(Y){
         },
         
         render : function () {
-            var place = this.place;
-            this.container.setContent(sub(this.template, {
-                locality: place.get('locality'),
-                admin   : place.get('admin'),
-                country : place.get('country'),
+            this.container.setContent(this.template({
+                place   : this.place.toJSON(),
                 size    : this.photos.size()
             }));
             
@@ -195,14 +192,8 @@ YUI.add('photosnearme', function(Y){
         },
         
         refresh : function (e) {
-            var fragment        = Y.one(Y.config.doc.createDocumentFragment()),
-                photoTemplate   = this.photoTemplate;
-    
-            Y.Array.each(e.models, function (model) {
-                fragment.append(sub(photoTemplate, model.toJSON()));
-            });
-    
-            this.container.one('ul').setContent(fragment);
+            var photosData = Y.Array.map(e.models, function(photo){ return photo.toJSON(); });
+            this.container.one('ul').setContent(this.photoTemplate({ photos: photosData }));
         },
         
         select : function (e) {
@@ -219,12 +210,12 @@ YUI.add('photosnearme', function(Y){
     PhotoView = Y.Base.create('photoView', Y.View, [], {
     
         container   : '<div id="lightbox" />',
-        template    : '<h1>{title}</h1><p>{description}</p><p class="photo"><img src="{largeUrl}" /></p>',
+        template    : Handlebars.compile(Y.one('#lightbox-template').getContent()),
         
         render : function () {
             var photo = this.model;
             
-            this.container.setContent(sub(this.template, {
+            this.container.setContent(this.template({
                 title       : photo.get('title') || 'Photo',
                 description : photo.get('description') || '',
                 largeUrl    : photo.get('largeUrl')
