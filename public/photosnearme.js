@@ -16,12 +16,17 @@ YUI.add('photosnearme', function(Y){
         sub         = Lang.sub,
         isString    = Lang.isString;
     
+    // *** Handlebars Partials *** //
+    
+    Handlebars.registerPartial('header', Y.one('#header-template').getContent());
+    
     // *** YQLSync *** //
     
     YQLSync = function(){};
     YQLSync.prototype = {
     
-        query : '',
+        query       : '',
+        _yqlRequests: {},
         
         buildQuery : function () {
             return sub(this.query, { id: this.get('id') });
@@ -30,13 +35,20 @@ YUI.add('photosnearme', function(Y){
         sync : function (action, options, callback) {
             if (action !== 'read') { return callback(null); }
             
-            Y.YQL(this.buildQuery(options), Y.bind(function(r){
+            var query   = this.buildQuery(options),
+                reqs    = this._yqlRequests,
+                req     = reqs[query] || (reqs[query] = new Y.YQLRequest(query));
+            
+            // override callback
+            req._callback = Y.bind(function(r){
                 if (r.error) {
                     callback(r.error, r);
                 } else {
                     callback(null, r.query.results);
                 }
-            }, this));
+            }, this);
+            
+            req.send();
         }
     
     };
@@ -55,7 +67,7 @@ YUI.add('photosnearme', function(Y){
             return {
                 woeid   : data.woeid,
                 country : data.country.code,
-                admin   : data.admin1.content,
+                region  : data.admin1.content,
                 locality: data.locality1.content
             };
         }
@@ -64,7 +76,7 @@ YUI.add('photosnearme', function(Y){
         ATTRS : {
             woeid   : {},
             country : {},
-            admin   : {},
+            region  : {},
             locality: {}
         }
     });
@@ -78,7 +90,20 @@ YUI.add('photosnearme', function(Y){
         pageUrl : 'http://www.flickr.com/photos/{user}/{id}/',
         
         parse : function (results) {
-            return results ? results.photo : null;
+            if ( ! results) { return; }
+            var photo = results.photo,
+                place = photo.location;
+                
+            // TODO handle places with less accuracy (i.e. no region or locality)
+                
+            photo.place = {
+                woeid   : place.woeid,
+                country : place.country.content,
+                region  : place.region.content,
+                locality: place.locality.content
+            };
+            
+            return photo;
         },
         
         getImgUrl : function (size) {
@@ -100,6 +125,12 @@ YUI.add('photosnearme', function(Y){
             pathalias   : {},
             title       : {},
             description : {},
+            place       : {
+                value   : {},
+                setter  : function (place) {
+                    return ((place instanceof Place) ? place : new Place(place));
+                }
+            },
             thumbUrl    : {
                 getter : function(){
                     return this.getImgUrl('s');
@@ -149,10 +180,10 @@ YUI.add('photosnearme', function(Y){
     LocatingView = Y.Base.create('locatingView', Y.View, [], {
     
         container   : Y.one('#content'),
-        template    : '<p>Locating you…</p>',
+        template    : Handlebars.compile(Y.one('#locating-template').getContent()),
         
         render : function () {
-            this.container.setContent(this.template);
+            this.container.setContent(this.template({ place: null }));
             
             return this;
         }
@@ -165,7 +196,7 @@ YUI.add('photosnearme', function(Y){
     
         container       : '<div id="photos" />',
         template        : Handlebars.compile(Y.one('#grid-template').getContent()),
-        photoTemplate   : Handlebars.compile(Y.one('#grid-photo-template').getContent()),
+        photosTemplate  : Handlebars.compile(Y.one('#grid-photos-template').getContent()),
         events          : {
             '.photo' : { 'click': 'select' }
         },
@@ -188,12 +219,16 @@ YUI.add('photosnearme', function(Y){
                 size    : this.photos.size()
             }));
             
+            Y.later(1, this, function(){
+                this.container.addClass('located');
+            });
+            
             return this;
         },
         
         refresh : function (e) {
             var photosData = Y.Array.map(e.models, function(photo){ return photo.toJSON(); });
-            this.container.one('ul').setContent(this.photoTemplate({ photos: photosData }));
+            this.container.append(this.photosTemplate({ photos: photosData }));
         },
         
         select : function (e) {
@@ -211,17 +246,34 @@ YUI.add('photosnearme', function(Y){
     
         container   : '<div id="lightbox" />',
         template    : Handlebars.compile(Y.one('#lightbox-template').getContent()),
+        events      : {
+            '.back' : { 'click': 'back' }
+        },
+        
+        initializer : function (config) {
+            config || (config = {});
+            this.place = config.place;
+            this.place.after('change', Y.bind(this.render, this));
+            
+            this.publish('back', { preventable: false });
+        },
         
         render : function () {
             var photo = this.model;
             
-            this.container.setContent(this.template({
+            this.container.addClass('located').setContent(this.template({
                 title       : photo.get('title') || 'Photo',
                 description : photo.get('description') || '',
-                largeUrl    : photo.get('largeUrl')
+                largeUrl    : photo.get('largeUrl'),
+                place       : this.place.toJSON()
             }));
             
             return this;
+        },
+               
+        back : function (e) {
+            e.preventDefault();
+            this.fire('back', { place : this.place });
         }
     
     });
@@ -239,7 +291,7 @@ YUI.add('photosnearme', function(Y){
         ],
         
         titles : {
-            place   : 'Photos Near: {locality}, {admin} {country}',
+            place   : 'Photos Near: {locality}, {region} {country}',
             photo   : 'Photo: {title}'
         },
         
@@ -255,8 +307,11 @@ YUI.add('photosnearme', function(Y){
             this.photos = new Photos();
             
             this.on('gridView:select', function(e){
-                var photo = e.photo;
-                this.save('/photo/' + photo.get('id') + '/');
+                this.save('/photo/' + e.photo.get('id') + '/');
+            });
+            
+            this.on('photoView:back', function(e){
+                this.save('/place/' + e.place.get('id') + '/');
             });
         },
         
@@ -312,8 +367,12 @@ YUI.add('photosnearme', function(Y){
             photo.load(Y.bind(function(){
                 Y.config.doc.title = sub(this.titles.photo, { title: photo.get('title') });
                 
+                // use the photo’s place if we don’t already have a place
+                var place = this.place.isNew() ? photo.get('place') : this.place;
+                
                 this.photoView = new PhotoView({
                     model           : photo,
+                    place           : place,
                     bubbleTargets   : this
                 }).render();
                 

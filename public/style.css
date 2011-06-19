@@ -17,6 +17,7 @@ section {
 
 html {
     font-size: 100%;
+    min-height: 100%;
     overflow-y: scroll;
     -webkit-tap-highlight-  : rgba(0,0,0,0);
     -webkit-text-size-adjust: 100%;
@@ -24,8 +25,7 @@ html {
 }
 
 body {
-    margin: 0 20px;
-    height: 100%;
+    margin: 0;
     color: #2D2930;
     background: #F8FFFF url(img/bg.png);
     background: url(img/bg.png), -moz-linear-gradient(left, #f1f7fa 0%, #f8ffff 25%, #f8ffff 75%, #f1f7fa 100%);
@@ -273,16 +273,27 @@ h1 {
 #location { font-weight: 400; }
 
 #content {
+    margin: 20px;
+}
+.loading #content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    margin: 0;
+    padding: 0;
     background: url(img/spinner.gif) no-repeat center;
-    min-height: 100px;
 }
 
 #photos ul {
     margin: 20px 0;
 }
 #photos .photo {
-    margin-left: 5px;
-    margin-right: 5px;
+    display: inline-block;
+    zoom: 1; *display: inline;
+    width: 75px;
+    height: 75px;
+    margin: 5px;
     -webkit-box-shadow: 0 0 2px rgba(0,0,0, 0.40);
     -moz-box-shadow: 0 0 2px rgba(0,0,0, 0.40);
     box-shadow: 0 0 2px rgba(0,0,0, 0.40);
@@ -315,7 +326,7 @@ only screen and (min-device-pixel-ratio: 1.5) {
         background-size: 50px 50px;
     }
     
-    #content {
+    .loading #content {
         background-image: url(img/spinner-2x.gif);
         background-size: 32px 32px;
     }

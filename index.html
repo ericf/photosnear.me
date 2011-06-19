@@ -17,37 +17,51 @@
 
     <link rel="stylesheet" href="/style.css" />
     
-    <script src="http://use.typekit.com/wkh7ffm.js"></script>
-    <script>try{Typekit.load();}catch(e){}</script>
-    
 </head>
 
-<body>
-    
-    <h1>
-        <span id="logo">
-            <span></span>
-            <a href="/"></a>
-        </span>
-        Photos Near <span id="location">Me</span>
-    </h1>
-    
+<body class="loading">
+        
     <div id="content"></div>
     
-    <script id="grid-template" type="text/x-handlebars-template">
-        <h1>Photos Near: {{place.locality}}, {{place.admin}}, {{place.country}}</h1>
-        <p>Photos: {{size}}</p>
-        <ul class="layout"></ul>
+    <script id="header-template" type="text/x-handlebars-template">
+        <h1>
+            <span id="logo">
+                <span></span>
+                <a href="/"></a>
+            </span>
+            Photos Near
+            <span id="location">
+                {{#if place}}
+                    {{place.locality}}, {{place.region}}
+                {{else}}
+                    Me
+                {{/if}}
+            </span>
+        </h1>
     </script>
     
-    <script id="grid-photo-template" type="text/x-handlebars-template">
+    <script id="locating-template" type="text/x-handlebars-template">
+        {{> header}}
+        <p>Locating you…</p>
+    </script>
+    
+    <script id="grid-template" type="text/x-handlebars-template">
+        {{> header}}
+        <p>Photos: {{size}}</p>
+    </script>
+    
+    <script id="grid-photos-template" type="text/x-handlebars-template">
+        <ul class="layout">
         {{#each photos}}
             <li class="photo"><a href="{{pageUrl}}"><img src="{{thumbUrl}}" /></a></li>
         {{/each}}
+        </ul>
     </script>
     
     <script id="lightbox-template" type="text/x-handlebars-template">
-        <h1>{{title}}</h1>
+        {{> header}}
+        <p><a class="back" href="/place/{{place.woeid}}/">« Back</a></p>
+        <h2>{{title}}</h2>
         <p>{{{description}}}</p>
         <p class="photo"><img src="{{largeUrl}}" /></p>
     </script>
@@ -95,6 +109,9 @@
     }(window, document));
     </script>
     
+    <script src="http://use.typekit.com/wkh7ffm.js"></script>
+    <script>try{Typekit.load();}catch(e){}</script>
+    
     <script src="http://fuji.jetpants.com/yui/combo/yui3?build/yui/yui.js&build/loader/loader.js"></script>
     <script src="/handlebars.js"></script>
     <script src="/photosnearme.js"></script>
@@ -108,7 +125,8 @@
         gallery     : 'gallery-2011.06.01-20-18'
     
     }).use('photosnearme', function(Y){
-    
+        
+        Y.one('body').removeClass('loading');
         new Y.PhotosNearMe;
     
     });
