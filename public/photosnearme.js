@@ -25,8 +25,8 @@ YUI.add('photosnearme', function(Y){
     YQLSync = function(){};
     YQLSync.prototype = {
     
-        query       : '',
-        _yqlRequests: {},
+        query : '',
+        cache : new Y.CacheOffline(),
         
         buildQuery : function () {
             return sub(this.query, { id: this.get('id') });
@@ -36,19 +36,21 @@ YUI.add('photosnearme', function(Y){
             if (action !== 'read') { return callback(null); }
             
             var query   = this.buildQuery(options),
-                reqs    = this._yqlRequests,
-                req     = reqs[query] || (reqs[query] = new Y.YQLRequest(query));
+                cache   = this.cache,
+                results = cache.retrieve(query);
             
-            // override callback
-            req._callback = Y.bind(function(r){
+            // return cached results if we got ’em
+            if (results) { return callback(null, results.response); }
+            
+            Y.YQL(query, function(r){
                 if (r.error) {
                     callback(r.error, r);
                 } else {
-                    callback(null, r.query.results);
+                    results = r.query.results;
+                    cache.add(query, results);
+                    callback(null, results);
                 }
-            }, this);
-            
-            req.send();
+            });
         }
     
     };
@@ -389,4 +391,4 @@ YUI.add('photosnearme', function(Y){
     
     });
 
-}, '0.1.0', { requires: ['app', 'yql', 'gallery-geo'] });
+}, '0.2.0', { requires: ['app', 'yql', 'cache-offline', 'gallery-geo'] });
