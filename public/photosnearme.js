@@ -116,6 +116,22 @@ YUI.add('photosnearme', function(Y){
                 secret  : this.get('secret'),
                 size    : size
             });
+        },
+        
+        loadImg : function (callback) {
+            // insired by: Lucas Smith (http://lucassmith.name/2008/11/is-my-image-loaded.html)
+            
+            var img     = new Image(),
+                prop    = img.naturalWidth ? 'naturalWidth' : 'width';
+            
+            img.src = this.get('largeUrl');
+            
+            if (img.complete) {
+                callback.call(this, img[prop] ? img : null);
+            } else {
+                img.onload = Y.bind(callback, this, img);
+                img.onerror = Y.bind(callback, this, null);
+            }
         }
     
     }, {
@@ -177,20 +193,6 @@ YUI.add('photosnearme', function(Y){
     
     });
     
-    // *** LocatingView *** //
-    
-    LocatingView = Y.Base.create('locatingView', Y.View, [], {
-    
-        container   : Y.one('#content'),
-        template    : Handlebars.compile(Y.one('#locating-template').getContent()),
-        
-        render : function () {
-            this.container.setContent(this.template({ place: null }));
-            return this;
-        }
-    
-    });
-    
     // *** GridView *** //
     
     GridView = Y.Base.create('gridView', Y.View, [], {
@@ -235,8 +237,18 @@ YUI.add('photosnearme', function(Y){
         select : function (e) {
             e.preventDefault();
             
-            var index = this.container.all('.photo').indexOf(e.currentTarget);
+            var photoNode   = e.currentTarget,
+                photoNodes  = this.container.all('.photo'),
+                index       = photoNodes.indexOf(photoNode);
+            
+            photoNodes.filter('.selected').removeClass('selected');
+            photoNode.addClass('selected');
+            
             this.fire('select', { photo: this.photos.item(index) });
+        },
+        
+        reset : function () {
+            this.container.all('.photo.selected').removeClass('selected');
         }
     
     });
@@ -317,7 +329,7 @@ YUI.add('photosnearme', function(Y){
         },
         
         locate : function (req) {
-            new LocatingView().render();
+            this.hideUrlBar();
             
             Y.Geo.getCurrentPosition(Y.bind(function(res){
                 if ( ! res.success) {
@@ -338,6 +350,8 @@ YUI.add('photosnearme', function(Y){
                 photoView   = this.photoView,
                 gridView    = this.gridView;
                        
+            Y.one('body').removeClass('loading');
+            
             if (photoView) {
                 photoView.removeTarget(this);
                 photoView.destroy();
@@ -351,12 +365,15 @@ YUI.add('photosnearme', function(Y){
                         bubbleTargets   : this
                     }).render();
                     
+                    this.hideUrlBar();
                     Y.config.doc.title = sub(this.titles.place, place.toJSON());
                     Y.one('#content').setContent(gridView.container);
                 }, this));
                 
                 this.photos.load({ place: place });
             } else if (gridView) {
+                gridView.reset();
+                this.hideUrlBar();
                 Y.config.doc.title = sub(this.titles.place, place.toJSON());
                 Y.one('#content').setContent(gridView.container);
             }
@@ -364,29 +381,40 @@ YUI.add('photosnearme', function(Y){
         
         showPhoto : function (req) {
             var photo = this.photos.getById(req.params.id) || new Photo(req.params);
+        
+            Y.one('body').removeClass('loading');
             
             photo.load(Y.bind(function(){
-                Y.config.doc.title = sub(this.titles.photo, { title: photo.get('title') });
-                
-                // use the photo’s place if we don’t already have a place
-                var place = this.place.isNew() ? photo.get('place') : this.place;
-                
-                this.photoView = new PhotoView({
-                    model           : photo,
-                    place           : place,
-                    bubbleTargets   : this
-                }).render();
-                
-                if (this.gridView) {
-                    // retrain rendered grid
-                    this.gridView.remove();
-                    this.photoView.container.appendTo('#content');
-                } else {
-                    // started on photo page
-                    Y.one('#content').setContent(this.photoView.container);
-                }
+                photo.loadImg(Y.bind(function(){
+                    this.hideUrlBar();
+                    Y.config.doc.title = sub(this.titles.photo, { title: photo.get('title') });
+                    
+                    // use the photo’s place if we don’t already have a place
+                    var place = this.place.isNew() ? photo.get('place') : this.place;
+                    
+                    this.photoView = new PhotoView({
+                        model           : photo,
+                        place           : place,
+                        bubbleTargets   : this
+                    }).render();
+                    
+                    if (this.gridView) {
+                        // retrain rendered grid
+                        this.gridView.remove();
+                        this.photoView.container.appendTo('#content');
+                    } else {
+                        // started on photo page
+                        Y.one('#content').setContent(this.photoView.container);
+                    }
+                }, this));
             }, this));
-        }
+        },
+        
+        hideUrlBar : Y.UA.ios && ! Y.UA.ipad ? function(){
+            setTimeout(function(){
+                Y.config.win.scrollTo(0, 1);
+            }, 1);
+        } : function(){}
     
     });
 
