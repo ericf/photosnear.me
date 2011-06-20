@@ -211,6 +211,7 @@ h1 {
     font-family: "myriad-pro-1", "myriad-pro-2", sans-serif;
     font-weight: 600;
     text-shadow: 0 1px 0 #fff;
+    padding-left: 50px;
 }
 .wf-loading h1 {
     visibility: hidden;
@@ -230,8 +231,8 @@ h1 {
     zoom: 1; *display: inline;
     position: relative;
     width: 42px;
-    height: 50px;
-    margin: 0 7px -17px 0;
+    height: 54px;
+    margin: 0 12px -17px -54px;
     background: url(img/cross_hair.png) center bottom no-repeat;
 }
 #logo a {
@@ -270,7 +271,10 @@ h1 {
     transition: transform ease-out 0.25s;
 }
 
-#location { font-weight: 400; }
+#location {
+    font-weight: 400;
+    color: #75607F;
+}
 
 #content {
     margin: 20px;
@@ -310,6 +314,7 @@ h1 {
 }
 #lightbox .photo img {
     display: block;
+    max-width: 100%;
     margin: 0 auto;
     -webkit-box-shadow: 0 4px 20px rgba(0,0,0, 0.40);
     -moz-box-shadow: 0 4px 20px rgba(0,0,0, 0.40);
@@ -326,6 +331,14 @@ only screen and (min-device-pixel-ratio: 1.5) {
         background-size: 50px 50px;
     }
     
+    h1 {
+        font-size: 1em;
+        padding-left: 27px;
+    }
+    
+    #content {
+        margin: 5px 10px;
+    }
     .loading #content {
         background-image: url(img/spinner-2x.gif);
         background-size: 32px 32px;
@@ -333,15 +346,23 @@ only screen and (min-device-pixel-ratio: 1.5) {
     
     #logo {
         background-image: url(img/cross_hair-2x.png);
-        background-size: 42px 25px;
+        background-size: 21px 13px;
+        width: 21px;
+        height: 25px;
+        margin: 0 6px -9px -27px;
+        
     }
     #logo a {
         background-image: url(img/pin-2x.png);
-        background-size: 18px 36px;
+        background-size: 9px 18px;
+        width: 9px;
+        height: 18px;
     }
     #logo span {
         background-image: url(img/pin_shadow-2x.png);
-        background-size: 32px 22px;
+        background-size: 16px 11px;
+        right: -4px;
+        height: 18px;
     }
     
 }

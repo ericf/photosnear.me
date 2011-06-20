@@ -26,7 +26,7 @@ YUI.add('photosnearme', function(Y){
     YQLSync.prototype = {
     
         query : '',
-        cache : new Y.CacheOffline(),
+        cache : new Y.CacheOffline,
         
         buildQuery : function () {
             return sub(this.query, { id: this.get('id') });
@@ -186,7 +186,6 @@ YUI.add('photosnearme', function(Y){
         
         render : function () {
             this.container.setContent(this.template({ place: null }));
-            
             return this;
         }
     
@@ -346,19 +345,19 @@ YUI.add('photosnearme', function(Y){
             
             if (place.isNew()) {
                 place.setAttrs(req.params).load(Y.bind(function(){
-                    Y.config.doc.title = sub(this.titles.place, place.toJSON());
-                    
                     gridView = this.gridView = new GridView({
                         place           : place,
                         photos          : photos,
                         bubbleTargets   : this
                     }).render();
                     
+                    Y.config.doc.title = sub(this.titles.place, place.toJSON());
                     Y.one('#content').setContent(gridView.container);
                 }, this));
                 
                 this.photos.load({ place: place });
             } else if (gridView) {
+                Y.config.doc.title = sub(this.titles.place, place.toJSON());
                 Y.one('#content').setContent(gridView.container);
             }
         },
