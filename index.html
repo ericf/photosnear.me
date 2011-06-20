@@ -60,7 +60,7 @@
     
     <script id="lightbox-template" type="text/x-handlebars-template">
         {{> header}}
-        <p><a class="back" href="/place/{{place.woeid}}/">« Back</a></p>
+        <p><a class="back" href="/place/{{place.woeid}}/">« Photos</a></p>
         <p class="photo"><img src="{{largeUrl}}" /></p>
         <h2>{{title}}</h2>
         <p>{{{description}}}</p>
@@ -68,6 +68,7 @@
     
     <script>
     (function(win, doc) {
+    
         /**
         iOS portrait » landscape scaling fix
         
@@ -106,6 +107,7 @@
         
         scaleFix();
         hideUrlBar();
+        
     }(window, document));
     </script>
     

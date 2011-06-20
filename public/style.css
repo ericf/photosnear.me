@@ -226,13 +226,28 @@ h1 {
     transition: opacity 0.50s;
 }
 
+/* http://developer.yahoo.com/yui/3/cssgrids/ */
+.layout {
+    letter-spacing: -0.31em; /* webkit: collapse white-space between units */
+    *letter-spacing: normal; /* reset IE < 8 */
+    word-spacing: -0.43em;   /* IE < 8 && gecko: collapse white-space between units */
+}
+.layout > *,
+.layout .unit {
+    display: inline-block;
+    zoom: 1; *display: inline; /* IE < 8: fake inline-block */
+    letter-spacing: normal;
+    word-spacing: normal;
+    vertical-align: top;
+}
+
 #logo {
     display: inline-block;
     zoom: 1; *display: inline;
     position: relative;
     width: 42px;
     height: 54px;
-    margin: 0 12px -17px -54px;
+    margin: 0 12px -17px -50px;
     background: url(img/cross_hair.png) center bottom no-repeat;
 }
 #logo a {
@@ -277,7 +292,9 @@ h1 {
 }
 
 #content {
-    margin: 20px;
+    width: 880px;
+    margin: auto;
+    padding: 20px;
 }
 .loading #content {
     position: absolute;
@@ -290,22 +307,28 @@ h1 {
 }
 
 #photos ul {
-    margin: 20px 0;
+    margin: 20px -5px;
+    padding: 0;
+    word-spacing: inherit;
 }
 #photos .photo {
-    display: inline-block;
-    zoom: 1; *display: inline;
-    width: 75px;
-    height: 75px;
-    margin: 5px;
+    width: 79px;
+    height: 79px;
+    padding: 5px;
+}
+#photos .photo a {
+    display: block;
     -webkit-box-shadow: 0 0 2px rgba(0,0,0, 0.40);
     -moz-box-shadow: 0 0 2px rgba(0,0,0, 0.40);
     box-shadow: 0 0 2px rgba(0,0,0, 0.40);
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
     padding: 2px;
 }
-#photos .photo a,
 #photos .photo img {
     display: block;
+    width: 100%;
 }
 
 #lightbox {}
@@ -316,9 +339,59 @@ h1 {
     display: block;
     max-width: 100%;
     margin: 0 auto;
-    -webkit-box-shadow: 0 4px 20px rgba(0,0,0, 0.40);
-    -moz-box-shadow: 0 4px 20px rgba(0,0,0, 0.40);
-    box-shadow: 0 4px 20px rgba(0,0,0, 0.40);
+    -webkit-box-shadow: 0 5px 30px -1px rgba(0,0,0, 0.65);
+    -moz-box-shadow: 0 5px 30px -1px rgba(0,0,0, 0.65);
+    box-shadow: 0 5px 30px -1px rgba(0,0,0, 0.65);
+}
+
+@media only screen and (max-device-width: 480px) {
+
+    h1 {
+        font-size: 1em;
+        padding-left: 27px;
+    }
+    
+    #content {
+        width: auto;
+        margin: 5px 10px;
+        padding: 0;
+    }
+    
+    #logo {
+        background-size: 21px 13px;
+        width: 21px;
+        height: 25px;
+        margin: 0 6px -9px -27px;
+        
+    }
+    #logo a {
+        background-size: 9px 18px;
+        width: 9px;
+        height: 18px;
+    }
+    #logo span {
+        background-size: 16px 11px;
+        right: -4px;
+        height: 18px;
+    }
+    
+    #photos ul { margin: 10px -5px; }
+    #photos .photo {
+        width: 54px;
+        height: 54px;
+        padding: 4px;
+    }
+
+}
+
+@media only screen and (max-device-width: 480px) and (orientation: landscape) {
+    
+    #photos .photo {
+        width: 39px;
+        height: 39px;
+        padding: 4px;
+    }
+    
 }
 
 @media
@@ -331,38 +404,13 @@ only screen and (min-device-pixel-ratio: 1.5) {
         background-size: 50px 50px;
     }
     
-    h1 {
-        font-size: 1em;
-        padding-left: 27px;
-    }
-    
-    #content {
-        margin: 5px 10px;
-    }
     .loading #content {
         background-image: url(img/spinner-2x.gif);
         background-size: 32px 32px;
     }
     
-    #logo {
-        background-image: url(img/cross_hair-2x.png);
-        background-size: 21px 13px;
-        width: 21px;
-        height: 25px;
-        margin: 0 6px -9px -27px;
-        
-    }
-    #logo a {
-        background-image: url(img/pin-2x.png);
-        background-size: 9px 18px;
-        width: 9px;
-        height: 18px;
-    }
-    #logo span {
-        background-image: url(img/pin_shadow-2x.png);
-        background-size: 16px 11px;
-        right: -4px;
-        height: 18px;
-    }
+    #logo { background-image: url(img/cross_hair-2x.png); }
+    #logo a { background-image: url(img/pin-2x.png); }
+    #logo span { background-image: url(img/pin_shadow-2x.png); }
     
 }
