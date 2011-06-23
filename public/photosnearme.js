@@ -295,8 +295,6 @@ YUI.add('photosnearme', function(Y){
     
     PhotosNearMe = Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.Controller, [], {
     
-        dispatchOnInit : true,
-        
         routes : [
             { path: '/',            callback: 'locate' },
             { path: '/place/:id/',  callback: 'showPlace' },
@@ -326,6 +324,13 @@ YUI.add('photosnearme', function(Y){
             this.on('photoView:back', function(e){
                 this.save('/place/' + e.place.get('id') + '/');
             });
+            
+            if (window.navigator.standalone) {
+                // iOS saved to home screen
+                this.replace('/');
+            } else {
+                this.dispatch();
+            }
         },
         
         locate : function (req) {
