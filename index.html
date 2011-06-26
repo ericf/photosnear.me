@@ -10,7 +10,7 @@
     <meta charset="utf-8" />
     
     <title>Photos Near Me</title>
-    <meta name="description" content="Photos Near Me" />
+    <meta name="description" content="Look at interesting photos of things taken near your current location" />
     <meta name="author" content="Eric Ferraiuolo" />
     
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
@@ -22,16 +22,27 @@
     
 </head>
 
-<body class="loading">
+<body>
         
-    <div id="content"></div>
+    <div id="wrap" class="loading">
+        <div id="header"></div>
+        <div id="main"></div>
+    </div>
+    
+    <script id="title-template" type="text/x-handlebars-template">
+        {{#if place}}
+            Photos Near: {{place.locality}}, {{place.region}} {{place.country}}
+        {{else}}
+            Photos Near Me
+        {{/if}}
+    </script>
     
     <script id="header-template" type="text/x-handlebars-template">
         <h1>
-            <span id="logo">
-                <span></span>
-                <a href="/"></a>
-            </span>
+            <a href="/" id="logo">
+                <span class="pin-shadow"></span>
+                <span class="pin"></span>
+            </a>
             Photos Near
             <span id="location">
                 {{#if place}}
@@ -44,21 +55,20 @@
     </script>
     
     <script id="grid-template" type="text/x-handlebars-template">
-        {{> header}}
         <p>Photos: {{size}}</p>
-    </script>
-    
-    <script id="grid-photos-template" type="text/x-handlebars-template">
         <ul class="layout">
         {{#each photos}}
-            <li class="photo"><a href="{{pageUrl}}"><img src="{{thumbUrl}}" /></a></li>
+            {{> photo}}
         {{/each}}
         </ul>
     </script>
     
+    <script id="grid-photo-template" type="text/x-handlebars-template">
+        <li class="photo"><a href="{{pageUrl}}"><img src="{{thumbUrl}}" /></a></li>
+    </script>
+    
     <script id="lightbox-template" type="text/x-handlebars-template">
-        {{> header}}
-        <p><a class="back" href="/place/{{place.woeid}}/">« Photos</a></p>
+        <p><a class="show-photos" href="/place/{{place.woeid}}/">« Photos</a></p>
         <p class="photo"><img src="{{largeUrl}}" /></p>
         <h2>{{title}}</h2>
         <p>{{{description}}}</p>

@@ -16,10 +16,6 @@ YUI.add('photosnearme', function(Y){
         sub         = Lang.sub,
         isString    = Lang.isString;
     
-    // *** Handlebars Partials *** //
-    
-    Handlebars.registerPartial('header', Y.one('#header-template').getContent());
-    
     // *** YQLSync *** //
     
     YQLSync = function(){};
@@ -67,19 +63,23 @@ YUI.add('photosnearme', function(Y){
             var data = results.place;
             
             return {
-                woeid   : data.woeid,
-                country : data.country.code,
-                region  : data.admin1.content,
-                locality: data.locality1.content
+                woeid       : data.woeid,
+                country     : data.country.code,
+                region      : data.admin1.content,
+                locality    : data.locality1.content,
+                latitude    : data.centroid.latitude,
+                longitude   : data.centroid.longitude
             };
         }
     
     }, {
         ATTRS : {
-            woeid   : {},
-            country : {},
-            region  : {},
-            locality: {}
+            woeid       : {},
+            country     : {},
+            region      : {},
+            locality    : {},
+            latitude    : {},
+            longitude   : {}
         }
     });
     
@@ -99,10 +99,12 @@ YUI.add('photosnearme', function(Y){
             // TODO handle places with less accuracy (i.e. no region or locality)
                 
             photo.place = {
-                woeid   : place.woeid,
-                country : place.country.content,
-                region  : place.region.content,
-                locality: place.locality.content
+                woeid       : place.woeid,
+                country     : place.country.content,
+                region      : place.region.content,
+                locality    : place.locality.content,
+                latitude    : place.latitude,
+                longitude   : place.longitude
             };
             
             return photo;
@@ -193,13 +195,51 @@ YUI.add('photosnearme', function(Y){
     
     });
     
+    // *** AppView *** //
+    
+    AppView = Y.Base.create('appView', Y.View, [], {
+        
+        container       : Y.one('#wrap'),
+        titleTemplate   : Handlebars.compile(Y.one('#title-template').getContent()),
+        headerTemplate  : Handlebars.compile(Y.one('#header-template').getContent()),
+        events          : {},
+        
+        initializer : function (config) {
+            config || (config = {});
+            
+            this.place = config.place;
+            this.place.after('change', this.render, this);
+        },
+        
+        render : function () {
+            var place       = this.place,
+                placeData   = place.isNew() ? null : place.toJSON();
+            
+            Y.config.doc.title = this.titleTemplate({ place: placeData });
+            
+            this.container.removeClass('loading')
+                .one('#header').setContent(this.headerTemplate({
+                    place : placeData
+                }));
+            
+            if ( ! place.isNew()) {
+                Y.later(1, this, function(){
+                    this.container.addClass('located');
+                });
+            }
+            
+            return this;
+        }
+    
+    });
+    
     // *** GridView *** //
     
     GridView = Y.Base.create('gridView', Y.View, [], {
     
         container       : '<div id="photos" />',
         template        : Handlebars.compile(Y.one('#grid-template').getContent()),
-        photosTemplate  : Handlebars.compile(Y.one('#grid-photos-template').getContent()),
+        photoTemplate   : Handlebars.compile(Y.one('#grid-photo-template').getContent()),
         events          : {
             '.photo' : { 'click': 'select' }
         },
@@ -207,31 +247,36 @@ YUI.add('photosnearme', function(Y){
         initializer : function (config) {
             config || (config = {});
             
-            this.place  = config.place;
-            this.photos = config.photos;
+            var photos = this.photos = config.photos;
+            photos.after('refresh', this.render, this);
+            photos.after('add', this.addPhoto, this);
+            photos.after('remove', this.removePhoto, this);
             
             this.publish('select', { preventable: false });
-            
-            this.photos.after(['refresh', 'add', 'remove'], this.render, this);
-            this.photos.after('refresh', this.refresh, this);
         },
         
         render : function () {
-            this.container.setContent(this.template({
-                place   : this.place.toJSON(),
-                size    : this.photos.size()
-            }));
+            var photos = this.photos;
             
-            Y.later(1, this, function(){
-                this.container.addClass('located');
-            });
+            this.container.setContent(this.template({
+                photos  : photos.toJSON(),
+                size    : photos.size()
+            }, {
+                partials: { photo: this.photoTemplate }
+            }));
             
             return this;
         },
         
-        refresh : function (e) {
-            var photosData = Y.Array.map(e.models, function(photo){ return photo.toJSON(); });
-            this.container.append(this.photosTemplate({ photos: photosData }));
+        addPhoto : function (e) {
+            var content = this.photoTemplate(e.model.toJSON()),
+                list    = this.container.one('ul');
+            
+            list.insert(content, list.all('.photo').item(e.index));
+        },
+        
+        removePhoto : function (e) {
+            this.container.all('.photo').splice(e.index, 1);
         },
         
         select : function (e) {
@@ -260,33 +305,32 @@ YUI.add('photosnearme', function(Y){
         container   : '<div id="lightbox" />',
         template    : Handlebars.compile(Y.one('#lightbox-template').getContent()),
         events      : {
-            '.back' : { 'click': 'back' }
+            '.show-photos' : { 'click': 'showPhotos' }
         },
         
         initializer : function (config) {
             config || (config = {});
-            this.place = config.place;
-            this.place.after('change', Y.bind(this.render, this));
             
-            this.publish('back', { preventable: false });
+            this.place = config.place;
+            this.publish('showPhotos', { preventable: false });
         },
         
         render : function () {
             var photo = this.model;
             
-            this.container.addClass('located').setContent(this.template({
+            this.container.setContent(this.template({
+                place       : this.place.toJSON(),
                 title       : photo.get('title') || 'Photo',
                 description : photo.get('description') || '',
-                largeUrl    : photo.get('largeUrl'),
-                place       : this.place.toJSON()
+                largeUrl    : photo.get('largeUrl')
             }));
             
             return this;
         },
                
-        back : function (e) {
+        showPhotos : function (e) {
             e.preventDefault();
-            this.fire('back', { place : this.place });
+            this.fire('showPhotos');
         }
     
     });
@@ -296,123 +340,125 @@ YUI.add('photosnearme', function(Y){
     PhotosNearMe = Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.Controller, [], {
     
         routes : [
-            { path: '/',            callback: 'locate' },
-            { path: '/place/:id/',  callback: 'showPlace' },
-            { path: '/photo/:id/',  callback: 'showPhoto' }
+            { path: '/',            callback: 'handleLocate' },
+            { path: '/place/:id/',  callback: 'handlePlace' },
+            { path: '/photo/:id/',  callback: 'handlePhoto' }
         ],
-        
-        titles : {
-            place   : 'Photos Near: {locality}, {region} {country}',
-            photo   : 'Photo: {title}'
-        },
         
         queries : {
             woeid : 'SELECT place.woeid FROM flickr.places WHERE lat={latitude} AND lon={longitude}'
         },
         
-        place   : null,
-        photos  : null,
-        
         initializer : function () {
-            this.place  = new Place();
-            this.photos = new Photos();
+            this.place      = new Place();
+            this.photos     = new Photos();
+            this.appView    = new AppView({ place: this.place });
+            
+            this.place.after('idChange', this.updatePlace, this);
             
             this.on('gridView:select', function(e){
                 this.save('/photo/' + e.photo.get('id') + '/');
             });
             
-            this.on('photoView:back', function(e){
-                this.save('/place/' + e.place.get('id') + '/');
-            });
+            this.on('photoView:showPhotos', Y.bind(function(e){
+                var place = this.place.isNew() ? e.target.model.get('place') : this.place;
+                this.save('/place/' + place.get('id') + '/');
+            }, this));
             
+            // do initial dispatch
             if (window.navigator.standalone) {
-                // iOS saved to home screen
+                // iOS saved to home screen,
+                // always route to / so geolocation lookup is preformed.
                 this.replace('/');
             } else {
                 this.dispatch();
             }
         },
         
-        locate : function (req) {
+        handleLocate : function (req) {
             this.hideUrlBar();
             
             Y.Geo.getCurrentPosition(Y.bind(function(res){
                 if ( ! res.success) {
-                    // TODO update LocatingView: can't locate you
+                    // TODO: Show problem View: unable to locate you.
                     return;
                 }
                 
                 Y.YQL(sub(this.queries.woeid, res.coords), Y.bind(function(r){
-                    var placeData = r.query && r.query.results ? r.query.results.places.place : {}
-                    this.replace('/place/' + placeData.woeid + '/');
-                }, this));
-            }, this));
-        },
-        
-        showPlace : function (req) {
-            var place       = this.place,
-                photos      = this.photos
-                photoView   = this.photoView,
-                gridView    = this.gridView;
-                       
-            Y.one('body').removeClass('loading');
-            
-            if (photoView) {
-                photoView.removeTarget(this);
-                photoView.destroy();
-            }
-            
-            if (place.isNew()) {
-                place.setAttrs(req.params).load(Y.bind(function(){
-                    gridView = this.gridView = new GridView({
-                        place           : place,
-                        photos          : photos,
-                        bubbleTargets   : this
-                    }).render();
-                    
-                    this.hideUrlBar();
-                    Y.config.doc.title = sub(this.titles.place, place.toJSON());
-                    Y.one('#content').setContent(gridView.container);
-                }, this));
-                
-                this.photos.load({ place: place });
-            } else if (gridView) {
-                gridView.reset();
-                this.hideUrlBar();
-                Y.config.doc.title = sub(this.titles.place, place.toJSON());
-                Y.one('#content').setContent(gridView.container);
-            }
-        },
-        
-        showPhoto : function (req) {
-            var photo = this.photos.getById(req.params.id) || new Photo(req.params);
-        
-            Y.one('body').removeClass('loading');
-            
-            photo.load(Y.bind(function(){
-                photo.loadImg(Y.bind(function(){
-                    this.hideUrlBar();
-                    Y.config.doc.title = sub(this.titles.photo, { title: photo.get('title') });
-                    
-                    // use the photo’s place if we don’t already have a place
-                    var place = this.place.isNew() ? photo.get('place') : this.place;
-                    
-                    this.photoView = new PhotoView({
-                        model           : photo,
-                        place           : place,
-                        bubbleTargets   : this
-                    }).render();
-                    
-                    if (this.gridView) {
-                        // retrain rendered grid
-                        this.gridView.remove();
-                        this.photoView.container.appendTo('#content');
+                    var place = r.query && r.query.results ? r.query.results.places.place : null;
+                    if (place) {
+                        this.replace('/place/' + place.woeid + '/');
                     } else {
-                        // started on photo page
-                        Y.one('#content').setContent(this.photoView.container);
+                        // TODO: Show problem View: unable to locate you.
                     }
                 }, this));
             }, this));
+        },
+        
+        handlePlace : function (req) {
+            this.place.setAttrs(req.params);
+            this.showGridView();
+        },
+        
+        handlePhoto : function (req) {
+            var photo = this.photos.getById(req.params.id) || new Photo(req.params);
+            
+            photo.load(Y.bind(function(){
+                photo.loadImg(Y.bind(this.showPhotoView, this, photo));
+            }, this));
+        },
+        
+        updatePlace : function () {
+            var place   = this.place,
+                photos  = this.photos;
+            
+            place.load(Y.bind(photos.load, photos, { place: place }));
+        },
+        
+        showGridView : function () {
+            var appView     = this.appView,
+                gridView    = this.gridView;
+            
+            if (this.photoView) {
+                this.photoView.destroy().removeTarget(this);
+                this.photoView = null;
+            }
+            
+            if ( ! gridView) {
+                gridView = this.gridView = new GridView({
+                    photos          : this.photos,
+                    bubbleTargets   : this
+                }).render();
+            }
+            
+            gridView.reset();
+            appView.render().container.one('#main').setContent(gridView.container);
+            this.hideUrlBar();
+        },
+        
+        showPhotoView : function (photo) {
+            var appView     = this.appView,
+                gridView    = this.gridView,
+                place       = this.place;
+            
+            // retain rendered GirdView
+            if (gridView) {
+                gridView.remove();
+            }
+                
+            // use the photo’s place data if we don’t already have a place
+            if (place.isNew()) {
+                place.setAttrs(photo.get('place').toJSON());
+            }
+            
+            this.photoView = new PhotoView({
+                model           : photo,
+                place           : place,
+                bubbleTargets   : this
+            }).render();
+            
+            appView.render().container.one('#main').setContent(this.photoView.container);
+            this.hideUrlBar();
         },
         
         hideUrlBar : Y.UA.ios && ! Y.UA.ipad ? function(){
