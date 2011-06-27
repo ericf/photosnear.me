@@ -311,14 +311,13 @@ h1 {
     padding: 0;
     word-spacing: inherit;
 }
-#photos .photo {
-    width: 79px;
-    height: 79px;
-    padding: 5px;
-}
+#photos .photo { padding: 5px; }
 #photos .photo a {
     display: block;
     position: relative;
+    width: 75px;
+    height: 75px;
+    padding: 2px;
     -webkit-box-shadow: 0 0 2px rgba(0,0,0, 0.40);
     -moz-box-shadow: 0 0 2px rgba(0,0,0, 0.40);
     box-shadow: 0 0 2px rgba(0,0,0, 0.40);
@@ -358,6 +357,11 @@ h1 {
     box-shadow: 0 5px 30px -1px rgba(0,0,0, 0.65);
 }
 
+#map .map {
+    width: 500px;
+    height: 400px;
+}
+
 @media only screen and (max-device-width: 480px) {
 
     h1 {
@@ -383,27 +387,29 @@ h1 {
         width: 9px;
         height: 18px;
     }
-    #logo .shadow {
+    #logo .pin-shadow {
         background-size: 16px 11px;
         right: -4px;
         height: 18px;
     }
     
     #photos ul { margin: 10px -5px; }
-    #photos .photo {
-        width: 54px;
-        height: 54px;
-        padding: 4px;
+    #photos .photo { padding: 4px; }
+    #photos .photo a {
+        width: 50px;
+        height: 50px;
+        padding: 2px;
     }
 
 }
 
 @media only screen and (max-device-width: 480px) and (orientation: landscape) {
     
-    #photos .photo {
-        width: 39px;
-        height: 39px;
-        padding: 4px;
+    #photos .photo { padding: 4px; }
+    #photos .photo a {
+        width: 35px;
+        height: 35px;
+        padding: 2px;
     }
     
 }

@@ -14,7 +14,8 @@ YUI.add('photosnearme', function(Y){
         
         Lang        = Y.Lang
         sub         = Lang.sub,
-        isString    = Lang.isString;
+        isString    = Lang.isString,
+        isNumber    = Lang.isNumber;
     
     // *** YQLSync *** //
     
@@ -202,13 +203,17 @@ YUI.add('photosnearme', function(Y){
         container       : Y.one('#wrap'),
         titleTemplate   : Handlebars.compile(Y.one('#title-template').getContent()),
         headerTemplate  : Handlebars.compile(Y.one('#header-template').getContent()),
-        events          : {},
+        events          : {
+            '.show-map' : { 'click': 'showMap' }
+        },
         
         initializer : function (config) {
             config || (config = {});
             
             this.place = config.place;
             this.place.after('change', this.render, this);
+            
+            this.publish('showMap', { preventable: false });
         },
         
         render : function () {
@@ -229,6 +234,11 @@ YUI.add('photosnearme', function(Y){
             }
             
             return this;
+        },
+        
+        showMap : function (e) {
+            e.preventDefault();
+            this.fire('showMap');
         }
     
     });
@@ -241,7 +251,9 @@ YUI.add('photosnearme', function(Y){
         template        : Handlebars.compile(Y.one('#grid-template').getContent()),
         photoTemplate   : Handlebars.compile(Y.one('#grid-photo-template').getContent()),
         events          : {
-            '.photo' : { 'click': 'select' }
+            '.photo': { 'click': 'select' },
+            '.prev' : { 'click': 'prev' },
+            '.next' : { 'click': 'next' }
         },
         
         initializer : function (config) {
@@ -252,15 +264,35 @@ YUI.add('photosnearme', function(Y){
             photos.after('add', this.addPhoto, this);
             photos.after('remove', this.removePhoto, this);
             
+            this.page = config.page;
+            
             this.publish('select', { preventable: false });
+            this.publish('navigate', { preventable: false });
         },
         
         render : function () {
-            var photos = this.photos;
+            var photos  = this.photos,
+                page    = this.page,
+                prev, next;
+                
+            if (page === 0) {
+                prev = null;
+                next = '2/';
+            } else if (page === 1) {
+                prev = '../';
+                next = '../3/';
+            } else {
+                prev = '../' + page + '/';
+                next = '../' + (page + 2) + '/';
+            }
             
             this.container.setContent(this.template({
                 photos  : photos.toJSON(),
-                size    : photos.size()
+                size    : photos.size(),
+                nav     : {
+                    prev: prev,
+                    next: next
+                }
             }, {
                 partials: { photo: this.photoTemplate }
             }));
@@ -294,6 +326,16 @@ YUI.add('photosnearme', function(Y){
         
         reset : function () {
             this.container.all('.photo.selected').removeClass('selected');
+        },
+        
+        prev : function (e) {
+            e.preventDefault();
+            this.fire('navigate', { page: this.page });
+        },
+        
+        next : function (e) {
+            e.preventDefault();
+            this.fire('navigate', { page: this.page + 2 });
         }
     
     });
@@ -335,14 +377,62 @@ YUI.add('photosnearme', function(Y){
     
     });
     
+    // *** MapView *** //
+    
+    MapView = Y.Base.create('mapView', Y.View, [], {
+    
+        container   : '<div id="map" />',
+        template    : Handlebars.compile(Y.one('#map-template').getContent()),
+        events      : {
+            '.close'    : { click: 'close' },
+            '.select'   : { click: 'select' },
+            '.current'  : { click: 'locate' },
+        },
+        
+        initializer : function (config) {
+            config || (config = {});
+            this.map = config.map;
+            this.publish('select', { preventable: false });
+            this.publish('locate', { preventable: false });
+        },
+        
+        render : function () {
+            var container = this.container;
+            container.setContent(this.template());
+            Y.one(this.map.getDiv()).addClass('map').appendTo(container);
+            return this;
+        },
+        
+        close : function (e) {
+            e.preventDefault();
+            this.remove();
+        },
+        
+        select : function (e) {
+            e.preventDefault();
+            
+            var center = this.map.getCenter();
+            this.fire('select', { coords: {
+                latitude    : center.lat(),
+                longitude   : center.lng()
+            }});
+        },
+        
+        locate : function (e) {
+            e.preventDefault();
+            this.fire('locate');
+        }
+    
+    });
+    
     // *** PhotosNearMe *** //
     
     PhotosNearMe = Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.Controller, [], {
     
         routes : [
-            { path: '/',            callback: 'handleLocate' },
-            { path: '/place/:id/',  callback: 'handlePlace' },
-            { path: '/photo/:id/',  callback: 'handlePhoto' }
+            { path: '/',                callback: 'handleLocate' },
+            { path: '/place/:id/*page', callback: 'handlePlace' },
+            { path: '/photo/:id/',      callback: 'handlePhoto' }
         ],
         
         queries : {
@@ -354,16 +444,30 @@ YUI.add('photosnearme', function(Y){
             this.photos     = new Photos();
             this.appView    = new AppView({ place: this.place });
             
-            this.place.after('idChange', this.updatePlace, this);
+            this.after('photosPageChange', this.loadPhotos);
+            
+            this.place.after('idChange', Y.bind(this.place.load, this.place));
+            
+            this.appView.on('showMap', this.showMap, this);
             
             this.on('gridView:select', function(e){
                 this.save('/photo/' + e.photo.get('id') + '/');
+            });
+            this.on('gridView:navigate', function(e){
+                this.save('/place/' + this.place.get('id') + '/' + e.page + '/');
             });
             
             this.on('photoView:showPhotos', Y.bind(function(e){
                 var place = this.place.isNew() ? e.target.model.get('place') : this.place;
                 this.save('/place/' + place.get('id') + '/');
             }, this));
+            
+            this.on('mapView:select', Y.bind(function(e){
+                e.target.remove();
+                this.navigatePlace(e.coords);
+            }, this));
+            
+            this.on('mapView:locate', this.updateMap, this);
             
             // do initial dispatch
             if (window.navigator.standalone) {
@@ -384,19 +488,21 @@ YUI.add('photosnearme', function(Y){
                     return;
                 }
                 
-                Y.YQL(sub(this.queries.woeid, res.coords), Y.bind(function(r){
-                    var place = r.query && r.query.results ? r.query.results.places.place : null;
-                    if (place) {
-                        this.replace('/place/' + place.woeid + '/');
-                    } else {
-                        // TODO: Show problem View: unable to locate you.
-                    }
-                }, this));
+                this.navigatePlace(res.coords);
             }, this));
         },
         
         handlePlace : function (req) {
-            this.place.setAttrs(req.params);
+            var params  = req.params,
+                page    = (parseInt(params.page, 10) || 1) - 1;
+            
+            // redirect to clear crufty URL
+            if (params.page && page <= 0) {
+                return this.replace('/place/' + params.id + '/');
+            }
+            
+            this.place.set('id', params.id);
+            this.set('photosPage', page);
             this.showGridView();
         },
         
@@ -408,11 +514,30 @@ YUI.add('photosnearme', function(Y){
             }, this));
         },
         
-        updatePlace : function () {
-            var place   = this.place,
-                photos  = this.photos;
+        navigatePlace : function (coords) {
+            Y.YQL(sub(this.queries.woeid, coords), Y.bind(function(r){
+                var place = r.query && r.query.results ? r.query.results.places.place : null;
+                if (place) {
+                    this.replace('/place/' + place.woeid + '/');
+                } else {
+                    // TODO: Show problem View: unable to locate you.
+                }
+            }, this));
+        },
+        
+        loadPhotos : function () {
+            var photosPage  = this.get('photosPage'),
+                gridView    = this.gridView;
+                
+            if (gridView) {
+                gridView.page = photosPage;
+                gridView.render();
+            }
             
-            place.load(Y.bind(photos.load, photos, { place: place }));
+            this.photos.load({
+                place : this.place,
+                start : photosPage * 100
+            });
         },
         
         showGridView : function () {
@@ -427,6 +552,7 @@ YUI.add('photosnearme', function(Y){
             if ( ! gridView) {
                 gridView = this.gridView = new GridView({
                     photos          : this.photos,
+                    page            : this.get('photosPage'),
                     bubbleTargets   : this
                 }).render();
             }
@@ -461,11 +587,51 @@ YUI.add('photosnearme', function(Y){
             this.hideUrlBar();
         },
         
+        showMap : function () {
+            var place   = this.place,
+                map     = this.map,
+                mapView = this.mapView;
+                
+            if ( ! map) {
+                map = this.map = new google.maps.Map(Y.config.doc.createElement('div'), {
+                    zoom        : 15,
+                    mapTypeId   : google.maps.MapTypeId.ROADMAP
+                });
+            }
+            
+            if ( ! mapView) {
+                mapView = this.mapView = new MapView({
+                    map             : map,
+                    bubbleTargets   : this
+                }).render();
+            }
+            
+            map.setCenter(new google.maps.LatLng(place.get('latitude'), place.get('longitude')));
+            this.appView.container.append(mapView.container);
+        },
+        
+        updateMap : function () {
+            var map = this.map;
+            if ( ! map) { return; }
+            
+            Y.Geo.getCurrentPosition(function(res){
+                if ( ! res.success) { return; }
+                var coords = res.coords;
+                map.setCenter(new google.maps.LatLng(coords.latitude, coords.longitude));
+            });
+        },
+        
         hideUrlBar : Y.UA.ios && ! Y.UA.ipad ? function(){
             setTimeout(function(){
                 Y.config.win.scrollTo(0, 1);
             }, 1);
         } : function(){}
+    
+    }, {
+    
+        ATTRS : {
+            photosPage : { validator: isNumber }
+        }
     
     });
 
