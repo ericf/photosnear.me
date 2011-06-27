@@ -272,6 +272,7 @@ YUI.add('photosnearme', function(Y){
         
         render : function () {
             var photos  = this.photos,
+                size    = photos.size(),
                 page    = this.page,
                 prev, next;
                 
@@ -288,10 +289,10 @@ YUI.add('photosnearme', function(Y){
             
             this.container.setContent(this.template({
                 photos  : photos.toJSON(),
-                size    : photos.size(),
+                size    : size,
                 nav     : {
                     prev: prev,
-                    next: next
+                    next: size >= 100 ? next : null
                 }
             }, {
                 partials: { photo: this.photoTemplate }
