@@ -61,16 +61,35 @@ YUI.add('photosnearme', function(Y){
         
         parse : function (results) {
             if ( ! results) { return; }
-            var data = results.place;
+            var data        = results.place,
+                country     = data.country,
+                region      = data.admin1,
+                locality    = data.locality1;
             
             return {
                 woeid       : data.woeid,
-                country     : data.country.code,
-                region      : data.admin1.content,
-                locality    : data.locality1.content,
                 latitude    : data.centroid.latitude,
-                longitude   : data.centroid.longitude
+                longitude   : data.centroid.longitude,
+                country     : (country && country.content),
+                region      : (region && region.content),
+                locality    : (locality && locality.content)
             };
+        },
+        
+        toString : function () {
+            var country     = this.get('country'),
+                region      = this.get('region'),
+                locality    = this.get('locality');
+            
+            if (locality) {
+                return ( locality + ', ' + region );
+            }
+            
+            if (region) {
+                return ( region + ', ' + country );
+            }
+            
+            return country || '';
         }
     
     }, {
@@ -94,18 +113,19 @@ YUI.add('photosnearme', function(Y){
         
         parse : function (results) {
             if ( ! results) { return; }
-            var photo = results.photo,
-                place = photo.location;
-                
-            // TODO handle places with less accuracy (i.e. no region or locality)
+            var photo       = results.photo,
+                place       = photo.location,
+                country     = place.country,
+                region      = place.region,
+                locality    = place.locality;
                 
             photo.place = {
                 woeid       : place.woeid,
-                country     : place.country.content,
-                region      : place.region.content,
-                locality    : place.locality.content,
                 latitude    : place.latitude,
-                longitude   : place.longitude
+                longitude   : place.longitude,
+                country     : (country && country.content),
+                region      : (region && region.content),
+                locality    : (locality && locality.content)
             };
             
             return photo;
@@ -218,13 +238,13 @@ YUI.add('photosnearme', function(Y){
         
         render : function () {
             var place       = this.place,
-                placeData   = place.isNew() ? null : place.toJSON();
+                placeText   = place.toString();
             
-            Y.config.doc.title = this.titleTemplate({ place: placeData });
+            Y.config.doc.title = this.titleTemplate({ place: placeText });
             
             this.container.removeClass('loading')
                 .one('#header').setContent(this.headerTemplate({
-                    place : placeData
+                    place : placeText
                 }));
             
             if ( ! place.isNew()) {
