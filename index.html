@@ -65,12 +65,12 @@
             {{> photo}}
         {{/each}}
         </ul>
-        <ul class="nav layout">
+        <ul class="nav layout {{#if nav.prev}}{{#if nav.next}} both {{/if}}{{/if}}">
         {{#if nav.prev}}
-            <li class="prev"><a href="{{nav.prev}}">Previous</a></li>
+            <li class="prev"><a href="{{nav.prev}}">« Previous</a></li>
         {{/if}}
         {{#if nav.next}}
-            <li class="next"><a href="{{nav.next}}">Next</a></li>
+            <li class="next"><a href="{{nav.next}}">Next »</a></li>
         {{/if}}
         </ul>
     </script>
@@ -80,10 +80,14 @@
     </script>
     
     <script id="lightbox-template" type="text/x-handlebars-template">
-        <p><a class="show-photos" href="/place/{{place.woeid}}/">« Photos</a></p>
-        <p class="photo"><img src="{{largeUrl}}" /></p>
-        <h2>{{title}}</h2>
-        <p>{{{description}}}</p>
+        <!-- <p><a class="show-photos" href="/place/{{place.woeid}}/">« Photos</a></p> -->
+        <div class="photo">
+            <img src="{{largeUrl}}" />
+            <div class="photo-info">
+                <h2>{{title}}</h2>
+                <p>{{{description}}}</p>
+            </div>
+        </div>
     </script>
     
     <script id="map-template" type="text/x-handlebars-template">
