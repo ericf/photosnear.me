@@ -343,10 +343,29 @@ h1 {
     opacity: 0.5;
 }
 #photos .selected img { opacity: 0.5; }
+#photos .nav { margin: 10px 0; }
+#photos .nav li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 50%;
+}
+#photos .nav .prev { text-align: left; }
+#photos .nav .next {
+    margin-left: 50%;
+    text-align: right;
+}
+#photos .nav.both .next { margin-left: 0; }
+#photos .nav a {
+    display: block;
+    text-decoration: none;
+}
 
-#lightbox {}
+#lightbox { text-align: center; }
 #lightbox .photo {
-    text-align: center;
+    display: inline-block;
+    zoom: 1; *display: inline;
+    position: relative;
 }
 #lightbox .photo img {
     display: block;
@@ -355,6 +374,27 @@ h1 {
     -webkit-box-shadow: 0 5px 30px -1px rgba(0,0,0, 0.65);
     -moz-box-shadow: 0 5px 30px -1px rgba(0,0,0, 0.65);
     box-shadow: 0 5px 30px -1px rgba(0,0,0, 0.65);
+}
+#lightbox .photo-info {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    color: #f8ffff;
+    background: #2D2930;
+    background: rgba(0,0,0, 0.80);
+    text-align: left;
+}
+#lightbox .photo-info h2 {
+    font-family: "myriad-pro-1", "myriad-pro-2", sans-serif;
+    font-weight: 400;
+    padding: 0 20px;
+}
+#lightbox .photo-info p {
+    display: none;
+    padding: 0 20px;
+}
+#lightbox .photo-info:hover p {
+    display: block;
 }
 
 #map .map {
