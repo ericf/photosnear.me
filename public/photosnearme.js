@@ -268,6 +268,21 @@ YUI.add('photosnearme', function(Y){
             
             this.publish('select', { preventable: false });
             this.publish('navigate', { preventable: false });
+            
+            // TODO: should I keep this?
+            this.container.on('flick', Y.bind(function(e){
+                var distance = e.flick.distance;
+                if (distance > 0) {
+                    if (this.page > 0) {
+                        this.prev(e);
+                    }
+                } else {
+                    this.next(e);
+                }
+            }, this), {
+                axis        : 'x',
+                minDistance : 100
+            });
         },
         
         render : function () {
@@ -331,12 +346,38 @@ YUI.add('photosnearme', function(Y){
         
         prev : function (e) {
             e.preventDefault();
-            this.fire('navigate', { page: this.page });
+            this.container.one('ul').transition({
+                right   : '-100px',
+                opacity : 0,
+                duration: 0.20,
+                easing  : 'ease-out',
+                on      : {
+                    start   : function(){
+                        this.setStyle('position', 'relative');
+                    },
+                    end     : Y.bind(function(){
+                        this.fire('navigate', { page: this.page });
+                    }, this)
+                }
+            });
         },
         
         next : function (e) {
             e.preventDefault();
-            this.fire('navigate', { page: this.page + 2 });
+            this.container.one('ul').transition({
+                left    : '-100px',
+                opacity : 0,
+                duration: 0.20,
+                easing  : 'ease-out',
+                on      : {
+                    start   : function(){
+                        this.setStyle('position', 'relative');
+                    },
+                    end     : Y.bind(function(){
+                        this.fire('navigate', { page: this.page + 2 });
+                    }, this)
+                }
+            });
         }
     
     });
@@ -447,7 +488,8 @@ YUI.add('photosnearme', function(Y){
             
             this.after('photosPageChange', this.loadPhotos);
             
-            this.place.after('idChange', Y.bind(this.place.load, this.place));
+            this.place.after('idChange', this.place.load);
+            this.place.after('idChange', this.loadPhotos, this);
             
             this.appView.on('showMap', this.showMap, this);
             
@@ -532,7 +574,7 @@ YUI.add('photosnearme', function(Y){
                 
             if (gridView) {
                 gridView.page = photosPage;
-                gridView.render();
+                //gridView.render();
             }
             
             this.photos.load({
@@ -636,4 +678,4 @@ YUI.add('photosnearme', function(Y){
     
     });
 
-}, '0.2.0', { requires: ['app', 'yql', 'cache-offline', 'gallery-geo'] });
+}, '0.2.0', { requires: ['app', 'yql', 'cache-offline', 'gallery-geo', 'transition', 'event-flick'] });
