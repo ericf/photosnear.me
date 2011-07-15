@@ -6,9 +6,11 @@ YUI.add('photosnearme', function(Y){
         Photo,
         Photos,
         
+        AppView,
         LocatingView,
         GridView,
         PhotoView,
+        MapView,
         
         YQLSync,
         
@@ -70,9 +72,9 @@ YUI.add('photosnearme', function(Y){
                 woeid       : data.woeid,
                 latitude    : data.centroid.latitude,
                 longitude   : data.centroid.longitude,
-                country     : (country && country.content),
-                region      : (region && region.content),
-                locality    : (locality && locality.content)
+                country     : country && country.content,
+                region      : region && region.content,
+                locality    : locality && locality.content
             };
         },
         
@@ -117,9 +119,9 @@ YUI.add('photosnearme', function(Y){
                 woeid       : place.woeid,
                 latitude    : place.latitude,
                 longitude   : place.longitude,
-                country     : (country && country.content),
-                region      : (region && region.content),
-                locality    : (locality && locality.content)
+                country     : country && country.content,
+                region      : region && region.content,
+                locality    : locality && locality.content
             };
             
             return photo;
