@@ -81,14 +81,8 @@ YUI.add('photosnearme', function(Y){
                 region      = this.get('region'),
                 locality    = this.get('locality');
             
-            if (locality) {
-                return ( locality + ', ' + region );
-            }
-            
-            if (region) {
-                return ( region + ', ' + country );
-            }
-            
+            if (locality) { return (locality + ', ' + region); }
+            if (region) { return (region + ', ' + country); }
             return country || '';
         }
     
@@ -271,10 +265,10 @@ YUI.add('photosnearme', function(Y){
         template        : Handlebars.compile(Y.one('#grid-template').getContent()),
         photoTemplate   : Handlebars.compile(Y.one('#grid-photo-template').getContent()),
         events          : {
-            '.photo': { 'click': 'select' },
-            '.prev' : { 'click': 'prev' },
-            '.next' : { 'click': 'next' }
+            '.photo': { 'click': 'select' }
         },
+        
+        _maxKnownHeight : 0,
         
         initializer : function (config) {
             config || (config = {});
@@ -284,54 +278,21 @@ YUI.add('photosnearme', function(Y){
             photos.after('add', this.addPhoto, this);
             photos.after('remove', this.removePhoto, this);
             
-            this.page = config.page;
-            
-            this.publish('select', { preventable: false });
-            this.publish('navigate', { preventable: false });
-            
-            //Y.one('doc').on('left', this.prev, this);
-            //Y.one('doc').on('right', this.next, this);
-            
-            // TODO: should I keep this?
-            this.container.on('flick', Y.bind(function(e){
-                var distance = e.flick.distance;
-                if (distance > 0) {
-                    if (this.page > 0) {
-                        this.prev(e);
-                    }
-                } else {
-                    this.next(e);
-                }
-            }, this), {
-                axis        : 'x',
-                minDistance : 100
+            this.publish({
+                more    : { preventable: false },
+                select  : { preventable: false }
             });
+            
+            Y.one('win').on(['scroll', 'resize'], this.more, this);
         },
         
         render : function () {
             var photos  = this.photos,
-                size    = photos.size(),
-                page    = this.page,
-                prev, next;
-                
-            if (page === 0) {
-                prev = null;
-                next = '2/';
-            } else if (page === 1) {
-                prev = '../';
-                next = '../3/';
-            } else {
-                prev = '../' + page + '/';
-                next = '../' + (page + 2) + '/';
-            }
+                size    = photos.size();
             
             this.container.setContent(this.template({
                 photos  : photos.toJSON(),
-                size    : size,
-                nav     : {
-                    prev: prev,
-                    next: size >= 100 ? next : null
-                }
+                size    : size
             }, {
                 partials: { photo: this.photoTemplate }
             }));
@@ -350,6 +311,21 @@ YUI.add('photosnearme', function(Y){
             this.container.all('.photo').splice(e.index, 1);
         },
         
+        more : function (e) {
+            var viewportBottom  = Y.DOM.viewportRegion().bottom,
+                maxKnowHeight   = this._maxKnownHeight,
+                containerBottom;
+                
+            if (viewportBottom <= maxKnowHeight) { return; }
+            
+            containerBottom = this.container.get('region').bottom;
+                
+            if (viewportBottom > containerBottom && containerBottom > maxKnowHeight) {
+                this._maxKnownHeight = containerBottom;
+                this.fire('more');
+            }
+        },
+        
         select : function (e) {
             e.preventDefault();
             
@@ -365,54 +341,6 @@ YUI.add('photosnearme', function(Y){
         
         reset : function () {
             this.container.all('.photo.selected').removeClass('selected');
-        },
-        
-        prev : function (e) {
-            e.preventDefault();
-            this.container.one('ul').transition({
-                right   : {
-                    value   : '-100px',
-                    duration: 0.25,
-                    easing  : 'ease-out'
-                },
-                opacity : {
-                    value   : 0,
-                    duration: 0.25,
-                    easing  : 'ease-in'
-                },
-                on      : {
-                    start   : function(){
-                        this.setStyle('position', 'relative');
-                    },
-                    end     : Y.bind(function(){
-                        this.fire('navigate', { page: this.page });
-                    }, this)
-                }
-            });
-        },
-        
-        next : function (e) {
-            e.preventDefault();
-            this.container.one('ul').transition({
-                left    : {
-                    value   : '-100px',
-                    duration: 0.25,
-                    easing  : 'ease-out'
-                },
-                opacity : {
-                    value   : 0,
-                    duration: 0.25,
-                    easing  : 'ease-in'
-                },
-                on      : {
-                    start   : function(){
-                        this.setStyle('position', 'relative');
-                    },
-                    end     : Y.bind(function(){
-                        this.fire('navigate', { page: this.page + 2 });
-                    }, this)
-                }
-            });
         }
     
     });
@@ -438,6 +366,19 @@ YUI.add('photosnearme', function(Y){
             this.publish({
                 navigate    : { preventable: false },
                 showPhotos  : { preventable: false }
+            });
+            
+            // TODO: should I keep this?
+            this.container.on('flick', Y.bind(function(e){
+                var distance = e.flick.distance;
+                if (distance > 0) {
+                    this.prev(e);
+                } else {
+                    this.next(e);
+                }
+            }, this), {
+                axis        : 'x',
+                minDistance : 100
             });
         },
         
@@ -555,9 +496,9 @@ YUI.add('photosnearme', function(Y){
     PhotosNearMe = Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.Controller, [], {
     
         routes : [
-            { path: '/',                callback: 'handleLocate' },
-            { path: '/place/:id/*page', callback: 'handlePlace' },
-            { path: '/photo/:id/',      callback: 'handlePhoto' }
+            { path: '/',            callback: 'handleLocate' },
+            { path: '/place/:id/',  callback: 'handlePlace' },
+            { path: '/photo/:id/',  callback: 'handlePhoto' }
         ],
         
         queries : {
@@ -569,18 +510,14 @@ YUI.add('photosnearme', function(Y){
             this.photos     = new Photos();
             this.appView    = new AppView({ place: this.place });
             
-            this.after('photosPageChange', this.loadPhotos);
-            
             this.place.after('idChange', this.place.load);
             this.place.after('idChange', this.loadPhotos, this);
             
             this.appView.on('showMap', this.showMap, this);
             
+            this.on('gridView:more', this.morePhotos);
             this.on(['gridView:select', 'photoView:navigate'], function(e){
                 this.save('/photo/' + e.photo.get('id') + '/');
-            });
-            this.on('gridView:navigate', function(e){
-                this.save('/place/' + this.place.get('id') + '/' + e.page + '/');
             });
             
             this.on('photoView:showPhotos', Y.bind(function(e){
@@ -619,16 +556,7 @@ YUI.add('photosnearme', function(Y){
         },
         
         handlePlace : function (req) {
-            var params  = req.params,
-                page    = (parseInt(params.page, 10) || 1) - 1;
-            
-            // redirect to clear crufty URL
-            if (params.page && page <= 0) {
-                return this.replace('/place/' + params.id + '/');
-            }
-            
-            this.place.set('id', params.id);
-            this.set('photosPage', page);
+            this.place.set('id', req.params.id);
             this.showGridView();
         },
         
@@ -652,18 +580,20 @@ YUI.add('photosnearme', function(Y){
         },
         
         loadPhotos : function () {
-            var photosPage  = this.get('photosPage'),
-                gridView    = this.gridView;
+            this.photos.load({ place: this.place });
+        },
+        
+        morePhotos : function () {
+            var photos      = this.photos,
+                newPhotos   = new Photos();
                 
-            if (gridView) {
-                gridView.page = photosPage;
-                //gridView.render();
-            }
-            
-            this.photos.load({
+            newPhotos.load({
                 place : this.place,
-                start : photosPage * 100
-            });
+                start : photos.size()
+            }, Y.bind(function(){
+                photos.add(newPhotos.toArray());
+                newPhotos.destroy();
+            }, this));
         },
         
         showGridView : function () {
@@ -678,7 +608,6 @@ YUI.add('photosnearme', function(Y){
             if ( ! gridView) {
                 gridView = this.gridView = new GridView({
                     photos          : this.photos,
-                    page            : this.get('photosPage'),
                     bubbleTargets   : this
                 }).render();
             }
@@ -754,19 +683,15 @@ YUI.add('photosnearme', function(Y){
             }, 1);
         } : function(){}
     
-    }, {
-    
-        ATTRS : {
-            photosPage : { validator: isNumber }
-        }
-    
     });
 
-}, '0.2.0', { requires: ['app'
-                        ,'yql'
-                        ,'cache-offline'
-                        ,'gallery-geo'
-                        ,'transition'
-                        ,'event-flick'
-                        ,'gallery-event-nav-keys'
-                        ]});
+}, '0.2.0', {
+    requires: ['app'
+              ,'yql'
+              ,'cache-offline'
+              ,'gallery-geo'
+              ,'transition'
+              ,'event-flick'
+              ,'node-screen'
+              ]
+});

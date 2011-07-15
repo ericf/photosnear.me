@@ -65,14 +65,6 @@
             {{> photo}}
         {{/each}}
         </ul>
-        <ul class="nav layout {{#if nav.prev}}{{#if nav.next}} both {{/if}}{{/if}}">
-        {{#if nav.prev}}
-            <li class="prev"><a href="{{nav.prev}}">« Previous</a></li>
-        {{/if}}
-        {{#if nav.next}}
-            <li class="next"><a href="{{nav.next}}">Next »</a></li>
-        {{/if}}
-        </ul>
     </script>
     
     <script id="grid-photo-template" type="text/x-handlebars-template">
