@@ -320,7 +320,7 @@ YUI.add('photosnearme', function(Y){
             
             containerBottom = this.container.get('region').bottom;
                 
-            if (viewportBottom > containerBottom && containerBottom > maxKnowHeight) {
+            if ((viewportBottom + 50) > containerBottom && containerBottom > maxKnowHeight) {
                 this._maxKnownHeight = containerBottom;
                 this.fire('more');
             }
