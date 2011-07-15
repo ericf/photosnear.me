@@ -289,6 +289,9 @@ YUI.add('photosnearme', function(Y){
             this.publish('select', { preventable: false });
             this.publish('navigate', { preventable: false });
             
+            //Y.one('doc').on('left', this.prev, this);
+            //Y.one('doc').on('right', this.next, this);
+            
             // TODO: should I keep this?
             this.container.on('flick', Y.bind(function(e){
                 var distance = e.flick.distance;
@@ -367,10 +370,16 @@ YUI.add('photosnearme', function(Y){
         prev : function (e) {
             e.preventDefault();
             this.container.one('ul').transition({
-                right   : '-100px',
-                opacity : 0,
-                duration: 0.20,
-                easing  : 'ease-out',
+                right   : {
+                    value   : '-100px',
+                    duration: 0.25,
+                    easing  : 'ease-out'
+                },
+                opacity : {
+                    value   : 0,
+                    duration: 0.25,
+                    easing  : 'ease-in'
+                },
                 on      : {
                     start   : function(){
                         this.setStyle('position', 'relative');
@@ -385,10 +394,16 @@ YUI.add('photosnearme', function(Y){
         next : function (e) {
             e.preventDefault();
             this.container.one('ul').transition({
-                left    : '-100px',
-                opacity : 0,
-                duration: 0.20,
-                easing  : 'ease-out',
+                left    : {
+                    value   : '-100px',
+                    duration: 0.25,
+                    easing  : 'ease-out'
+                },
+                opacity : {
+                    value   : 0,
+                    duration: 0.25,
+                    easing  : 'ease-in'
+                },
                 on      : {
                     start   : function(){
                         this.setStyle('position', 'relative');
@@ -409,24 +424,42 @@ YUI.add('photosnearme', function(Y){
         container   : '<div id="lightbox" />',
         template    : Handlebars.compile(Y.one('#lightbox-template').getContent()),
         events      : {
-            '.show-photos' : { 'click': 'showPhotos' }
+            '.show-photos'  : { 'click': 'showPhotos' },
+            '.prev'         : { 'click': 'prev' },
+            '.next'         : { 'click': 'next' }
         },
         
         initializer : function (config) {
             config || (config = {});
             
-            this.place = config.place;
-            this.publish('showPhotos', { preventable: false });
+            this.place  = config.place;
+            this.photos = config.photos;
+            
+            this.publish({
+                navigate    : { preventable: false },
+                showPhotos  : { preventable: false }
+            });
         },
         
         render : function () {
-            var photo = this.model;
+            var photo = this.model,
+                nav, prev, next;
+                
+            if ( ! this.photos.isEmpty()) {
+                nav     = {};
+                prev    = this.getPrev();
+                next    = this.getNext();
+                
+                prev && (nav.prev = '../' + prev.get('id') + '/');
+                next && (nav.next = '../' + next.get('id') + '/');
+            }
             
             this.container.setContent(this.template({
                 place       : this.place.toJSON(),
                 title       : photo.get('title') || 'Photo',
                 description : photo.get('description') || '',
-                largeUrl    : photo.get('largeUrl')
+                largeUrl    : photo.get('largeUrl'),
+                nav         : nav
             }));
             
             return this;
@@ -435,6 +468,36 @@ YUI.add('photosnearme', function(Y){
         showPhotos : function (e) {
             e.preventDefault();
             this.fire('showPhotos');
+        },
+        
+        getPrev : function () {
+            var photos  = this.photos,
+                photo   = photos.getById(this.model.get('id'));
+                
+            return photo && photos.item( photos.indexOf(photo) - 1 );
+        },
+        
+        getNext : function () {
+            var photos  = this.photos,
+                photo   = photos.getById(this.model.get('id'));
+                
+            return photo && photos.item( photos.indexOf(photo) + 1 );
+        },
+        
+        prev : function (e) {
+            e.preventDefault();
+            var photo = this.getPrev();
+            if (photo) {
+                this.fire('navigate', { photo: photo });
+            }
+        },
+        
+        next : function (e) {
+            e.preventDefault();
+            var photo = this.getNext();
+            if (photo) {
+                this.fire('navigate', { photo: photo });
+            }
         }
     
     });
@@ -513,7 +576,7 @@ YUI.add('photosnearme', function(Y){
             
             this.appView.on('showMap', this.showMap, this);
             
-            this.on('gridView:select', function(e){
+            this.on(['gridView:select', 'photoView:navigate'], function(e){
                 this.save('/photo/' + e.photo.get('id') + '/');
             });
             this.on('gridView:navigate', function(e){
@@ -643,6 +706,7 @@ YUI.add('photosnearme', function(Y){
             this.photoView = new PhotoView({
                 model           : photo,
                 place           : place,
+                photos          : this.photos,
                 bubbleTargets   : this
             }).render();
             
@@ -698,4 +762,11 @@ YUI.add('photosnearme', function(Y){
     
     });
 
-}, '0.2.0', { requires: ['app', 'yql', 'cache-offline', 'gallery-geo', 'transition', 'event-flick'] });
+}, '0.2.0', { requires: ['app'
+                        ,'yql'
+                        ,'cache-offline'
+                        ,'gallery-geo'
+                        ,'transition'
+                        ,'event-flick'
+                        ,'gallery-event-nav-keys'
+                        ]});

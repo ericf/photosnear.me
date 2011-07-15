@@ -88,6 +88,16 @@
                 <p>{{{description}}}</p>
             </div>
         </div>
+        {{#if nav}}
+        <ul class="nav layout {{#if nav.prev}}{{#if nav.next}} both {{/if}}{{/if}}">
+        {{#if nav.prev}}
+            <li class="prev"><a href="{{nav.prev}}">« Previous</a></li>
+        {{/if}}
+        {{#if nav.next}}
+            <li class="next"><a href="{{nav.next}}">Next »</a></li>
+        {{/if}}
+        </ul>
+        {{/if}}
     </script>
     
     <script id="map-template" type="text/x-handlebars-template">
