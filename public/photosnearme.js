@@ -268,8 +268,6 @@ YUI.add('photosnearme', function(Y){
             '.photo': { 'click': 'select' }
         },
         
-        _maxKnownHeight : 0,
-        
         initializer : function (config) {
             config || (config = {});
             
@@ -282,6 +280,8 @@ YUI.add('photosnearme', function(Y){
                 more    : { preventable: false },
                 select  : { preventable: false }
             });
+            
+            this._maxKnownHeight = 0;
             
             Y.one('win').on(['scroll', 'resize'], this.more, this);
         },
@@ -340,6 +340,7 @@ YUI.add('photosnearme', function(Y){
         },
         
         reset : function () {
+            this._maxKnownHeight = 0;
             this.container.all('.photo.selected').removeClass('selected');
         }
     
@@ -663,7 +664,7 @@ YUI.add('photosnearme', function(Y){
             }
             
             map.setCenter(new google.maps.LatLng(place.get('latitude'), place.get('longitude')));
-            this.appView.container.append(mapView.container);
+            this.appView.container.one('#map-container').append(mapView.container);
         },
         
         updateMap : function () {
