@@ -17,7 +17,8 @@ YUI.add('photosnearme', function(Y){
         Lang        = Y.Lang
         sub         = Lang.sub,
         isString    = Lang.isString,
-        isNumber    = Lang.isNumber;
+        isNumber    = Lang.isNumber,
+        isFunction  = Lang.isFunction;
     
     // *** YQLSync *** //
     
@@ -59,7 +60,31 @@ YUI.add('photosnearme', function(Y){
     Place = Y.Base.create('place', Y.Model, [YQLSync], {
     
         idAttribute : 'woeid',
-        query       : 'SELECT * FROM geo.places WHERE woeid={id}',
+        queries     : {
+            placeFromId         : 'SELECT * FROM geo.places WHERE woeid={id}',
+            placeFromCentroid   : 'SELECT * FROM geo.places WHERE woeid in ' +
+                                  '(SELECT place.woeid FROM flickr.places WHERE lat={latitude} AND lon={longitude})',
+            placeFromBoundingBox: 'SELECT * FROM geo.places.common WHERE woeid1={southWest} AND woeid2={northEast}'
+        },
+        
+        buildQuery : function () {
+            var centroid, boundingBox;
+            
+            if ( ! this.isNew()) {
+                return sub(this.queries.placeFromId, { id: this.get('id') });
+            }
+            
+            centroid = this.get('centroid');
+            if (centroid) {
+                return sub(this.queries.placeFromCentroid, centroid);
+            }
+            
+            boundingBox = this.get('boundingBox');
+            if (boundingBox) {
+                // assumes a boundingBox object with woeids not lat/lons.
+                return sub(this.queries.placeFromBoundingBox, boundingBox);
+            }
+        },
         
         parse : function (results) {
             if ( ! results) { return; }
@@ -70,8 +95,8 @@ YUI.add('photosnearme', function(Y){
             
             return {
                 woeid       : data.woeid,
-                latitude    : data.centroid.latitude,
-                longitude   : data.centroid.longitude,
+                centroid    : data.centroid,
+                boundingBox : data.boundingBox,
                 country     : country && country.content,
                 region      : region && region.content,
                 locality    : locality && locality.content
@@ -91,11 +116,31 @@ YUI.add('photosnearme', function(Y){
     }, {
         ATTRS : {
             woeid       : {},
+            centroid    : {},
+            boundingBox : {},
             country     : {},
             region      : {},
-            locality    : {},
-            latitude    : {},
-            longitude   : {}
+            locality    : {}
+        },
+        
+        getCommonPlace : function (boundingBox, callback) {
+            var sw = new Place({ centroid: boundingBox.southWest }),
+                ne = new Place({ centroid: boundingBox.northEast });
+            
+            sw.load(function(){
+                ne.load(function(){
+                    var place = new Place({
+                        boundingBox : {
+                            southWest : sw.get('id'),
+                            northEast : ne.get('id')
+                        }
+                    });
+                    
+                    place.load(function(){
+                        isFunction(callback) && callback(place);
+                    });
+                });
+            });
         }
     });
     
@@ -117,8 +162,10 @@ YUI.add('photosnearme', function(Y){
                 
             photo.place = {
                 woeid       : place.woeid,
-                latitude    : place.latitude,
-                longitude   : place.longitude,
+                centroid    : {
+                    latitude    : place.latitude,
+                    longitude   : place.longitude,
+                },
                 country     : country && country.content,
                 region      : region && region.content,
                 locality    : locality && locality.content
@@ -196,13 +243,23 @@ YUI.add('photosnearme', function(Y){
         
         model : Photo,
         query : 'SELECT * FROM flickr.photos.search({start},{num}) ' +
-                'WHERE woe_id="{woeid}" AND radius_units="mi" AND sort="interestingness-desc" AND extras="path_alias"',
+                'WHERE bbox="{minLon},{minLat},{maxLon},{maxLat}" ' +
+                'AND sort="interestingness-desc" AND extras="path_alias" AND min_taken_date="1/1/1970"',
         
         buildQuery : function (options) {
+            options || (options = {});
+            
+            var bounds  = options.place.get('boundingBox'),
+                sw      = bounds.southWest,
+                ne      = bounds.northEast;
+            
             return sub(this.query, {
-                woeid : options.place.get('id'),
                 start : options.start || 0,
-                num   : options.num || 100
+                num   : options.num || 100,
+                minLon: Math.min(sw.longitude, ne.longitude),
+                maxLon: Math.max(sw.longitude, ne.longitude),
+                minLat: Math.min(sw.latitude, ne.latitude),
+                maxLat: Math.max(sw.latitude, ne.latitude),
             });
         },
         
@@ -322,7 +379,7 @@ YUI.add('photosnearme', function(Y){
             
             containerBottom = this.container.get('region').bottom;
                 
-            if ((viewportBottom + 50) > containerBottom && containerBottom > maxKnowHeight) {
+            if ((viewportBottom + 100) > containerBottom && containerBottom > maxKnowHeight) {
                 this._maxKnownHeight = containerBottom;
                 this.fire('more');
             }
@@ -335,7 +392,7 @@ YUI.add('photosnearme', function(Y){
                 photoNodes  = this.container.all('.photo'),
                 index       = photoNodes.indexOf(photoNode);
             
-            photoNodes.filter('.selected').removeClass('selected');
+            photoNodes.removeClass('selected');
             photoNode.addClass('selected');
             
             this.fire('select', { photo: this.photos.item(index) });
@@ -461,8 +518,11 @@ YUI.add('photosnearme', function(Y){
         initializer : function (config) {
             config || (config = {});
             this.map = config.map;
-            this.publish('select', { preventable: false });
-            this.publish('locate', { preventable: false });
+            
+            this.publish({
+                select : { preventable: false },
+                locate : { preventable: false }
+            });
         },
         
         render : function () {
@@ -479,12 +539,7 @@ YUI.add('photosnearme', function(Y){
         
         select : function (e) {
             e.preventDefault();
-            
-            var center = this.map.getCenter();
-            this.fire('select', { coords: {
-                latitude    : center.lat(),
-                longitude   : center.lng()
-            }});
+            this.fire('select');
         },
         
         locate : function (e) {
@@ -499,38 +554,54 @@ YUI.add('photosnearme', function(Y){
     PhotosNearMe = Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.Controller, [], {
     
         routes : [
-            { path: '/',            callback: 'handleLocate' },
-            { path: '/place/:id/',  callback: 'handlePlace' },
-            { path: '/photo/:id/',  callback: 'handlePhoto' }
+            { path: '/',                        callback: 'handleLocate' },
+            { path: '/place/:id/',              callback: 'handlePlace' },
+            { path: '/place/:id/region/:bbox/', callback: 'handlePlace' },
+            { path: '/photo/:id/',              callback: 'handlePhoto' }
         ],
-        
-        queries : {
-            woeid : 'SELECT place.woeid FROM flickr.places WHERE lat={latitude} AND lon={longitude}'
-        },
         
         initializer : function () {
             this.place      = new Place();
             this.photos     = new Photos();
             this.appView    = new AppView({ place: this.place });
             
-            this.place.after('idChange', this.place.load);
-            this.place.after('idChange', this.loadPhotos, this);
+            this.place.after('boundingBoxChange', this.loadPhotos, this);
             
             this.appView.on('showMap', this.showMap, this);
             
-            this.on('gridView:more', this.morePhotos);
+            this.on('gridView:more', this.morePhotos, this);
             this.on(['gridView:select', 'photoView:navigate'], function(e){
                 this.save('/photo/' + e.photo.get('id') + '/');
             });
             
             this.on('photoView:showPhotos', Y.bind(function(e){
+                // Use the photo's place when the app starts on a photo page
                 var place = this.place.isNew() ? e.target.model.get('place') : this.place;
                 this.save('/place/' + place.get('id') + '/');
             }, this));
             
             this.on('mapView:select', Y.bind(function(e){
-                e.target.remove();
-                this.navigatePlace(e.coords);
+                var mapView = e.target,
+                    bounds  = mapView.map.getBounds(),
+                    sw      = bounds.getSouthWest(),
+                    ne      = bounds.getNorthEast(),
+                    boundingBox, place;
+                    
+                boundingBox = {
+                    southWest : {
+                        latitude    : sw.lat(),
+                        longitude   : sw.lng()
+                    },
+                    northEast : {
+                        latitude    : ne.lat(),
+                        longitude   : ne.lng()
+                    }
+                };
+                
+                Place.getCommonPlace(boundingBox, Y.bind(function(place){
+                    mapView.remove();
+                    this.navigatePlace(place, bounds.toUrlValue());
+                }, this));
             }, this));
             
             this.on('mapView:locate', this.updateMap, this);
@@ -554,12 +625,42 @@ YUI.add('photosnearme', function(Y){
                     return;
                 }
                 
-                this.navigatePlace(res.coords);
+                this.navigatePlace(new Place({ centroid: res.coords }), null, true);
             }, this));
         },
         
         handlePlace : function (req) {
-            this.place.set('id', req.params.id);
+            var params  = req.params,
+                place   = this.place,
+                region, boundingBox;
+            
+            if (params.bbox) {
+                region = params.bbox.split(',');
+                boundingBox = {
+                    southWest : {
+                        latitude    : region[0],
+                        longitude   : region[1]
+                    },
+                    northEast : {
+                        latitude    : region[2],
+                        longitude   : region[3]
+                    }
+                };
+                
+                place.set('boundingBox', boundingBox);
+            }
+            
+            if (place.get('id') !== params.id) {
+                if (boundingBox) {
+                    // we already set our special boundingBox
+                    place.once('boundingBoxChange', function(e){
+                        e.preventDefault();
+                    });
+                }
+                
+                place.set('id', params.id).load();
+            }
+            
             this.showGridView();
         },
         
@@ -571,15 +672,26 @@ YUI.add('photosnearme', function(Y){
             }, this));
         },
         
-        navigatePlace : function (coords) {
-            Y.YQL(sub(this.queries.woeid, coords), Y.bind(function(r){
-                var place = r.query && r.query.results ? r.query.results.places.place : null;
-                if (place) {
-                    this.replace('/place/' + place.woeid + '/');
-                } else {
-                    // TODO: Show problem View: unable to locate you.
+        navigatePlace : function (place, region, replace) {
+            var navigate = Y.bind(function(err){
+                if (err) {
+                    // TODO: Show problem View: unable to find location.
+                    return;
                 }
-            }, this));
+                
+                var url = '/place/' + place.get('id') + '/';
+                if (region) {
+                    url += 'region/' + region + '/';
+                }
+                
+                this[!!replace ? 'replace' : 'save'](url);
+            }, this);
+            
+            if (place.isNew()) {
+                place.load(navigate);
+            } else {
+                navigate();
+            }
         },
         
         loadPhotos : function () {
@@ -648,14 +760,23 @@ YUI.add('photosnearme', function(Y){
         
         showMap : function () {
             var place   = this.place,
+                center  = place.get('centroid'),
+                bbox    = place.get('boundingBox'),
+                sw      = bbox.southWest,
+                ne      = bbox.northEast,
                 map     = this.map,
                 mapView = this.mapView;
                 
             if ( ! map) {
                 map = this.map = new google.maps.Map(Y.config.doc.createElement('div'), {
-                    zoom        : 15,
+                    zoom        : 14,
                     mapTypeId   : google.maps.MapTypeId.ROADMAP
                 });
+                
+                map.fitBounds(new google.maps.LatLngBounds(
+                    new google.maps.LatLng(sw.latitude, sw.longitude),
+                    new google.maps.LatLng(ne.latitude, ne.longitude)
+                ));
             }
             
             if ( ! mapView) {
@@ -665,7 +786,8 @@ YUI.add('photosnearme', function(Y){
                 }).render();
             }
             
-            map.setCenter(new google.maps.LatLng(place.get('latitude'), place.get('longitude')));
+            //map.setCenter(new google.maps.LatLng(center.latitude, center.longitude));
+            
             this.appView.container.one('#map-container').append(mapView.container);
         },
         
