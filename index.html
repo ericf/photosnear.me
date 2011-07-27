@@ -6,29 +6,29 @@
 <!--[if IE 8 ]>    <html class="ie8" lang="en"> <![endif]-->
 <!--[if (gt IE 8)|!(IE)]><!--> <html lang="en"> <!--<![endif]-->
 <head>
-    
+
     <meta charset="utf-8" />
-    
+
     <title>Photos Near Me</title>
     <meta name="description" content="Look at interesting photos of things taken near your current location" />
     <meta name="author" content="Eric Ferraiuolo" />
-    
+
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="format-detection" content="telephone=no" />
-    
+
     <link rel="stylesheet" href="/style.css" />
-    
+
 </head>
 
 <body>
-        
+
     <div id="wrap" class="loading">
         <div id="header"></div>
         <div id="main"></div>
     </div>
-    
+
     <script id="title-template" type="text/x-handlebars-template">
         {{#if place}}
             Photos Near: {{place}}
@@ -36,7 +36,7 @@
             Photos Near Me
         {{/if}}
     </script>
-    
+
     <script id="header-template" type="text/x-handlebars-template">
         <h1>
             <a href="/" id="logo">
@@ -53,20 +53,21 @@
             </span>
         </h1>
     </script>
-    
+
     <script id="grid-template" type="text/x-handlebars-template">
-        <p>Photos: {{size}}</p>
+        <p>Photos: <span class="size">{{size}}</span></p>
         <ul class="layout">
         {{#each photos}}
             {{> photo}}
         {{/each}}
         </ul>
+        <p class="loading">Loading Photos…</p>
     </script>
-    
+
     <script id="grid-photo-template" type="text/x-handlebars-template">
         <li class="photo"><a href="{{pageUrl}}"><img src="{{thumbUrl}}" /></a></li>
     </script>
-    
+
     <script id="lightbox-template" type="text/x-handlebars-template">
         <!-- <p><a class="show-photos" href="/place/{{place.woeid}}/">« Photos</a></p> -->
         <div class="photo">
@@ -87,28 +88,28 @@
         </ul>
         {{/if}}
     </script>
-    
+
     <script src="http://use.typekit.com/wkh7ffm.js"></script>
     <script>try{Typekit.load();}catch(e){}</script>
-    
+
     <script src="http://fuji.jetpants.com/yui/combo/yui3?build/yui/yui.js&build/loader/loader.js"></script>
     <script src="/handlebars.js"></script>
     <script src="/photosnearme.js"></script>
     <script>
     YUI({
-    
+
         comboBase   : 'http://fuji.jetpants.com/yui/combo/yui3?',
         combine     : true,
         root        : 'build/',
         filter      : 'RAW',
         gallery     : 'gallery-2011.06.01-20-18'
-    
+
     }).use('photosnearme', function(Y){
-        
+
         new Y.PhotosNearMe;
-    
+
     });
     </script>
-    
+
 </body>
 </html>

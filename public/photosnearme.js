@@ -291,6 +291,7 @@ YUI.add('photosnearme', function(Y){
             photos.after('refresh', this.render, this);
             photos.after('add', this.addPhoto, this);
             photos.after('remove', this.removePhoto, this);
+            photos.after(['add', 'remove'], this.updateSize, this);
 
             this.publish({
                 more    : { preventable: false },
@@ -317,14 +318,20 @@ YUI.add('photosnearme', function(Y){
         },
 
         addPhoto : function (e) {
-            var content = this.photoTemplate(e.model.toJSON()),
-                list    = this.container.one('ul');
+            var container   = this.container,
+                content     = this.photoTemplate(e.model.toJSON()),
+                list        = container.one('ul');
 
+            container.one('.loading').hide();
             list.insert(content, list.all('.photo').item(e.index));
         },
 
         removePhoto : function (e) {
             this.container.all('.photo').splice(e.index, 1);
+        },
+
+        updateSize : function (e) {
+            this.container.one('size').set('text', this.photos.size());
         },
 
         more : function (e) {
@@ -338,6 +345,7 @@ YUI.add('photosnearme', function(Y){
 
             if ((viewportBottom + 100) > containerBottom && containerBottom > maxKnowHeight) {
                 this._maxKnownHeight = containerBottom;
+                this.container.one('.loading').show();
                 this.fire('more');
             }
         },
@@ -557,10 +565,12 @@ YUI.add('photosnearme', function(Y){
             newPhotos.load({
                 place : this.place,
                 start : photos.size()
-            }, Y.bind(function(){
-                photos.add(newPhotos.toArray());
+            }, function(){
+                var allPhotos = photos.toArray().concat(newPhotos.toArray());
+                photos.refresh(allPhotos);
+                // clean up temp ModelList
                 newPhotos.destroy();
-            }, this));
+            });
         },
 
         showGridView : function () {
