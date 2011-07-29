@@ -414,6 +414,7 @@ YUI.add('photosnearme', function(Y){
 
         render : function () {
             var photo = this.model,
+                place = this.place,
                 nav, prev, next;
 
             if ( ! this.photos.isEmpty()) {
@@ -426,7 +427,8 @@ YUI.add('photosnearme', function(Y){
             }
 
             this.container.setContent(this.template({
-                place       : this.place.toJSON(),
+                placeId     : place.get('id'),
+                placeText   : place.toString(),
                 title       : photo.get('title') || 'Photo',
                 description : photo.get('description') || '',
                 largeUrl    : photo.get('largeUrl'),
