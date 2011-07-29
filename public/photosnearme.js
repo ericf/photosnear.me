@@ -7,13 +7,12 @@ YUI.add('photosnearme', function(Y){
         Photos,
 
         AppView,
-        LocatingView,
         GridView,
         PhotoView,
 
         YQLSync,
 
-        Lang        = Y.Lang
+        Lang        = Y.Lang,
         sub         = Lang.sub,
         isString    = Lang.isString,
         isNumber    = Lang.isNumber;
@@ -37,8 +36,10 @@ YUI.add('photosnearme', function(Y){
                 cache   = this.cache,
                 results = cache.retrieve(query);
 
-            // return cached results if we got ’em
-            if (results) { return callback(null, results.response); }
+            if (results) {
+                // return cached results if we got ’em
+                return callback(null, results.response);
+            }
 
             Y.YQL(query, function(r){
                 if (r.error) {
@@ -281,14 +282,14 @@ YUI.add('photosnearme', function(Y){
         template        : Handlebars.compile(Y.one('#grid-template').getContent()),
         photoTemplate   : Handlebars.compile(Y.one('#grid-photo-template').getContent()),
         events          : {
-            '.photo': { 'click': 'select' }
+            '.photo' : { 'click': 'select' }
         },
 
         initializer : function (config) {
             config || (config = {});
 
             var photos = this.photos = config.photos;
-            photos.after('refresh', this.render, this);
+            photos.after('reset', this.render, this);
             photos.after('add', this.addPhoto, this);
             photos.after('remove', this.removePhoto, this);
             photos.after(['add', 'remove'], this.updateSize, this);
@@ -343,7 +344,7 @@ YUI.add('photosnearme', function(Y){
 
             containerBottom = this.container.get('region').bottom;
 
-            if ((viewportBottom + 100) > containerBottom && containerBottom > maxKnowHeight) {
+            if ((viewportBottom + 150) > containerBottom && containerBottom > maxKnowHeight) {
                 this._maxKnownHeight = containerBottom;
                 this.container.one('.loading').show();
                 this.fire('more');
@@ -482,19 +483,22 @@ YUI.add('photosnearme', function(Y){
             this.place      = new Place();
             this.photos     = new Photos();
             this.appView    = new AppView({ place: this.place });
+            this.gridView   = null;
+            this.photoView  = null;
 
             this.place.after('idChange', this.loadPlace, this);
             this.place.after('idChange', this.loadPhotos, this);
 
             this.on('gridView:more', this.morePhotos, this);
+
             this.on(['gridView:select', 'photoView:navigate'], function(e){
-                this.save('/photo/' + e.photo.get('id') + '/');
+                this.navigatePhoto(e.photo);
             });
 
             this.on('photoView:showPhotos', Y.bind(function(e){
                 // Use the photo's place when the app starts on a photo page
                 var place = this.place.isNew() ? e.target.model.get('place') : this.place;
-                this.save('/place/' + place.get('id') + '/');
+                this.navigatePlace(place);
             }, this));
 
             // do initial dispatch
@@ -527,7 +531,6 @@ YUI.add('photosnearme', function(Y){
 
         handlePhoto : function (req) {
             var photo = this.photos.getById(req.params.id) || new Photo(req.params);
-
             photo.load(Y.bind(function(){
                 photo.loadImg(Y.bind(this.showPhotoView, this, photo));
             }, this));
@@ -550,6 +553,11 @@ YUI.add('photosnearme', function(Y){
             }
         },
 
+        navigatePhoto : function (photo, replace) {
+            var url = '/photo/' + photo.get('id') + '/';
+            this[!!replace ? 'replace' : 'save'](url);
+        },
+
         loadPlace : function () {
             this.place.load();
         },
@@ -567,7 +575,7 @@ YUI.add('photosnearme', function(Y){
                 start : photos.size()
             }, function(){
                 var allPhotos = photos.toArray().concat(newPhotos.toArray());
-                photos.refresh(allPhotos);
+                photos.reset(allPhotos);
                 // clean up temp ModelList
                 newPhotos.destroy();
             });
@@ -621,9 +629,9 @@ YUI.add('photosnearme', function(Y){
         },
 
         hideUrlBar : Y.UA.ios && ! Y.UA.ipad ? function(){
-            setTimeout(function(){
-                Y.config.win.scrollTo(0, 1);
-            }, 1);
+            Y.later(1, Y.config.win, function(){
+                this.scrollTo(0, 1);
+            });
         } : function(){}
 
     });
