@@ -69,7 +69,6 @@
     </script>
 
     <script id="lightbox-template" type="text/x-handlebars-template">
-        <!-- <p><a class="show-photos" href="/place/{{place.woeid}}/">« Photos</a></p> -->
         <div class="photo">
             <img src="{{largeUrl}}" />
             <div class="photo-info">
@@ -78,15 +77,16 @@
             </div>
         </div>
         {{#if nav}}
-        <ul class="nav layout {{#if nav.prev}}{{#if nav.next}} both {{/if}}{{/if}}">
-        {{#if nav.prev}}
-            <li class="prev"><a href="{{nav.prev}}">« Previous</a></li>
+            <ul class="nav layout {{#if nav.prev}}{{#if nav.next}} both {{/if}}{{/if}}">
+            {{#if nav.prev}}
+                <li class="prev"><a href="{{nav.prev}}">« Previous</a></li>
+            {{/if}}
+            {{#if nav.next}}
+                <li class="next"><a href="{{nav.next}}">Next »</a></li>
+            {{/if}}
+            </ul>
         {{/if}}
-        {{#if nav.next}}
-            <li class="next"><a href="{{nav.next}}">Next »</a></li>
-        {{/if}}
-        </ul>
-        {{/if}}
+        <p><a class="show-photos" href="/place/{{place.woeid}}/">« Photos</a></p>
     </script>
 
     <script src="http://use.typekit.com/wkh7ffm.js"></script>

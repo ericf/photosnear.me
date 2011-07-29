@@ -294,6 +294,8 @@ YUI.add('photosnearme', function(Y){
             photos.after('remove', this.removePhoto, this);
             photos.after(['add', 'remove'], this.updateSize, this);
 
+            this.loadingNode = null;
+
             this.publish({
                 more    : { preventable: false },
                 select  : { preventable: false }
@@ -315,6 +317,8 @@ YUI.add('photosnearme', function(Y){
                 partials: { photo: this.photoTemplate }
             }));
 
+            this.loadingNode = this.container.one('.loading');
+
             return this;
         },
 
@@ -323,7 +327,7 @@ YUI.add('photosnearme', function(Y){
                 content     = this.photoTemplate(e.model.toJSON()),
                 list        = container.one('ul');
 
-            container.one('.loading').hide();
+            this.loadingNode.hide();
             list.insert(content, list.all('.photo').item(e.index));
         },
 
@@ -346,7 +350,7 @@ YUI.add('photosnearme', function(Y){
 
             if ((viewportBottom + 150) > containerBottom && containerBottom > maxKnowHeight) {
                 this._maxKnownHeight = containerBottom;
-                this.container.one('.loading').show();
+                this.loadingNode.show();
                 this.fire('more');
             }
         },

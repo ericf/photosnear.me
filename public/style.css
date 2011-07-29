@@ -67,9 +67,9 @@ abbr[title] {
     border-bottom: 1px dotted;
 }
 
-b, 
-strong { 
-    font-weight: bold; 
+b,
+strong {
+    font-weight: bold;
 }
 
 blockquote {
@@ -172,8 +172,8 @@ input {
 }
 
 button,
-input[type="button"], 
-input[type="reset"], 
+input[type="button"],
+input[type="reset"],
 input[type="submit"] {
     cursor: pointer;
     -webkit-appearance: button;
@@ -343,23 +343,6 @@ h1 {
     opacity: 0.5;
 }
 #photos .selected img { opacity: 0.5; }
-#photos .nav { margin: 10px 0; }
-#photos .nav li {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    width: 50%;
-}
-#photos .nav .prev { text-align: left; }
-#photos .nav .next {
-    margin-left: 50%;
-    text-align: right;
-}
-#photos .nav.both .next { margin-left: 0; }
-#photos .nav a {
-    display: block;
-    text-decoration: none;
-}
 
 #lightbox { text-align: center; }
 #lightbox .photo {
@@ -396,10 +379,22 @@ h1 {
 #lightbox .photo-info:hover p {
     display: block;
 }
-
-#map .map {
-    width: 500px;
-    height: 400px;
+#lightbox .nav { margin: 10px 0; }
+#lightbox .nav li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 50%;
+}
+#lightbox .nav .prev { text-align: left; }
+#lightbox .nav .next {
+    margin-left: 50%;
+    text-align: right;
+}
+#lightbox .nav.both .next { margin-left: 0; }
+#lightbox .nav a {
+    display: block;
+    text-decoration: none;
 }
 
 @media only screen and (max-device-width: 480px) {
@@ -408,19 +403,19 @@ h1 {
         font-size: 1em;
         padding-left: 27px;
     }
-    
+
     #wrap {
         width: auto;
         margin: 5px 10px;
         padding: 0;
     }
-    
+
     #logo {
         background-size: 21px 13px;
         width: 21px;
         height: 25px;
         margin: 0 6px -9px -27px;
-        
+
     }
     #logo .pin {
         background-size: 9px 18px;
@@ -432,7 +427,7 @@ h1 {
         right: -4px;
         height: 18px;
     }
-    
+
     #photos ul { margin: 10px -5px; }
     #photos .photo { padding: 4px; }
     #photos .photo a {
@@ -444,14 +439,14 @@ h1 {
 }
 
 @media only screen and (max-device-width: 480px) and (orientation: landscape) {
-    
+
     #photos .photo { padding: 4px; }
     #photos .photo a {
         width: 35px;
         height: 35px;
         padding: 2px;
     }
-    
+
 }
 
 @media
@@ -463,15 +458,15 @@ only screen and (min-device-pixel-ratio: 1.5) {
         background: #F8FFFF url(img/bg.png);
         background-size: 50px 50px;
     }
-    
+
     #wrap.loading,
     #photos .selected a:after {
         background-image: url(img/spinner-2x.gif);
         background-size: 32px 32px;
     }
-    
+
     #logo { background-image: url(img/cross_hair-2x.png); }
     #logo .pin { background-image: url(img/pin-2x.png); }
     #logo .pin-shadow { background-image: url(img/pin_shadow-2x.png); }
-    
+
 }
