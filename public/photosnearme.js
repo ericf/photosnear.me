@@ -492,20 +492,20 @@ YUI.add('photosnearme', function(Y){
             this.gridView   = null;
             this.photoView  = null;
 
-            this.place.after('idChange', this.loadPlace, this);
+            this.place.after('idChange', this.place.load);
             this.place.after('idChange', this.loadPhotos, this);
 
-            this.on('gridView:more', this.morePhotos, this);
+            this.on('gridView:more', this.morePhotos);
 
             this.on(['gridView:select', 'photoView:navigate'], function(e){
                 this.navigatePhoto(e.photo);
             });
 
-            this.on('photoView:showPhotos', Y.bind(function(e){
+            this.on('photoView:showPhotos', function(e){
                 // Use the photo's place when the app starts on a photo page
                 var place = this.place.isNew() ? e.target.model.get('place') : this.place;
                 this.navigatePlace(place);
-            }, this));
+            });
 
             // do initial dispatch
             if (window.navigator.standalone) {
@@ -562,10 +562,6 @@ YUI.add('photosnearme', function(Y){
         navigatePhoto : function (photo, replace) {
             var url = '/photo/' + photo.get('id') + '/';
             this[!!replace ? 'replace' : 'save'](url);
-        },
-
-        loadPlace : function () {
-            this.place.load();
         },
 
         loadPhotos : function () {
@@ -642,7 +638,7 @@ YUI.add('photosnearme', function(Y){
 
     });
 
-}, '0.2.0', {
+}, '0.3.0', {
     requires: ['app'
               ,'yql'
               ,'cache-offline'
