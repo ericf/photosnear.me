@@ -292,7 +292,6 @@ YUI.add('photosnearme', function(Y){
             photos.after('reset', this.render, this);
             photos.after('add', this.addPhoto, this);
             photos.after('remove', this.removePhoto, this);
-            photos.after(['add', 'remove'], this.updateSize, this);
 
             this.loadingNode = null;
 
@@ -307,14 +306,10 @@ YUI.add('photosnearme', function(Y){
         },
 
         render : function () {
-            var photos  = this.photos,
-                size    = photos.size();
-
             this.container.setContent(this.template({
-                photos  : photos.toJSON(),
-                size    : size
+                photos : this.photos.toJSON()
             }, {
-                partials: { photo: this.photoTemplate }
+                partials : { photo: this.photoTemplate }
             }));
 
             this.loadingNode = this.container.one('.loading');
@@ -333,10 +328,6 @@ YUI.add('photosnearme', function(Y){
 
         removePhoto : function (e) {
             this.container.all('.photo').splice(e.index, 1);
-        },
-
-        updateSize : function (e) {
-            this.container.one('size').set('text', this.photos.size());
         },
 
         more : function (e) {
@@ -383,6 +374,7 @@ YUI.add('photosnearme', function(Y){
         template    : Handlebars.compile(Y.one('#lightbox-template').getContent()),
         events      : {
             '.show-photos'  : { 'click': 'showPhotos' },
+            '.photo'        : { 'click': 'showInfo' },
             '.prev'         : { 'click': 'prev' },
             '.next'         : { 'click': 'next' }
         },
@@ -441,6 +433,11 @@ YUI.add('photosnearme', function(Y){
         showPhotos : function (e) {
             e.preventDefault();
             this.fire('showPhotos');
+        },
+
+        showInfo : function (e) {
+            e.preventDefault();
+            e.currentTarget.toggleClass('flipped');
         },
 
         getPrev : function () {

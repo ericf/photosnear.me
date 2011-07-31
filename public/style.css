@@ -41,7 +41,7 @@ button,
 input,
 select,
 textarea {
-    font-family: sans-serif;
+    font-family: ff-tisa-web-pro-1, ff-tisa-web-pro-2, Georgia, serif;
 }
 
 img {
@@ -207,8 +207,10 @@ textarea {
 
 
 
+h1, h2, h3, h4, h5, h6 {
+    font-family: myriad-pro-1, myriad-pro-2, Helvetica, sans-serif;
+}
 h1 {
-    font-family: "myriad-pro-1", "myriad-pro-2", sans-serif;
     font-weight: 600;
     text-shadow: 0 1px 0 #fff;
     padding-left: 50px;
@@ -344,11 +346,21 @@ h1 {
 }
 #photos .selected img { opacity: 0.5; }
 
-#lightbox { text-align: center; }
+#lightbox {
+    text-align: center;
+    -webkit-transform-origin: 50% 50% 0;
+    -webkit-transform-style: preserve-3d;
+    -webkit-perspective: 1200;
+}
 #lightbox .photo {
     display: inline-block;
     zoom: 1; *display: inline;
     position: relative;
+    -webkit-transition: -webkit-transform 0.2s linear;
+}
+#lightbox .photo.flipped {
+    -webkit-transform: rotateY(180deg);
+    -webkit-transition: -webkit-transform 0.2s linear;
 }
 #lightbox .photo img {
     display: block;
@@ -358,27 +370,39 @@ h1 {
     -moz-box-shadow: 0 5px 30px -1px rgba(0,0,0, 0.65);
     box-shadow: 0 5px 30px -1px rgba(0,0,0, 0.65);
 }
+#lightbox .photo-caption,
 #lightbox .photo-info {
     position: absolute;
     bottom: 0;
+    height: auto;
     width: 100%;
     color: #f8ffff;
     background: #2D2930;
-    background: rgba(0,0,0, 0.80);
+    background: rgba(0,0,0, 0.75);
     text-align: left;
+    -webkit-transition: opacity 0s linear 0.1s;
 }
+#lightbox .photo-info {
+    opacity: 0;
+    height: 100%;
+    overflow: auto;
+    -webkit-transform: rotateY(-180deg);
+}
+#lightbox .photo.flipped .photo-caption {
+    opacity: 0;
+    -webkit-transition: opacity 0s linear 0.1s;
+}
+#lightbox .photo.flipped .photo-info {
+    opacity: 1;
+    -webkit-transition: opacity 0s linear 0.1s;
+}
+#lightbox .photo-caption h2,
 #lightbox .photo-info h2 {
-    font-family: "myriad-pro-1", "myriad-pro-2", sans-serif;
     font-weight: 400;
     padding: 0 20px;
+    text-shadow: 0 1px 2px rgba(0,0,0, 0.75);
 }
-#lightbox .photo-info p {
-    display: none;
-    padding: 0 20px;
-}
-#lightbox .photo-info:hover p {
-    display: block;
-}
+#lightbox .photo-info p { padding: 0 20px; }
 #lightbox .nav { margin: 10px 0; }
 #lightbox .nav li {
     list-style: none;

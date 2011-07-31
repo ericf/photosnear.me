@@ -55,7 +55,6 @@
     </script>
 
     <script id="grid-template" type="text/x-handlebars-template">
-        <p>Photos: <span class="size">{{size}}</span></p>
         <ul class="layout">
         {{#each photos}}
             {{> photo}}
@@ -71,6 +70,9 @@
     <script id="lightbox-template" type="text/x-handlebars-template">
         <div class="photo">
             <img src="{{largeUrl}}" />
+            <div class="photo-caption">
+                <h2>{{title}}</h2>
+            </div>
             <div class="photo-info">
                 <h2>{{title}}</h2>
                 <p>{{{description}}}</p>
