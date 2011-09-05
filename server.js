@@ -1,11 +1,11 @@
 var express = require('express'),
     app     = express.createServer();
 
-app.configure(function(){
+app.configure(function () {
     app.use(express.static(__dirname + '/public'));
 });
 
-app.get('*', function(req, res){
+app.get('*', function (req, res) {
     res.sendfile('index.html');
 });
 

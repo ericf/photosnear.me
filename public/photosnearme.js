@@ -62,7 +62,8 @@ YUI.add('photosnearme', function(Y){
         queries     : {
             placeFromId     : 'SELECT * FROM geo.places WHERE woeid={id}',
             placeFromLatLon : 'SELECT * FROM geo.places WHERE woeid ' +
-                              'IN (SELECT place.woeid FROM flickr.places WHERE lat={latitude} AND lon={longitude})'
+                              'IN (SELECT place.woeid FROM flickr.places ' +
+                                  'WHERE lat={latitude} AND lon={longitude})'
         },
 
         buildQuery : function () {
@@ -161,7 +162,8 @@ YUI.add('photosnearme', function(Y){
         },
 
         loadImg : function (callback) {
-            // insired by: Lucas Smith (http://lucassmith.name/2008/11/is-my-image-loaded.html)
+            // insired by: Lucas Smith
+            // (http://lucassmith.name/2008/11/is-my-image-loaded.html)
 
             var img     = new Image(),
                 prop    = img.naturalWidth ? 'naturalWidth' : 'width';
