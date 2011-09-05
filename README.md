@@ -5,7 +5,7 @@ PhotosNear.me
 
 An application that allows you view photos that were taken near your current,
 physical, location. This is a JavaScript web app built on top of the
-[http://yuilibrary.com/yui/docs/app/](YUI 3.4.0 App Framework), YQL, and Flickr.
+[YUI 3.4.0 App Framework](http://yuilibrary.com/yui/docs/app/), YQL, and Flickr.
 
 Running
 -------
