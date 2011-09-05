@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 
-<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
-<!--[if lt IE 7 ]> <html class="ie6" lang="en"> <![endif]-->
-<!--[if IE 7 ]>    <html class="ie7" lang="en"> <![endif]-->
-<!--[if IE 8 ]>    <html class="ie8" lang="en"> <![endif]-->
-<!--[if (gt IE 8)|!(IE)]><!--> <html lang="en"> <!--<![endif]-->
+<html lang="en">
 <head>
 
     <meta charset="utf-8" />
@@ -30,14 +26,17 @@
     </div>
 
     <script id="title-template" type="text/x-handlebars-template">
+
         {{#if place}}
             Photos Near: {{place}}
         {{else}}
             Photos Near Me
         {{/if}}
+
     </script>
 
     <script id="header-template" type="text/x-handlebars-template">
+
         <h1>
             <a href="/" id="logo">
                 <span class="pin-shadow"></span>
@@ -52,23 +51,31 @@
                 {{/if}}
             </span>
         </h1>
+
     </script>
 
     <script id="grid-template" type="text/x-handlebars-template">
+
         <p>Photos: <span class="size">{{size}}</span></p>
+
         <ul class="layout">
         {{#each photos}}
             {{> photo}}
         {{/each}}
         </ul>
+
         <p class="loading">Loading Photos…</p>
+
     </script>
 
     <script id="grid-photo-template" type="text/x-handlebars-template">
+
         <li class="photo"><a href="{{pageUrl}}"><img src="{{thumbUrl}}" /></a></li>
+
     </script>
 
     <script id="lightbox-template" type="text/x-handlebars-template">
+
         <div class="photo">
             <img src="{{largeUrl}}" />
             <div class="photo-info">
@@ -76,6 +83,7 @@
                 <p>{{{description}}}</p>
             </div>
         </div>
+
         {{#if nav}}
             <ul class="nav layout {{#if nav.prev}}{{#if nav.next}} both {{/if}}{{/if}}">
             {{#if nav.prev}}
@@ -86,26 +94,18 @@
             {{/if}}
             </ul>
         {{/if}}
+
         <p><a class="show-photos" href="/place/{{placeId}}/">Photos Near: {{placeText}}</a></p>
+
     </script>
 
     <script src="http://use.typekit.com/wkh7ffm.js"></script>
     <script>try{Typekit.load();}catch(e){}</script>
 
-    <script src="http://yui.yahooapis.com/3.4.0/build/yui/yui.js"></script>
-    <script src="/handlebars.js"></script>
-    <script src="/photosnearme.js"></script>
+    <script src="/js/handlebars.js"></script>
+    <script src="/js/yui-config.js"></script>
+    <script src="http://yui.yahooapis.com/3.4.0/build/yui/yui-min.js"></script>
     <script>
-    (function () {
-        var filter = (window.location.search.match(/[?&]filter=([^&]+)/) || [])[1] || 'min';
-        window.YUI_config = {
-            filter     : filter,
-            combine    : filter === 'min',
-            allowRollup: false,
-            gallery    : 'gallery-2011.08.31-20-57'
-        };
-    }());
-
     YUI().use('photosnearme', function (Y) {
 
         new Y.PhotosNearMe();

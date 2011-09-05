@@ -1,17 +1,19 @@
 PhotosNear.me
 =============
 
-[http://photosnear.me/](**http://photosnear.me/**)
+**[http://photosnear.me/](http://photosnear.me/)**
 
-A JavaScript web application built on top of the YUI 3.4 App Framework, YQL, and Flickr.
+An application that allows you view photos that were taken near your current,
+physical, location. This is a JavaScript web app built on top of the
+[YUI 3.4.0 App Framework](http://yuilibrary.com/yui/docs/app/), YQL, and Flickr.
 
 Running
 -------
 
-This requires **node.js** and **express**
+You need **node.js** and **npm** on your system.
 
 ```bash
-$ npm i express
+$ npm install
 ```
 
 ```bash
