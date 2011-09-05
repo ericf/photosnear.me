@@ -1,4 +1,4 @@
-YUI.add('photosnearme', function(Y){
+YUI.add('photosnearme', function (Y) {
 
     var PhotosNearMe,
 
@@ -10,96 +10,58 @@ YUI.add('photosnearme', function(Y){
         GridView,
         PhotoView,
 
-        YQLSync,
-
-        Lang        = Y.Lang,
-        sub         = Lang.sub,
-        isString    = Lang.isString,
-        isNumber    = Lang.isNumber;
-
-    // *** YQLSync *** //
-
-    YQLSync = function(){};
-    YQLSync.prototype = {
-
-        query : '',
-        cache : new Y.CacheOffline,
-
-        buildQuery : function () {
-            return sub(this.query, { id: this.get('id') });
-        },
-
-        sync : function (action, options, callback) {
-            if (action !== 'read') { return callback(null); }
-
-            var query   = this.buildQuery(options),
-                cache   = this.cache,
-                results = cache.retrieve(query);
-
-            if (results) {
-                // return cached results if we got ’em
-                return callback(null, results.response);
-            }
-
-            Y.YQL(query, function(r){
-                if (r.error) {
-                    callback(r.error, r);
-                } else {
-                    results = r.query.results;
-                    cache.add(query, results);
-                    callback(null, results);
-                }
-            });
-        }
-
-    };
+        Lang     = Y.Lang,
+        sub      = Lang.sub,
+        isString = Lang.isString,
+        isNumber = Lang.isNumber;
 
     // *** Place *** //
 
-    Place = Y.Base.create('place', Y.Model, [YQLSync], {
+    Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
 
-        idAttribute : 'woeid',
-        queries     : {
-            placeFromId     : 'SELECT * FROM geo.places WHERE woeid={id}',
-            placeFromLatLon : 'SELECT * FROM geo.places WHERE woeid ' +
-                              'IN (SELECT place.woeid FROM flickr.places ' +
-                                  'WHERE lat={latitude} AND lon={longitude})'
+        idAttribute: 'woeid',
+        cache      : new Y.CacheOffline(),
+        queries    : {
+            placeFromId    : 'SELECT * FROM geo.places WHERE woeid={id}',
+            placeFromLatLon: 'SELECT * FROM geo.places WHERE woeid ' +
+                                'IN (SELECT place.woeid FROM flickr.places ' +
+                                'WHERE lat={latitude} AND lon={longitude})'
         },
 
-        buildQuery : function () {
+        buildQuery: function () {
             if (this.isNew()) {
                 // assumes we at least have a lat/lon
                 return sub(this.queries.placeFromLatLon, {
-                    latitude    : this.get('latitude'),
-                    longitude   : this.get('longitude')
+                    latitude : this.get('latitude'),
+                    longitude: this.get('longitude')
                 });
             }
 
             return sub(this.queries.placeFromId, { id: this.get('id') });
         },
 
-        parse : function (results) {
+        parse: function (results) {
             if ( ! results) { return; }
-            var data        = results.place,
-                centroid    = data.centroid,
-                country     = data.country,
-                region      = data.admin1,
-                locality    = data.locality1;
+            var data     = results.place,
+                centroid = data.centroid,
+                country  = data.country,
+                region   = data.admin1,
+                locality = data.locality1;
 
             return {
-                woeid       : data.woeid,
-                latitude    : centroid.latitude,
-                longitude   : centroid.longitude,
-                country     : country && country.content,
-                region      : region && region.content,
-                locality    : locality && locality.content
+                woeid    : data.woeid,
+                latitude : centroid.latitude,
+                longitude: centroid.longitude,
+                country  : country && country.content,
+                region   : region && region.content,
+                locality : locality && locality.content
             };
         },
 
-        toString : function () {
-            var country     = this.get('country'),
-                region      = this.get('region'),
-                locality    = this.get('locality');
+        toString: function () {
+            var country  = this.get('country'),
+                region   = this.get('region'),
+                locality = this.get('locality');
 
             if (locality) {
                 return (locality + ', ' + region);
@@ -113,98 +75,103 @@ YUI.add('photosnearme', function(Y){
         }
 
     }, {
-        ATTRS : {
-            woeid       : {},
-            latitude    : {},
-            longitude   : {},
-            country     : {},
-            region      : {},
-            locality    : {}
+        ATTRS: {
+            woeid    : {},
+            latitude : {},
+            longitude: {},
+            country  : {},
+            region   : {},
+            locality : {}
         }
     });
 
     // *** Photo *** //
 
-    Photo = Y.Base.create('photo', Y.Model, [YQLSync], {
+    Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
 
-        query   : 'SELECT * FROM flickr.photos.info WHERE photo_id={id}',
-        imgUrl  : 'http://farm{farm}.static.flickr.com/{server}/{id}_{secret}_{size}.jpg',
-        pageUrl : 'http://www.flickr.com/photos/{user}/{id}/',
+        cache  : new Y.CacheOffline(),
+        query  : 'SELECT * FROM flickr.photos.info WHERE photo_id={id}',
+        imgUrl : 'http://farm{farm}.static.flickr.com/{server}/{id}_{secret}_{size}.jpg',
+        pageUrl: 'http://www.flickr.com/photos/{user}/{id}/',
 
-        parse : function (results) {
+        parse: function (results) {
             if ( ! results) { return; }
-            var photo       = results.photo,
-                place       = photo.location,
-                country     = place.country,
-                region      = place.region,
-                locality    = place.locality;
+            var photo    = results.photo,
+                place    = photo.location,
+                country  = place.country,
+                region   = place.region,
+                locality = place.locality;
 
             photo.place = {
-                woeid       : place.woeid,
-                latitude    : place.latitude,
-                longitude   : place.longitude,
-                country     : country && country.content,
-                region      : region && region.content,
-                locality    : locality && locality.content
+                woeid    : place.woeid,
+                latitude : place.latitude,
+                longitude: place.longitude,
+                country  : country && country.content,
+                region   : region && region.content,
+                locality : locality && locality.content
             };
 
             return photo;
         },
 
-        getImgUrl : function (size) {
+        getImgUrl: function (size) {
             return sub(this.imgUrl, {
-                id      : this.get('id'),
-                farm    : this.get('farm'),
-                server  : this.get('server'),
-                secret  : this.get('secret'),
-                size    : size
+                id    : this.get('id'),
+                farm  : this.get('farm'),
+                server: this.get('server'),
+                secret: this.get('secret'),
+                size  : size
             });
         },
 
-        loadImg : function (callback) {
+        loadImg: function (callback) {
             // insired by: Lucas Smith
             // (http://lucassmith.name/2008/11/is-my-image-loaded.html)
 
-            var img     = new Image(),
-                prop    = img.naturalWidth ? 'naturalWidth' : 'width';
+            var img  = new Image(),
+                prop = img.naturalWidth ? 'naturalWidth' : 'width';
 
             img.src = this.get('largeUrl');
 
             if (img.complete) {
                 callback.call(this, img[prop] ? img : null);
             } else {
-                img.onload = Y.bind(callback, this, img);
+                img.onload  = Y.bind(callback, this, img);
                 img.onerror = Y.bind(callback, this, null);
             }
         }
 
     }, {
-        ATTRS : {
-            farm        : {},
-            server      : {},
-            secret      : {},
-            owner       : {},
-            pathalias   : {},
-            title       : {},
-            description : {},
-            place       : {
-                value   : {},
-                setter  : function (place) {
+        ATTRS: {
+            farm       : {},
+            server     : {},
+            secret     : {},
+            owner      : {},
+            pathalias  : {},
+            title      : {},
+            description: {},
+
+            place: {
+                value : {},
+                setter: function (place) {
                     return ((place instanceof Place) ? place : new Place(place));
                 }
             },
-            thumbUrl    : {
-                getter : function(){
+
+            thumbUrl: {
+                getter: function () {
                     return this.getImgUrl('s');
                 }
             },
-            largeUrl    : {
-                getter : function(){
+
+            largeUrl: {
+                getter: function () {
                     return this.getImgUrl('z');
                 }
             },
-            pageUrl     : {
-                getter : function(){
+
+            pageUrl: {
+                getter: function () {
                     var user = this.get('pathalias') || this.get('owner');
                     return sub(this.pageUrl, {
                         id  : this.get('id'),
@@ -217,23 +184,24 @@ YUI.add('photosnearme', function(Y){
 
     // *** Photos *** //
 
-    Photos = Y.Base.create('photos', Y.ModelList, [YQLSync], {
+    Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
 
-        model : Photo,
-        query : 'SELECT * FROM flickr.photos.search({start},{num}) ' +
+        model: Photo,
+        cache: new Y.CacheOffline(),
+        query: 'SELECT * FROM flickr.photos.search({start},{num}) ' +
                 'WHERE woe_id={woeid} AND sort="interestingness-desc" AND extras="path_alias"',
 
-        buildQuery : function (options) {
+        buildQuery: function (options) {
             options || (options = {});
 
             return sub(this.query, {
-                start : options.start || 0,
-                num   : options.num || 100,
-                woeid : options.place.get('id')
+                start: options.start || 0,
+                num  : options.num || 100,
+                woeid: options.place.get('id')
             });
         },
 
-        parse : function (results) {
+        parse: function (results) {
             return results ? results.photo : [];
         }
 
@@ -243,30 +211,30 @@ YUI.add('photosnearme', function(Y){
 
     AppView = Y.Base.create('appView', Y.View, [], {
 
-        container       : Y.one('#wrap'),
-        titleTemplate   : Handlebars.compile(Y.one('#title-template').getContent()),
-        headerTemplate  : Handlebars.compile(Y.one('#header-template').getContent()),
+        container     : Y.one('#wrap'),
+        titleTemplate : Handlebars.compile(Y.one('#title-template').getContent()),
+        headerTemplate: Handlebars.compile(Y.one('#header-template').getContent()),
 
-        initializer : function (config) {
+        initializer: function (config) {
             config || (config = {});
 
             this.place = config.place;
             this.place.after('change', this.render, this);
         },
 
-        render : function () {
-            var place       = this.place,
-                placeText   = place.toString();
+        render: function () {
+            var place     = this.place,
+                placeText = place.toString();
 
             Y.config.doc.title = this.titleTemplate({ place: placeText });
 
             this.container.removeClass('loading')
                 .one('#header').setContent(this.headerTemplate({
-                    place : placeText
+                    place: placeText
                 }));
 
             if ( ! place.isNew()) {
-                Y.later(1, this, function(){
+                Y.later(1, this, function () {
                     this.container.addClass('located');
                 });
             }
@@ -280,14 +248,14 @@ YUI.add('photosnearme', function(Y){
 
     GridView = Y.Base.create('gridView', Y.View, [], {
 
-        container       : '<div id="photos" />',
-        template        : Handlebars.compile(Y.one('#grid-template').getContent()),
-        photoTemplate   : Handlebars.compile(Y.one('#grid-photo-template').getContent()),
-        events          : {
-            '.photo' : { 'click': 'select' }
+        container    : '<div id="photos" />',
+        template     : Handlebars.compile(Y.one('#grid-template').getContent()),
+        photoTemplate: Handlebars.compile(Y.one('#grid-photo-template').getContent()),
+        events       : {
+            '.photo': { 'click': 'select' }
         },
 
-        initializer : function (config) {
+        initializer: function (config) {
             config || (config = {});
 
             var photos = this.photos = config.photos;
@@ -299,8 +267,8 @@ YUI.add('photosnearme', function(Y){
             this.loadingNode = null;
 
             this.publish({
-                more    : { preventable: false },
-                select  : { preventable: false }
+                more  : { preventable: false },
+                select: { preventable: false }
             });
 
             this._maxKnownHeight = 0;
@@ -308,13 +276,13 @@ YUI.add('photosnearme', function(Y){
             Y.one('win').on(['scroll', 'resize'], this.more, this);
         },
 
-        render : function () {
-            var photos  = this.photos,
-                size    = photos.size();
+        render: function () {
+            var photos = this.photos,
+                size   = photos.size();
 
             this.container.setContent(this.template({
-                photos  : photos.toJSON(),
-                size    : size
+                photos: photos.toJSON(),
+                size  : size
             }, {
                 partials: { photo: this.photoTemplate }
             }));
@@ -324,26 +292,26 @@ YUI.add('photosnearme', function(Y){
             return this;
         },
 
-        addPhoto : function (e) {
-            var container   = this.container,
-                content     = this.photoTemplate(e.model.toJSON()),
-                list        = container.one('ul');
+        addPhoto: function (e) {
+            var container = this.container,
+                content   = this.photoTemplate(e.model.toJSON()),
+                list      = container.one('ul');
 
             this.loadingNode.hide();
             list.insert(content, list.all('.photo').item(e.index));
         },
 
-        removePhoto : function (e) {
+        removePhoto: function (e) {
             this.container.all('.photo').splice(e.index, 1);
         },
 
-        updateSize : function (e) {
+        updateSize: function (e) {
             this.container.one('size').set('text', this.photos.size());
         },
 
-        more : function (e) {
-            var viewportBottom  = Y.DOM.viewportRegion().bottom,
-                maxKnowHeight   = this._maxKnownHeight,
+        more: function (e) {
+            var viewportBottom = Y.DOM.viewportRegion().bottom,
+                maxKnowHeight  = this._maxKnownHeight,
                 containerBottom;
 
             if (viewportBottom <= maxKnowHeight) { return; }
@@ -357,12 +325,12 @@ YUI.add('photosnearme', function(Y){
             }
         },
 
-        select : function (e) {
+        select: function (e) {
             e.preventDefault();
 
-            var photoNode   = e.currentTarget,
-                photoNodes  = this.container.all('.photo'),
-                index       = photoNodes.indexOf(photoNode);
+            var photoNode  = e.currentTarget,
+                photoNodes = this.container.all('.photo'),
+                index      = photoNodes.indexOf(photoNode);
 
             photoNodes.removeClass('selected');
             photoNode.addClass('selected');
@@ -370,7 +338,7 @@ YUI.add('photosnearme', function(Y){
             this.fire('select', { photo: this.photos.item(index) });
         },
 
-        reset : function () {
+        reset: function () {
             this._maxKnownHeight = 0;
             this.container.all('.photo.selected').removeClass('selected');
         }
@@ -381,27 +349,27 @@ YUI.add('photosnearme', function(Y){
 
     PhotoView = Y.Base.create('photoView', Y.View, [], {
 
-        container   : '<div id="lightbox" />',
-        template    : Handlebars.compile(Y.one('#lightbox-template').getContent()),
-        events      : {
-            '.show-photos'  : { 'click': 'showPhotos' },
-            '.prev'         : { 'click': 'prev' },
-            '.next'         : { 'click': 'next' }
+        container: '<div id="lightbox" />',
+        template : Handlebars.compile(Y.one('#lightbox-template').getContent()),
+        events   : {
+            '.show-photos': { 'click': 'showPhotos' },
+            '.prev'       : { 'click': 'prev' },
+            '.next'       : { 'click': 'next' }
         },
 
-        initializer : function (config) {
+        initializer: function (config) {
             config || (config = {});
 
             this.place  = config.place;
             this.photos = config.photos;
 
             this.publish({
-                navigate    : { preventable: false },
-                showPhotos  : { preventable: false }
+                navigate  : { preventable: false },
+                showPhotos: { preventable: false }
             });
 
             // TODO: should I keep this?
-            this.container.on('flick', Y.bind(function(e){
+            this.container.on('flick', Y.bind(function (e) {
                 var distance = e.flick.distance;
                 if (distance > 0) {
                     this.prev(e);
@@ -409,57 +377,57 @@ YUI.add('photosnearme', function(Y){
                     this.next(e);
                 }
             }, this), {
-                axis        : 'x',
-                minDistance : 100
+                axis       : 'x',
+                minDistance: 100
             });
         },
 
-        render : function () {
+        render: function () {
             var photo = this.model,
                 place = this.place,
                 nav, prev, next;
 
             if ( ! this.photos.isEmpty()) {
-                nav     = {};
-                prev    = this.getPrev();
-                next    = this.getNext();
+                nav  = {};
+                prev = this.getPrev();
+                next = this.getNext();
 
                 prev && (nav.prev = '../' + prev.get('id') + '/');
                 next && (nav.next = '../' + next.get('id') + '/');
             }
 
             this.container.setContent(this.template({
-                placeId     : place.get('id'),
-                placeText   : place.toString(),
-                title       : photo.get('title') || 'Photo',
-                description : photo.get('description') || '',
-                largeUrl    : photo.get('largeUrl'),
-                nav         : nav
+                placeId    : place.get('id'),
+                placeText  : place.toString(),
+                title      : photo.get('title') || 'Photo',
+                description: photo.get('description') || '',
+                largeUrl   : photo.get('largeUrl'),
+                nav        : nav
             }));
 
             return this;
         },
 
-        showPhotos : function (e) {
+        showPhotos: function (e) {
             e.preventDefault();
             this.fire('showPhotos');
         },
 
-        getPrev : function () {
-            var photos  = this.photos,
-                photo   = photos.getById(this.model.get('id'));
+        getPrev: function () {
+            var photos = this.photos,
+                photo  = photos.getById(this.model.get('id'));
 
             return photo && photos.item( photos.indexOf(photo) - 1 );
         },
 
-        getNext : function () {
-            var photos  = this.photos,
-                photo   = photos.getById(this.model.get('id'));
+        getNext: function () {
+            var photos = this.photos,
+                photo  = photos.getById(this.model.get('id'));
 
             return photo && photos.item( photos.indexOf(photo) + 1 );
         },
 
-        prev : function (e) {
+        prev: function (e) {
             e.preventDefault();
             var photo = this.getPrev();
             if (photo) {
@@ -467,7 +435,7 @@ YUI.add('photosnearme', function(Y){
             }
         },
 
-        next : function (e) {
+        next: function (e) {
             e.preventDefault();
             var photo = this.getNext();
             if (photo) {
@@ -481,29 +449,29 @@ YUI.add('photosnearme', function(Y){
 
     PhotosNearMe = Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.Controller, [], {
 
-        routes : [
+        routes: [
             { path: '/',            callback: 'handleLocate' },
             { path: '/place/:id/',  callback: 'handlePlace' },
             { path: '/photo/:id/',  callback: 'handlePhoto' }
         ],
 
-        initializer : function () {
-            this.place      = new Place();
-            this.photos     = new Photos();
-            this.appView    = new AppView({ place: this.place });
-            this.gridView   = null;
-            this.photoView  = null;
+        initializer: function () {
+            this.place     = new Place();
+            this.photos    = new Photos();
+            this.appView   = new AppView({ place: this.place });
+            this.gridView  = null;
+            this.photoView = null;
 
             this.place.after('idChange', this.place.load);
             this.place.after('idChange', this.loadPhotos, this);
 
             this.on('gridView:more', this.morePhotos);
 
-            this.on(['gridView:select', 'photoView:navigate'], function(e){
+            this.on(['gridView:select', 'photoView:navigate'], function (e) {
                 this.navigatePhoto(e.photo);
             });
 
-            this.on('photoView:showPhotos', function(e){
+            this.on('photoView:showPhotos', function (e) {
                 // Use the photo's place when the app starts on a photo page
                 var place = this.place.isNew() ? e.target.model.get('place') : this.place;
                 this.navigatePlace(place);
@@ -519,10 +487,10 @@ YUI.add('photosnearme', function(Y){
             }
         },
 
-        handleLocate : function (req) {
+        handleLocate: function (req) {
             this.hideUrlBar();
 
-            Y.Geo.getCurrentPosition(Y.bind(function(res){
+            Y.Geo.getCurrentPosition(Y.bind(function (res) {
                 if ( ! res.success) {
                     // TODO: Show problem View: unable to locate you.
                     return;
@@ -532,20 +500,20 @@ YUI.add('photosnearme', function(Y){
             }, this));
         },
 
-        handlePlace : function (req) {
+        handlePlace: function (req) {
             this.place.set('id', req.params.id);
             this.showGridView();
         },
 
-        handlePhoto : function (req) {
+        handlePhoto: function (req) {
             var photo = this.photos.getById(req.params.id) || new Photo(req.params);
-            photo.load(Y.bind(function(){
+            photo.load(Y.bind(function () {
                 photo.loadImg(Y.bind(this.showPhotoView, this, photo));
             }, this));
         },
 
-        navigatePlace : function (place, replace) {
-            var navigate = Y.bind(function(err){
+        navigatePlace: function (place, replace) {
+            var navigate = Y.bind(function (err) {
                 if (err) {
                     // TODO: Show problem View: unable to find location.
                     return;
@@ -561,23 +529,23 @@ YUI.add('photosnearme', function(Y){
             }
         },
 
-        navigatePhoto : function (photo, replace) {
+        navigatePhoto: function (photo, replace) {
             var url = '/photo/' + photo.get('id') + '/';
             this[!!replace ? 'replace' : 'save'](url);
         },
 
-        loadPhotos : function () {
+        loadPhotos: function () {
             this.photos.load({ place: this.place });
         },
 
-        morePhotos : function () {
-            var photos      = this.photos,
-                newPhotos   = new Photos();
+        morePhotos: function () {
+            var photos    = this.photos,
+                newPhotos = new Photos();
 
             newPhotos.load({
-                place : this.place,
-                start : photos.size()
-            }, function(){
+                place: this.place,
+                start: photos.size()
+            }, function () {
                 var allPhotos = photos.toArray().concat(newPhotos.toArray());
                 photos.reset(allPhotos);
                 // clean up temp ModelList
@@ -585,9 +553,9 @@ YUI.add('photosnearme', function(Y){
             });
         },
 
-        showGridView : function () {
-            var appView     = this.appView,
-                gridView    = this.gridView;
+        showGridView: function () {
+            var appView  = this.appView,
+                gridView = this.gridView;
 
             if (this.photoView) {
                 this.photoView.destroy().removeTarget(this);
@@ -596,8 +564,8 @@ YUI.add('photosnearme', function(Y){
 
             if ( ! gridView) {
                 gridView = this.gridView = new GridView({
-                    photos          : this.photos,
-                    bubbleTargets   : this
+                    photos       : this.photos,
+                    bubbleTargets: this
                 }).render();
             }
 
@@ -606,10 +574,10 @@ YUI.add('photosnearme', function(Y){
             this.hideUrlBar();
         },
 
-        showPhotoView : function (photo) {
-            var appView     = this.appView,
-                gridView    = this.gridView,
-                place       = this.place;
+        showPhotoView: function (photo) {
+            var appView  = this.appView,
+                gridView = this.gridView,
+                place    = this.place;
 
             // retain rendered GirdView
             if (gridView) {
@@ -622,31 +590,31 @@ YUI.add('photosnearme', function(Y){
             }
 
             this.photoView = new PhotoView({
-                model           : photo,
-                place           : place,
-                photos          : this.photos,
-                bubbleTargets   : this
+                model        : photo,
+                place        : place,
+                photos       : this.photos,
+                bubbleTargets: this
             }).render();
 
             appView.render().container.one('#main').setContent(this.photoView.container);
             this.hideUrlBar();
         },
 
-        hideUrlBar : Y.UA.ios && ! Y.UA.ipad ? function(){
-            Y.later(1, Y.config.win, function(){
+        hideUrlBar: Y.UA.ios && ! Y.UA.ipad ? function () {
+            Y.later(1, Y.config.win, function () {
                 this.scrollTo(0, 1);
             });
-        } : function(){}
+        } : function () {}
 
     });
 
-}, '0.3.0', {
-    requires: ['app'
-              ,'yql'
-              ,'cache-offline'
-              ,'gallery-geo'
-              ,'transition'
-              ,'event-flick'
-              ,'node-screen'
+}, '0.3.1', {
+    requires: [ 'app'
+              , 'gallery-model-sync-yql'
+              , 'cache-offline'
+              , 'gallery-geo'
+              , 'transition'
+              , 'event-flick'
+              , 'node-screen'
               ]
 });

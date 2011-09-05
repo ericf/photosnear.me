@@ -92,21 +92,23 @@
     <script src="http://use.typekit.com/wkh7ffm.js"></script>
     <script>try{Typekit.load();}catch(e){}</script>
 
-    <script src="http://fuji.jetpants.com/yui/combo/yui3?build/yui/yui.js&build/loader/loader.js"></script>
+    <script src="http://yui.yahooapis.com/3.4.0/build/yui/yui.js"></script>
     <script src="/handlebars.js"></script>
     <script src="/photosnearme.js"></script>
     <script>
-    YUI({
+    (function () {
+        var filter = (window.location.search.match(/[?&]filter=([^&]+)/) || [])[1] || 'min';
+        window.YUI_config = {
+            filter     : filter,
+            combine    : filter === 'min',
+            allowRollup: false,
+            gallery    : 'gallery-2011.08.31-20-57'
+        };
+    }());
 
-        comboBase   : 'http://fuji.jetpants.com/yui/combo/yui3?',
-        combine     : true,
-        root        : 'build/',
-        filter      : 'RAW',
-        gallery     : 'gallery-2011.06.01-20-18'
+    YUI().use('photosnearme', function (Y) {
 
-    }).use('photosnearme', function(Y){
-
-        new Y.PhotosNearMe;
+        new Y.PhotosNearMe();
 
     });
     </script>
