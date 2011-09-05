@@ -1,0 +1,9 @@
+{
+    "name"        : "photosnearme",
+    "description" : "Photos Near Me",
+    "homepage"    : "http://photosnear.me/",
+    "version"     : "0.3.1",
+    "dependencies": {
+        "express": ">=2.4.0 <2.5.0"
+    }
+}
