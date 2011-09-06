@@ -10,7 +10,7 @@
     <meta name="author" content="Eric Ferraiuolo" />
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="format-detection" content="telephone=no" />
 
@@ -99,17 +99,17 @@
 
     </script>
 
-    <script src="http://use.typekit.com/wkh7ffm.js"></script>
-    <script>try{Typekit.load();}catch(e){}</script>
-
-    <script src="/js/handlebars.js"></script>
     <script src="/js/yui-config.js"></script>
+    <script src="/js/handlebars.js"></script>
+    <script src="http://use.typekit.com/wkh7ffm.js"></script>
     <script src="http://yui.yahooapis.com/3.4.0/build/yui/yui-min.js"></script>
     <script>
+    // Load Typekit.
+    try { Typekit.load(); } catch (e) {}
+
+    // Load YUI and start PhotosNearMe App.
     YUI().use('photosnearme', function (Y) {
-
         new Y.PhotosNearMe();
-
     });
     </script>
 
