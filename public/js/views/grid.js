@@ -86,6 +86,7 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
     reset: function () {
         this._maxKnownHeight = 0;
         this.container.all('.photo.selected').removeClass('selected');
+        return this;
     }
 
 });
