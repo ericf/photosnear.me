@@ -15,7 +15,7 @@ YUI_config = (function () {
                 root     : '',
                 modules  : {
                     'place': {
-                        path    : 'place.js',
+                        path    : 'models/place.js',
                         requires: [ 'model'
                                   , 'yql'
                                   , 'gallery-model-sync-yql'
@@ -24,7 +24,7 @@ YUI_config = (function () {
                     },
 
                     'photo': {
-                        path    : 'photo.js',
+                        path    : 'models/photo.js',
                         requires: [ 'model'
                                   , 'yql'
                                   , 'gallery-model-sync-yql'
@@ -34,7 +34,7 @@ YUI_config = (function () {
                     },
 
                     'photos': {
-                        path    : 'photos.js',
+                        path    : 'models/photos.js',
                         requires: [ 'model-list'
                                   , 'yql'
                                   , 'gallery-model-sync-yql'
@@ -44,7 +44,7 @@ YUI_config = (function () {
                     },
 
                     'grid-view': {
-                        path    : 'grid-view.js',
+                        path    : 'views/grid.js',
                         requires: [ 'view'
                                   , 'node-style'
                                   , 'node-screen'
@@ -53,7 +53,7 @@ YUI_config = (function () {
                     },
 
                     'photo-view': {
-                        path    : 'photo-view.js',
+                        path    : 'views/photo.js',
                         requires: [ 'view'
                                   , 'place'
                                   , 'photos'
@@ -61,7 +61,7 @@ YUI_config = (function () {
                     },
 
                     'photosnearme-view': {
-                        path    : 'photosnearme-view.js',
+                        path    : 'views/photosnearme.js',
                         requires: [ 'view'
                                   , 'place'
                                   ]
