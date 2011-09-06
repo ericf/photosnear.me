@@ -16,7 +16,6 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
         photos.after('reset', this.render, this);
         photos.after('add', this.addPhoto, this);
         photos.after('remove', this.removePhoto, this);
-        photos.after(['add', 'remove'], this.updateSize, this);
 
         this.loadingNode = null;
 
@@ -31,12 +30,8 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
     },
 
     render: function () {
-        var photos = this.photos,
-            size   = photos.size();
-
         this.container.setContent(this.template({
-            photos: photos.toJSON(),
-            size  : size
+            photos: this.photos.toJSON()
         }, {
             partials: { photo: this.photoTemplate }
         }));
@@ -57,10 +52,6 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
 
     removePhoto: function (e) {
         this.container.all('.photo').splice(e.index, 1);
-    },
-
-    updateSize: function (e) {
-        this.container.one('.size').set('text', this.photos.size());
     },
 
     more: function (e) {
@@ -95,6 +86,7 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
     reset: function () {
         this._maxKnownHeight = 0;
         this.container.all('.photo.selected').removeClass('selected');
+        return this;
     }
 
 });

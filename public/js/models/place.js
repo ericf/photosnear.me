@@ -1,6 +1,8 @@
 YUI.add('place', function (Y) {
 
-var sub = Y.Lang.sub;
+var sub = Y.Lang.sub,
+
+    FLICKR_API_KEY = YUI.namespace('Env.Flickr').API_KEY || '';
 
 Y.Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
 
@@ -10,13 +12,16 @@ Y.Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
         placeFromId    : 'SELECT * FROM geo.places WHERE woeid={id}',
         placeFromLatLon: 'SELECT * FROM geo.places WHERE woeid ' +
                             'IN (SELECT place.woeid FROM flickr.places ' +
-                            'WHERE lat={latitude} AND lon={longitude})'
+                            'WHERE api_key={api_key} ' +
+                            'AND lat={latitude} ' +
+                            'AND lon={longitude})'
     },
 
     buildQuery: function () {
         if (this.isNew()) {
             // assumes we at least have a lat/lon
             return sub(this.queries.placeFromLatLon, {
+                api_key  : FLICKR_API_KEY,
                 latitude : this.get('latitude'),
                 longitude: this.get('longitude')
             });
@@ -27,6 +32,7 @@ Y.Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
 
     parse: function (results) {
         if ( ! results) { return; }
+
         var data     = results.place,
             centroid = data.centroid,
             country  = data.country,

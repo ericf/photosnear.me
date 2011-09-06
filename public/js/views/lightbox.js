@@ -1,6 +1,6 @@
-YUI.add('photo-view', function (Y) {
+YUI.add('lightbox-view', function (Y) {
 
-Y.PhotoView = Y.Base.create('photoView', Y.View, [], {
+Y.LightboxView = Y.Base.create('lightboxView', Y.View, [], {
 
     container: '<div id="lightbox" />',
     template : Handlebars.compile(Y.one('#lightbox-template').getContent()),

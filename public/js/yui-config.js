@@ -1,85 +1,91 @@
-YUI_config = (function () {
-    var loc    = window.location,
-        filter = (loc.search.match(/[?&]filter=([^&]+)/) || [])[1] || 'min';
+(function () {
 
-    return {
-        filter     : filter,
-        combine    : filter === 'min',
-        allowRollup: false,
-        gallery    : 'gallery-2011.08.31-20-57',
-        groups     : {
-            app: {
-                base     : '/js/',
-                comboBase: '/js/?',
-                combine  : filter === 'min',
-                root     : '',
-                modules  : {
-                    'place': {
-                        path    : 'models/place.js',
-                        requires: [ 'model'
-                                  , 'yql'
-                                  , 'gallery-model-sync-yql'
-                                  , 'cache-offline'
-                                  ]
-                    },
+var filter = (window.location.search.match(/[?&]filter=([^&]+)/) || [])[1] || 'min';
 
-                    'photo': {
-                        path    : 'models/photo.js',
-                        requires: [ 'model'
-                                  , 'yql'
-                                  , 'gallery-model-sync-yql'
-                                  , 'cache-offline'
-                                  , 'place'
-                                  ]
-                    },
+// YUI Config.
+YUI_config = {
+    filter     : filter,
+    combine    : filter === 'min',
+    allowRollup: false,
+    gallery    : 'gallery-2011.08.31-20-57',
+    groups     : {
+        app: {
+            base     : '/js/',
+            comboBase: '/js/?',
+            combine  : filter === 'min',
+            root     : '',
+            modules  : {
+                'place': {
+                    path    : 'models/place.js',
+                    requires: [ 'model'
+                              , 'yql'
+                              , 'gallery-model-sync-yql'
+                              , 'cache-offline'
+                              ]
+                },
 
-                    'photos': {
-                        path    : 'models/photos.js',
-                        requires: [ 'model-list'
-                                  , 'yql'
-                                  , 'gallery-model-sync-yql'
-                                  , 'cache-offline'
-                                  , 'photo'
-                                  ]
-                    },
+                'photo': {
+                    path    : 'models/photo.js',
+                    requires: [ 'model'
+                              , 'yql'
+                              , 'gallery-model-sync-yql'
+                              , 'cache-offline'
+                              , 'place'
+                              ]
+                },
 
-                    'grid-view': {
-                        path    : 'views/grid.js',
-                        requires: [ 'view'
-                                  , 'node-style'
-                                  , 'node-screen'
-                                  , 'photos'
-                                  ]
-                    },
+                'photos': {
+                    path    : 'models/photos.js',
+                    requires: [ 'model-list'
+                              , 'yql'
+                              , 'gallery-model-sync-yql'
+                              , 'cache-offline'
+                              , 'photo'
+                              ]
+                },
 
-                    'photo-view': {
-                        path    : 'views/photo.js',
-                        requires: [ 'view'
-                                  , 'place'
-                                  , 'photos'
-                                  ]
-                    },
+                'grid-view': {
+                    path    : 'views/grid.js',
+                    requires: [ 'view'
+                              , 'node-style'
+                              , 'node-screen'
+                              , 'photos'
+                              ]
+                },
 
-                    'photosnearme-view': {
-                        path    : 'views/app.js',
-                        requires: [ 'view'
-                                  , 'place'
-                                  ]
-                    },
+                'lightbox-view': {
+                    path    : 'views/lightbox.js',
+                    requires: [ 'view'
+                              , 'place'
+                              , 'photos'
+                              ]
+                },
 
-                    'photosnearme': {
-                        path    : 'photosnearme.js',
-                        requires: [ 'controller'
-                                  , 'gallery-geo'
-                                  , 'place'
-                                  , 'photos'
-                                  , 'photosnearme-view'
-                                  , 'grid-view'
-                                  , 'photo-view'
-                                  ]
-                    }
+                'app-view': {
+                    path    : 'views/app.js',
+                    requires: [ 'view'
+                              , 'transition'
+                              , 'place'
+                              ]
+                },
+
+                'photosnearme': {
+                    path    : 'photosnearme.js',
+                    requires: [ 'controller'
+                              , 'gallery-geo'
+                              , 'place'
+                              , 'photos'
+                              , 'app-view'
+                              , 'grid-view'
+                              , 'lightbox-view'
+                              ]
                 }
             }
         }
-    };
+    }
+};
+
+// Flickr API Key.
+YUI && (YUI.namespace('Env.Flickr').API_KEY = '0984607e2222db7a1be6a5692741ca08');
+
 }());

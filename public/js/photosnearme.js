@@ -9,22 +9,22 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.Controller, [], {
     ],
 
     initializer: function () {
-        this.place     = new Y.Place();
-        this.photos    = new Y.Photos();
-        this.appView   = new Y.PhotosNearMeView({ place: this.place });
-        this.gridView  = null;
-        this.photoView = null;
+        this.place        = new Y.Place();
+        this.photos       = new Y.Photos();
+        this.appView      = new Y.AppView({ place: this.place });
+        this.gridView     = null;
+        this.lightboxView = null;
 
         this.place.after('idChange', this.place.load);
         this.place.after('idChange', this.loadPhotos, this);
 
         this.on('gridView:more', this.morePhotos);
 
-        this.on(['gridView:select', 'photoView:navigate'], function (e) {
+        this.on(['gridView:select', 'lightboxView:navigate'], function (e) {
             this.navigatePhoto(e.photo);
         });
 
-        this.on('photoView:showPhotos', function (e) {
+        this.on('lightboxView:showPhotos', function (e) {
             // Use the photo's place when the app starts on a photo page
             var place = this.place.isNew() ? e.target.model.get('place') : this.place;
             this.navigatePlace(place);
@@ -61,7 +61,7 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.Controller, [], {
     handlePhoto: function (req) {
         var photo = this.photos.getById(req.params.id) || new Y.Photo(req.params);
         photo.load(Y.bind(function () {
-            photo.loadImg(Y.bind(this.showPhotoView, this, photo));
+            photo.loadImg(Y.bind(this.showLightboxView, this, photo));
         }, this));
     },
 
@@ -112,9 +112,11 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.Controller, [], {
         var appView  = this.appView,
             gridView = this.gridView;
 
-        if (this.photoView) {
-            this.photoView.destroy().removeTarget(this);
-            this.photoView = null;
+        function destroyLightbox () {
+            if (this.lightboxView) {
+                this.lightboxView.destroy().removeTarget(this);
+                this.lightboxView = null;
+            }
         }
 
         if ( ! gridView) {
@@ -124,34 +126,30 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.Controller, [], {
             }).render();
         }
 
-        gridView.reset();
-        appView.render().container.one('#main').setContent(gridView.container);
+        appView.set('pageView', gridView.reset(), {
+            callback: Y.bind(destroyLightbox, this)
+        });
+
         appView.hideUrlBar();
     },
 
-    showPhotoView: function (photo) {
-        var appView  = this.appView,
-            gridView = this.gridView,
-            place    = this.place;
-
-        // retain rendered GirdView
-        if (gridView) {
-            gridView.remove();
-        }
+    showLightboxView: function (photo) {
+        var appView = this.appView,
+            place   = this.place;
 
         // use the photo’s place data if we don’t already have a place
         if (place.isNew()) {
             place.setAttrs(photo.get('place').toJSON());
         }
 
-        this.photoView = new Y.PhotoView({
+        this.lightboxView = new Y.LightboxView({
             model        : photo,
             place        : place,
             photos       : this.photos,
             bubbleTargets: this
-        }).render();
+        });
 
-        appView.render().container.one('#main').setContent(this.photoView.container);
+        appView.set('pageView', this.lightboxView.render());
         appView.hideUrlBar();
     }
 
@@ -162,8 +160,8 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.Controller, [], {
               , 'gallery-geo'
               , 'place'
               , 'photos'
-              , 'photosnearme-view'
+              , 'app-view'
               , 'grid-view'
-              , 'photo-view'
+              , 'lightbox-view'
               ]
 });
