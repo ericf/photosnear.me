@@ -1,6 +1,6 @@
-YUI.add('photosnearme-view', function (Y) {
+YUI.add('app-view', function (Y) {
 
-Y.PhotosNearMeView = Y.Base.create('photosNearMeView', Y.View, [], {
+Y.AppView = Y.Base.create('appView', Y.View, [], {
 
     container     : Y.one('#wrap'),
     titleTemplate : Handlebars.compile(Y.one('#title-template').getContent()),

@@ -52,15 +52,15 @@ YUI_config = (function () {
                                   ]
                     },
 
-                    'photo-view': {
-                        path    : 'views/photo.js',
+                    'lightbox-view': {
+                        path    : 'views/lightbox.js',
                         requires: [ 'view'
                                   , 'place'
                                   , 'photos'
                                   ]
                     },
 
-                    'photosnearme-view': {
+                    'app-view': {
                         path    : 'views/app.js',
                         requires: [ 'view'
                                   , 'place'
@@ -73,9 +73,9 @@ YUI_config = (function () {
                                   , 'gallery-geo'
                                   , 'place'
                                   , 'photos'
-                                  , 'photosnearme-view'
+                                  , 'app-view'
                                   , 'grid-view'
-                                  , 'photo-view'
+                                  , 'lightbox-view'
                                   ]
                     }
                 }
