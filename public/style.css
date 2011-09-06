@@ -348,19 +348,11 @@ h1 {
 
 #lightbox {
     text-align: center;
-    -webkit-transform-origin: 50% 50% 0;
-    -webkit-transform-style: preserve-3d;
-    -webkit-perspective: 1200;
 }
 #lightbox .photo {
     display: inline-block;
     zoom: 1; *display: inline;
     position: relative;
-    -webkit-transition: -webkit-transform 0.2s linear;
-}
-#lightbox .photo.flipped {
-    -webkit-transform: rotateY(180deg);
-    -webkit-transition: -webkit-transform 0.2s linear;
 }
 #lightbox .photo img {
     display: block;
@@ -370,37 +362,48 @@ h1 {
     -moz-box-shadow: 0 5px 30px -1px rgba(0,0,0, 0.65);
     box-shadow: 0 5px 30px -1px rgba(0,0,0, 0.65);
 }
-#lightbox .photo-caption,
 #lightbox .photo-info {
     position: absolute;
     bottom: 0;
-    height: auto;
     width: 100%;
+    height: 67px;
+    overflow: hidden;
     color: #f8ffff;
     background: #2D2930;
-    background: rgba(0,0,0, 0.75);
+    background: rgba(0,0,0, 0.80);
     text-align: left;
-    -webkit-transition: opacity 0s linear 0.1s;
 }
-#lightbox .photo-info {
-    opacity: 0;
-    height: 100%;
+#lightbox .photo:hover .photo-info,
+#lightbox .photo-info.expanded {
+    display: block !important;
+    opacity: 1 !important;
+}
+#lightbox .photo-info.expanded {
     overflow: auto;
-    -webkit-transform: rotateY(-180deg);
 }
-#lightbox .photo.flipped .photo-caption {
-    opacity: 0;
-    -webkit-transition: opacity 0s linear 0.1s;
+#lightbox .photo-info .toggle {
+    float: right;
+    line-height: 27px;
+    padding: 10px;
+    margin: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
 }
-#lightbox .photo.flipped .photo-info {
-    opacity: 1;
-    -webkit-transition: opacity 0s linear 0.1s;
-}
-#lightbox .photo-caption h2,
 #lightbox .photo-info h2 {
     font-weight: 400;
     padding: 0 20px;
     text-shadow: 0 1px 2px rgba(0,0,0, 0.75);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+#lightbox .photo-info.expanded h2 {
+    overflow: auto;
+    text-overflow: clip;
+    white-space: normal;
 }
 #lightbox .photo-info p { padding: 0 20px; }
 #lightbox .nav { margin: 10px 0; }

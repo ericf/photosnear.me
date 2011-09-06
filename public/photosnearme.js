@@ -370,11 +370,12 @@ YUI.add('photosnearme', function(Y){
 
     PhotoView = Y.Base.create('photoView', Y.View, [], {
 
-        container   : '<div id="lightbox" />',
-        template    : Handlebars.compile(Y.one('#lightbox-template').getContent()),
-        events      : {
+        container       : '<div id="lightbox" />',
+        template        : Handlebars.compile(Y.one('#lightbox-template').getContent()),
+        photoTemplate   : Handlebars.compile(Y.one('#photo-template').getContet()),
+        events          : {
             '.show-photos'  : { 'click': 'showPhotos' },
-            '.photo'        : { 'click': 'showInfo' },
+            '.toggle'       : { 'click': 'toggleInfo' },
             '.prev'         : { 'click': 'prev' },
             '.next'         : { 'click': 'next' }
         },
@@ -388,19 +389,6 @@ YUI.add('photosnearme', function(Y){
             this.publish({
                 navigate    : { preventable: false },
                 showPhotos  : { preventable: false }
-            });
-
-            // TODO: should I keep this?
-            this.container.on('flick', Y.bind(function(e){
-                var distance = e.flick.distance;
-                if (distance > 0) {
-                    this.prev(e);
-                } else {
-                    this.next(e);
-                }
-            }, this), {
-                axis        : 'x',
-                minDistance : 100
             });
         },
 
@@ -435,9 +423,28 @@ YUI.add('photosnearme', function(Y){
             this.fire('showPhotos');
         },
 
-        showInfo : function (e) {
+        toggleInfo : function (e) {
+            var toggle      = e.currentTarget,
+                photo       = toggle.ancestor('.photo'),
+                photoInfo   = photo.one('.photo-info'),
+                expanded    = photoInfo.hasClass('expanded');
+
             e.preventDefault();
-            e.currentTarget.toggleClass('flipped');
+            photoInfo.transition({
+                height  : expanded ? '67px' : photo.getStyle('height'),
+                duration: 0.2,
+                easing  : 'ease-out',
+                on      : {
+                    start   : function(){
+                        expanded && this.removeClass('expanded');
+                        this.set('scrollTop', 0);
+                    },
+                    end     : function(){
+                        toggle.set('text', expanded ? '+' : '-');
+                        expanded || this.addClass('expanded');
+                    }
+                }
+            });
         },
 
         getPrev : function () {
@@ -636,12 +643,14 @@ YUI.add('photosnearme', function(Y){
     });
 
 }, '0.3.0', {
-    requires: ['app'
-              ,'yql'
-              ,'cache-offline'
-              ,'gallery-geo'
-              ,'transition'
-              ,'event-flick'
-              ,'node-screen'
+    requires: [ 'app'
+              , 'yql'
+              , 'cache-offline'
+              , 'gallery-geo'
+              , 'transition'
+              , 'event-flick'
+              , 'node-screen'
+              , 'scrollview'
+              , 'scrollview-paginator'
               ]
 });

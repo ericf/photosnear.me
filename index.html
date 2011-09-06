@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 
-<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
-<!--[if lt IE 7 ]> <html class="ie6" lang="en"> <![endif]-->
-<!--[if IE 7 ]>    <html class="ie7" lang="en"> <![endif]-->
-<!--[if IE 8 ]>    <html class="ie8" lang="en"> <![endif]-->
-<!--[if (gt IE 8)|!(IE)]><!--> <html lang="en"> <!--<![endif]-->
+<html lang="en">
 <head>
 
     <meta charset="utf-8" />
@@ -68,16 +64,11 @@
     </script>
 
     <script id="lightbox-template" type="text/x-handlebars-template">
-        <div class="photo">
-            <img src="{{largeUrl}}" />
-            <div class="photo-caption">
-                <h2>{{title}}</h2>
-            </div>
-            <div class="photo-info">
-                <h2>{{title}}</h2>
-                <p>{{{description}}}</p>
-            </div>
-        </div>
+        <ul>
+        {{#each photos}}
+            {{> photo}}
+        {{/each}}
+        </ul>
         {{#if nav}}
             <ul class="nav layout {{#if nav.prev}}{{#if nav.next}} both {{/if}}{{/if}}">
             {{#if nav.prev}}
@@ -89,6 +80,17 @@
             </ul>
         {{/if}}
         <p><a class="show-photos" href="/place/{{placeId}}/">Photos Near: {{placeText}}</a></p>
+    </script>
+
+    <script id="photo-template" type="text/x-handlebars-template">
+        <li class="photo">
+            <img src="{{largeUrl}}" />
+            <div class="photo-info">
+                <span class="toggle">+</span>
+                <h2>{{title}}</h2>
+                <p class="description">{{{description}}}</p>
+            </div>
+        </li>
     </script>
 
     <script src="http://use.typekit.com/wkh7ffm.js"></script>
