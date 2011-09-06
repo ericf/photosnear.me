@@ -27,6 +27,7 @@ Y.Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
 
     parse: function (results) {
         if ( ! results) { return; }
+
         var data     = results.place,
             centroid = data.centroid,
             country  = data.country,

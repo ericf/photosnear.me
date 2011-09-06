@@ -13,6 +13,7 @@ Y.Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
 
     parse: function (results) {
         if ( ! results) { return; }
+
         var photo    = results.photo,
             place    = photo.location,
             country  = place.country,
