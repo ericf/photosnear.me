@@ -1,22 +1,27 @@
 YUI.add('photos', function (Y) {
 
-var sub = Y.Lang.sub;
+var sub = Y.Lang.sub,
+
+    FLICKR_API_KEY = YUI.namespace('Env.Flickr').API_KEY || '';
 
 Y.Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
 
     model: Y.Photo,
     cache: new Y.CacheOffline(),
     query: 'SELECT * FROM flickr.photos.search({start},{num}) ' +
-            'WHERE woe_id={woeid} AND sort="interestingness-desc" ' +
-            'AND extras="path_alias"',
+                'WHERE api_key={api_key} ' +
+                'AND woe_id={woeid} ' +
+                'AND sort="interestingness-desc" ' +
+                'AND extras="path_alias"',
 
     buildQuery: function (options) {
         options || (options = {});
 
         return sub(this.query, {
-            start: options.start || 0,
-            num  : options.num || 100,
-            woeid: options.place.get('id')
+            api_key: FLICKR_API_KEY,
+            start  : options.start || 0,
+            num    : options.num || 100,
+            woeid  : options.place.get('id')
         });
     },
 

@@ -2,14 +2,23 @@ YUI.add('photo', function (Y) {
 
 var Lang     = Y.Lang,
     sub      = Lang.sub,
-    isString = Lang.isString;
+    isString = Lang.isString,
+
+    FLICKR_API_KEY = YUI.namespace('Env.Flickr').API_KEY || '';
 
 Y.Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
 
     cache  : new Y.CacheOffline(),
-    query  : 'SELECT * FROM flickr.photos.info WHERE photo_id={id}',
+    query  : 'SELECT * FROM flickr.photos.info WHERE api_key={api_key} AND photo_id={id}',
     imgUrl : 'http://farm{farm}.static.flickr.com/{server}/{id}_{secret}_{size}.jpg',
     pageUrl: 'http://www.flickr.com/photos/{user}/{id}/',
+
+    buildQuery: function () {
+        return sub(this.query, {
+            api_key: FLICKR_API_KEY,
+            id     : this.get('id')
+        });
+    },
 
     parse: function (results) {
         if ( ! results) { return; }
