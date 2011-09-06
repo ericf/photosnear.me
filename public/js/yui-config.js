@@ -61,7 +61,7 @@ YUI_config = (function () {
                     },
 
                     'photosnearme-view': {
-                        path    : 'views/photosnearme.js',
+                        path    : 'views/app.js',
                         requires: [ 'view'
                                   , 'place'
                                   ]
