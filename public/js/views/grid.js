@@ -31,7 +31,13 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
 
     render: function () {
         this.container.setContent(this.template({
-            photos: this.photos.toJSON()
+            photos: this.photos.map(function (photo) {
+                return {
+                    clientId: photo.get('clientId'),
+                    pageUrl : photo.get('pageUrl'),
+                    thumbUrl: photo.get('thumbUrl')
+                };
+            })
         }, {
             partials: { photo: this.photoTemplate }
         }));
@@ -43,8 +49,15 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
 
     addPhoto: function (e) {
         var container = this.container,
-            content   = this.photoTemplate(e.model.toJSON()),
-            list      = container.one('ul');
+            photo     = e.model,
+            list      = container.one('ul'),
+            content;
+
+        content = this.photoTemplate({
+            clientId: photo.get('clientId'),
+            pageUrl : photo.get('pageUrl'),
+            thumbUrl: photo.get('thumbUrl')
+        });
 
         this.loadingNode.hide();
         list.insert(content, list.all('.photo').item(e.index));
@@ -75,12 +88,12 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
 
         var photoNode  = e.currentTarget,
             photoNodes = this.container.all('.photo'),
-            index      = photoNodes.indexOf(photoNode);
+            photo      = this.photos.getByClientId(photoNode.get('id'));
 
         photoNodes.removeClass('selected');
         photoNode.addClass('selected');
 
-        this.fire('select', { photo: this.photos.item(index) });
+        this.fire('select', { photo: photo });
     },
 
     reset: function () {
