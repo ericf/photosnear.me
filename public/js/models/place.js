@@ -1,6 +1,6 @@
 YUI.add('place', function (Y) {
 
-var sub = Y.Lang.sub,
+var Lang = Y.Lang,
 
     FLICKR_API_KEY = YUI.namespace('Env.Flickr').API_KEY || '';
 
@@ -20,14 +20,14 @@ Y.Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
     buildQuery: function () {
         if (this.isNew()) {
             // assumes we at least have a lat/lon
-            return sub(this.queries.placeFromLatLon, {
+            return Lang.sub(this.queries.placeFromLatLon, {
                 api_key  : FLICKR_API_KEY,
                 latitude : this.get('latitude'),
                 longitude: this.get('longitude')
             });
         }
 
-        return sub(this.queries.placeFromId, { id: this.get('id') });
+        return Lang.sub(this.queries.placeFromId, { id: this.get('id') });
     },
 
     parse: function (results) {
@@ -66,6 +66,7 @@ Y.Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
     }
 
 }, {
+
     ATTRS: {
         woeid    : {},
         latitude : {},
@@ -74,12 +75,12 @@ Y.Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
         region   : {},
         locality : {}
     }
+
 });
 
 }, '0.3.2', {
-    requires: [ 'model'
-              , 'yql'
+    requires: [ 'cache-offline'
               , 'gallery-model-sync-yql'
-              , 'cache-offline'
+              , 'model'
               ]
 });

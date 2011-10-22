@@ -4,10 +4,12 @@ var filter = (window.location.search.match(/[?&]filter=([^&]+)/) || [])[1] || 'm
 
 // YUI Config.
 YUI_config = {
+    comboBase  : '/yui?',
+    root       : '/build/',
     filter     : filter,
     combine    : filter === 'min',
     allowRollup: false,
-    gallery    : 'gallery-2011.08.31-20-57',
+    gallery    : 'gallery-2011.10.20-23-28',
     groups     : {
         app: {
             base     : '/js/',
@@ -17,65 +19,53 @@ YUI_config = {
             modules  : {
                 'place': {
                     path    : 'models/place.js',
-                    requires: [ 'model'
-                              , 'yql'
+                    requires: [ 'cache-offline'
                               , 'gallery-model-sync-yql'
-                              , 'cache-offline'
+                              , 'model'
                               ]
                 },
 
                 'photo': {
                     path    : 'models/photo.js',
-                    requires: [ 'model'
-                              , 'yql'
-                              , 'gallery-model-sync-yql'
+                    requires: [ 'gallery-model-sync-yql'
                               , 'cache-offline'
+                              , 'model'
                               , 'place'
                               ]
                 },
 
                 'photos': {
                     path    : 'models/photos.js',
-                    requires: [ 'model-list'
-                              , 'yql'
+                    requires: [ 'cache-offline'
                               , 'gallery-model-sync-yql'
-                              , 'cache-offline'
+                              , 'model-list'
                               , 'photo'
                               ]
                 },
 
                 'grid-view': {
                     path    : 'views/grid.js',
-                    requires: [ 'view'
-                              , 'node-style'
+                    requires: [ 'node-style'
                               , 'node-screen'
                               , 'photos'
+                              , 'view'
                               ]
                 },
 
                 'lightbox-view': {
                     path    : 'views/lightbox.js',
-                    requires: [ 'view'
+                    requires: [ 'photos'
                               , 'place'
-                              , 'photos'
-                              ]
-                },
-
-                'app-view': {
-                    path    : 'views/app.js',
-                    requires: [ 'view'
-                              , 'transition'
-                              , 'place'
+                              , 'view'
                               ]
                 },
 
                 'photosnearme': {
                     path    : 'photosnearme.js',
-                    requires: [ 'controller'
+                    requires: [ 'app-base'
                               , 'gallery-geo'
                               , 'place'
                               , 'photos'
-                              , 'app-view'
                               , 'grid-view'
                               , 'lightbox-view'
                               ]

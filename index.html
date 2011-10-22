@@ -100,9 +100,9 @@
     </script>
 
 
-    <script src="http://yui.yahooapis.com/3.4.0/build/yui/yui-min.js"></script>
+    <script src="/yui?/build/yui/yui-min.js"></script>
     <script src="http://use.typekit.com/wkh7ffm.js"></script>
-    <script src="/js/handlebars.js"></script>
+    <script src="/js/vendor/handlebars.js"></script>
     <script src="/js/yui-config.js"></script>
     <script>
     // Load Typekit.
@@ -110,7 +110,12 @@
 
     // Load YUI and start PhotosNearMe App.
     YUI().use('photosnearme', function (Y) {
-        new Y.PhotosNearMe();
+
+        new Y.PhotosNearMe({
+            container    : '#wrap',
+            viewContainer: '#main'
+        });
+
     });
     </script>
 

@@ -2,33 +2,15 @@ YUI.add('lightbox-view', function (Y) {
 
 Y.LightboxView = Y.Base.create('lightboxView', Y.View, [], {
 
-    container: '<div id="lightbox" />',
-    template : Handlebars.compile(Y.one('#lightbox-template').getContent()),
-    events   : {
-        '.show-photos': { 'click': 'showPhotos' },
-        '.prev'       : { 'click': 'prev' },
-        '.next'       : { 'click': 'next' }
-    },
-
-    initializer: function (config) {
-        config || (config = {});
-
-        this.place  = config.place;
-        this.photos = config.photos;
-
-        this.publish({
-            navigate  : { preventable: false },
-            showPhotos: { preventable: false }
-        });
-    },
+    template: Handlebars.compile(Y.one('#lightbox-template').getContent()),
 
     render: function () {
-        var photo  = this.model,
-            place  = this.place,
-            photos = this.photos,
-            nav, prev, next;
+        var photo  = this.get('model'),
+            photos = this.get('modelList'),
+            place  = this.get('place'),
+            content, nav, prev, next;
 
-        if ( ! photos.isEmpty()) {
+        if (!photos.isEmpty()) {
             nav  = {};
             prev = photos.getPrev(photo);
             next = photos.getNext(photo);
@@ -37,44 +19,55 @@ Y.LightboxView = Y.Base.create('lightboxView', Y.View, [], {
             next && (nav.next = '../' + next.get('id') + '/');
         }
 
-        this.container.setContent(this.template({
+        content = this.template({
             placeId    : place.get('id'),
             placeText  : place.toString(),
             title      : photo.get('title') || 'Photo',
             description: photo.get('description') || '',
             largeUrl   : photo.get('largeUrl'),
             nav        : nav
-        }));
+        });
+
+        this.loadImg(function () {
+            this.get('container').setContent(content);
+        });
 
         return this;
     },
 
-    showPhotos: function (e) {
-        e.preventDefault();
-        this.fire('showPhotos');
-    },
+    loadImg: function (callback) {
+        // Insired by: Lucas Smith
+        // (http://lucassmith.name/2008/11/is-my-image-loaded.html)
+        var img  = new Image(),
+            prop = img.naturalWidth ? 'naturalWidth' : 'width';
 
-    prev: function (e) {
-        e.preventDefault();
-        var photo = this.photos.getPrev(this.model);
-        if (photo) {
-            this.fire('navigate', { photo: photo });
-        }
-    },
+        img.src = this.get('model').get('largeUrl');
 
-    next: function (e) {
-        e.preventDefault();
-        var photo = this.photos.getNext(this.model);
-        if (photo) {
-            this.fire('navigate', { photo: photo });
+        if (img.complete) {
+            callback.call(this, img[prop] ? img : null);
+        } else {
+            img.onload  = Y.bind(callback, this, img);
+            img.onerror = Y.bind(callback, this, null);
         }
+    }
+
+}, {
+
+    ATTRS: {
+        container: {
+            valueFn: function () {
+                return Y.Node.create('<div id="lightbox" />');
+            }
+        },
+
+        place : {}
     }
 
 });
 
 }, '0.3.2', {
-    requires: [ 'view'
+    requires: [ 'photos'
               , 'place'
-              , 'photos'
+              , 'view'
               ]
 });

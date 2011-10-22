@@ -1,6 +1,6 @@
 YUI.add('photos', function (Y) {
 
-var sub = Y.Lang.sub,
+var Lang = Y.Lang,
 
     FLICKR_API_KEY = YUI.namespace('Env.Flickr').API_KEY || '';
 
@@ -17,7 +17,7 @@ Y.Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
     buildQuery: function (options) {
         options || (options = {});
 
-        return sub(this.query, {
+        return Lang.sub(this.query, {
             api_key: FLICKR_API_KEY,
             start  : options.start || 0,
             num    : options.num || 100,
@@ -46,10 +46,9 @@ Y.Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
 });
 
 }, '0.3.2', {
-    requires: [ 'model-list'
-              , 'yql'
+    requires: [ 'cache-offline'
               , 'gallery-model-sync-yql'
-              , 'cache-offline'
+              , 'model-list'
               , 'photo'
               ]
 });
