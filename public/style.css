@@ -18,8 +18,7 @@ section {
 html {
     font-size: 100%;
     min-height: 100%;
-    overflow-y: scroll;
-    -webkit-tap-highlight-  : rgba(0,0,0,0);
+    /*overflow-y: scroll;*/
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
 }
@@ -28,12 +27,12 @@ body {
     margin: 0;
     color: #2D2930;
     background: #F8FFFF url(img/bg.png);
-    background: url(img/bg.png), -moz-linear-gradient(left, #f1f7fa 0%, #f8ffff 25%, #f8ffff 75%, #f1f7fa 100%);
+    /*background: url(img/bg.png), -moz-linear-gradient(left, #f1f7fa 0%, #f8ffff 25%, #f8ffff 75%, #f1f7fa 100%);
     background: url(img/bg.png), -webkit-gradient(linear, left top, right top, color-stop(0%,#f1f7fa), color-stop(25%,#f8ffff), color-stop(75%,#f8ffff), color-stop(100%,#f1f7fa));
     background: url(img/bg.png), -webkit-linear-gradient(left, #f1f7fa 0%, #f8ffff 25%, #f8ffff 75%, #f1f7fa 100%);
     background: url(img/bg.png), -o-linear-gradient(left, #f1f7fa 0%, #f8ffff 25%, #f8ffff 75%, #f1f7fa 100%);
     background: url(img/bg.png), -ms-linear-gradient(left, #f1f7fa 0%, #f8ffff 25%, #f8ffff 75%, #f1f7fa 100%);
-    background: url(img/bg.png), linear-gradient(left, #f1f7fa 0%, #f8ffff 25%, #f8ffff 75%, #f1f7fa 100%);
+    background: url(img/bg.png), linear-gradient(left, #f1f7fa 0%, #f8ffff 25%, #f8ffff 75%, #f1f7fa 100%);*/
 }
 
 body,
@@ -138,23 +137,6 @@ nav ol {
     list-style: none;
 }
 
-figure {
-    margin: 0;
-}
-
-form {
-    margin: 0;
-}
-
-fieldset {
-    margin: 0 2px;
-    padding: 0.35em 0.625em 0.75em;
-}
-
-legend {
-    *margin-left: -7px;
-}
-
 button,
 input,
 select,
@@ -205,8 +187,6 @@ textarea {
     vertical-align: top;
 }
 
-
-
 h1 {
     font-family: "myriad-pro-1", "myriad-pro-2", sans-serif;
     font-weight: 600;
@@ -241,20 +221,31 @@ h1 {
     vertical-align: top;
 }
 
+.loading {
+    min-height: 32px;
+    background: url(img/spinner.gif) no-repeat center;
+}
+
+#wrap.loading {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+#wrap.loading > * {
+    display: none;
+}
+
 #logo {
     display: inline-block;
     zoom: 1; *display: inline;
     position: relative;
-    width: 42px;
-    height: 54px;
-    margin: 0 12px -17px -50px;
     background: url(img/cross_hair.png) center bottom no-repeat;
 }
 #logo .pin {
     display: block;
     position: relative;
-    width: 18px;
-    height: 36px;
     margin: 0 auto;
     background: url(img/pin.png) center top no-repeat;
     visibility: hidden;
@@ -266,9 +257,7 @@ h1 {
     display: block;
     position: absolute;
     top: 0;
-    right: -8px;
     width: 100%;
-    height: 35px;
     background: url(img/pin_shadow.png) right bottom no-repeat;
     visibility: hidden;
     -webkit-transform: translate(50%, -50%);
@@ -291,21 +280,6 @@ h1 {
     color: #75607F;
 }
 
-#wrap {
-    width: 880px;
-    margin: auto;
-    padding: 20px;
-}
-#wrap.loading {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border: 0;
-    margin: 0;
-    padding: 0;
-    background: url(img/spinner.gif) no-repeat center;
-}
-
 #photos ul {
     margin: 20px -5px;
     padding: 0;
@@ -315,21 +289,18 @@ h1 {
 #photos .photo a {
     display: block;
     position: relative;
-    width: 75px;
-    height: 75px;
     padding: 2px;
-    -webkit-box-shadow: 0 0 2px rgba(0,0,0, 0.40);
-    -moz-box-shadow: 0 0 2px rgba(0,0,0, 0.40);
-    box-shadow: 0 0 2px rgba(0,0,0, 0.40);
-    -webkit-border-radius: 2px;
-    -moz-border-radius: 2px;
-    border-radius: 2px;
-    padding: 2px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
     background: #fff;
 }
 #photos .photo img {
     display: block;
     width: 100%;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
 }
 #photos .selected a:after {
     content: "";
@@ -397,7 +368,7 @@ h1 {
     text-decoration: none;
 }
 
-@media only screen and (max-device-width: 480px) {
+@media only screen and (min-width: 320px) {
 
     h1 {
         font-size: 1em;
@@ -415,7 +386,6 @@ h1 {
         width: 21px;
         height: 25px;
         margin: 0 6px -9px -27px;
-
     }
     #logo .pin {
         background-size: 9px 18px;
@@ -428,23 +398,85 @@ h1 {
         height: 18px;
     }
 
-    #photos ul { margin: 10px -5px; }
+    #photos ul { margin: 10px -4px; }
     #photos .photo { padding: 4px; }
     #photos .photo a {
-        width: 50px;
-        height: 50px;
-        padding: 2px;
+        width: 65px;
+        height: 65px;
     }
 
 }
 
-@media only screen and (max-device-width: 480px) and (orientation: landscape) {
+@media only screen and (min-width: 480px) {
 
-    #photos .photo { padding: 4px; }
+    h1 {
+        font-size: 1.5em;
+        padding-left: 41px;
+    }
+
+    #logo {
+        background-size: 32px 20px;
+        width: 32px;
+        height: 38px;
+        margin: 0 9px -14px -41px;
+    }
+    #logo .pin {
+        background-size: 14px 27px;
+        width: 14px;
+        height: 27px;
+    }
+    #logo .pin-shadow {
+        background-size: 24px 17px;
+        right: -6px;
+        height: 27px;
+    }
+
     #photos .photo a {
-        width: 35px;
+        width: 66px;
+        height: 66px;
+    }
+
+}
+
+@media only screen and (min-width: 720px) {
+
+    h1 {
+        font-size: 2em;
+        padding-left: 50px;
+    }
+
+    #wrap {
+        margin: auto;
+        width: auto;
+        max-width: 880px;
+        padding: 20px;
+    }
+    #wrap.loading {
+        max-width: 100%;
+    }
+
+    #logo {
+        background-size: auto;
+        width: 42px;
+        height: 54px;
+        margin: 0 12px -17px -50px;
+    }
+    #logo .pin {
+        background-size: auto;
+        width: 18px;
+        height: 36px;
+    }
+    #logo .pin-shadow {
+        background-size: auto;
+        right: -8px;
         height: 35px;
-        padding: 2px;
+    }
+
+    #photos ul { margin: 20px -5px; }
+    #photos .photo { padding: 5px; }
+    #photos .photo a {
+        width: 75px;
+        height: 75px;
     }
 
 }
@@ -459,7 +491,7 @@ only screen and (min-device-pixel-ratio: 1.5) {
         background-size: 50px 50px;
     }
 
-    #wrap.loading,
+    .loading,
     #photos .selected a:after {
         background-image: url(img/spinner-2x.gif);
         background-size: 32px 32px;

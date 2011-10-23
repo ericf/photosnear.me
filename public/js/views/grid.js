@@ -4,9 +4,6 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
 
     template     : Handlebars.compile(Y.one('#grid-template').getContent()),
     photoTemplate: Handlebars.compile(Y.one('#grid-photo-template').getContent()),
-    events       : {
-        '.photo': { 'click': 'select' }
-    },
 
     initializer: function (config) {
         var photos = this.get('modelList');
@@ -36,10 +33,12 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
                 };
             })
         }, {
-            partials: { photo: this.photoTemplate }
+            partials: {photo: this.photoTemplate}
         }));
 
         this.loadingNode = container.one('.loading');
+
+        Y.later(1, this, 'more');
 
         return this;
     },

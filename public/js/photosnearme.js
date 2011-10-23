@@ -29,7 +29,7 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
         if (Y.config.win.navigator.standalone) {
             // iOS saved to home screen,
             // always route to / so geolocation lookup is preformed.
-            this.replace('/');
+            this.handleLocate();
         } else {
             this.dispatch();
         }
@@ -77,41 +77,42 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
             photos  = this.get('photos'),
             self    = this;
 
-        function showGridView() {
-            self.showView('grid', {modelList: photos}, function (gridView) {
-                gridView.reset();
-            });
-        }
-
-        if (place.get('id') === placeId) {
-            showGridView();
-        } else {
+        if (place.get('id') !== placeId) {
             place = new Y.Place({id: placeId});
             place.load(function () {
                 self.set('place', place);
-                showGridView();
             });
         }
+
+        this.showView('grid', {modelList: photos}, function (gridView) {
+            gridView.reset();
+        });
     },
 
     handlePhoto: function (req) {
         var params = req.params,
             place  = this.get('place'),
             photos = this.get('photos'),
-            photo  = photos.getById(params.id) || new Y.Photo(params);
+            photo  = photos.getById(params.id);
 
-        photo.load(Y.bind(function () {
-            if (place.isNew()) {
-                place = photo.get('place');
-                this.set('place', place);
-            }
+        this.showView('lightbox', {
+            model    : photo,
+            modelList: photos,
+            place    : !place.isNew() && place
+        }, function (lightboxView) {
+            if (photo) { return; }
 
-            this.showView('lightbox', {
-                model    : photo,
-                modelList: photos,
-                place    : place
-            });
-        }, this));
+            photo = new Y.Photo(params);
+            photo.load(Y.bind(function () {
+                lightboxView.set('model', photo);
+
+                if (place.isNew()) {
+                    place = photo.get('place');
+                    lightboxView.set('place', place);
+                    this.set('place', place);
+                }
+            }, this));
+        });
     },
 
     morePhotos: function () {
@@ -135,7 +136,6 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     ATTRS: {
         place : {value: new Y.Place},
         photos: {value: new Y.Photos},
-
         routes: {
             value: [
                 {path: '/',            callback: 'handleLocate'},
