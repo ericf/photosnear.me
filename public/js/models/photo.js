@@ -47,6 +47,24 @@ Y.Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
             secret: this.get('secret'),
             size  : size
         });
+    },
+
+    loadImg: function (callback) {
+        // Insired by: Lucas Smith
+        // (http://lucassmith.name/2008/11/is-my-image-loaded.html)
+        var img  = new Image(),
+            prop = img.naturalWidth ? 'naturalWidth' : 'width';
+
+        Lang.isFunction(callback) || (callback = function() {});
+
+        img.src = this.get('largeUrl');
+
+        if (img.complete) {
+            callback.call(this, img[prop] ? img : null);
+        } else {
+            img.onload  = Y.bind(callback, this, img);
+            img.onerror = Y.bind(callback, this, null);
+        }
     }
 
 }, {
