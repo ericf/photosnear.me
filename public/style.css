@@ -205,6 +205,11 @@ h1 {
     -moz-transition: opacity 0.50s;
     transition: opacity 0.50s;
 }
+h1 a:link,
+h1 a:visited {
+    color: #2D2930;
+    text-decoration: none;
+}
 
 /* http://developer.yahoo.com/yui/3/cssgrids/ */
 .layout {

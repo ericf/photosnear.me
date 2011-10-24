@@ -38,17 +38,23 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     render: function () {
         Y.PhotosNearMe.superclass.render.apply(this, arguments);
 
-        var placeText = this.get('place').toString(),
+        var place     = this.get('place'),
+            placeText = place.toString(),
             container = this.get('container'),
-            doc       = Y.config.doc;
+            doc       = Y.config.doc,
+            content;
 
         // Update the title of the browser window.
         doc && (doc.title = this.titleTemplate({place: placeText}));
 
-        container
-            .removeClass('loading')
-            .one('#header').setContent(this.headerTemplate({place: placeText}));
+        content = this.headerTemplate({
+            place: !place.isNew() && {
+                id  : place.get('id'),
+                text: placeText
+            }
+        });
 
+        container.removeClass('loading').one('#header').setContent(content);
         Y.later(1, container, 'addClass', 'located');
 
         return this;

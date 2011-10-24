@@ -34,14 +34,13 @@
                 <span class="pin-shadow"></span>
                 <span class="pin"></span>
             </a>
-            Photos Near
-            <span id="location">
-                {{#if place}}
-                    {{place}}
-                {{else}}
-                    Me
-                {{/if}}
-            </span>
+            {{#if place}}
+                <a href="/place/{{place.id}}/">
+                    Photos Near <span id="location">{{place.text}}</span>
+                </a>
+            {{else}}
+                Photos Near <span id="location">Me</span>
+            {{/if}}
         </h1>
     </script>
 
@@ -75,10 +74,6 @@
                 <li class="next"><a href="{{nav.next}}">Next »</a></li>
             {{/if}}
             </ul>
-        {{/if}}
-
-        {{#if place}}
-            <p><a class="show-photos" href="/place/{{place.id}}/">Photos Near: {{place.text}}</a></p>
         {{/if}}
     </script>
 
