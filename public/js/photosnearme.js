@@ -95,30 +95,45 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
         });
     },
 
-    handlePhoto: function (req) {
+    handlePhoto: function (req, res, next) {
         var params = req.params,
-            place  = this.get('place'),
-            photos = this.get('photos'),
-            photo  = photos.getById(params.id);
+            photo  = this.get('photos').getById(params.id),
+            self   = this;
 
-        this.showView('lightbox', {
-            model    : photo,
-            modelList: photos,
-            place    : !place.isNew() && place
-        }, function (lightboxView) {
-            if (photo) { return; }
-
-            photo = new Y.Photo(params);
-            photo.load(Y.bind(function () {
-                lightboxView.set('model', photo);
-
-                if (place.isNew()) {
-                    place = photo.get('place');
-                    lightboxView.set('place', place);
-                    this.set('place', place);
+        if (photo) {
+            req.photo = photo;
+            photo.loadImg(function () {
+                next();
+            });
+        } else {
+            photo = req.photo = new Y.Photo(params);
+            photo.load(function () {
+                if (self.get('place').isNew()) {
+                    self.set('place', photo.get('place'));
                 }
-            }, this));
-        });
+
+                photo.loadImg(function () {
+                    next();
+                });
+            });
+        }
+    },
+
+    showLightbox: function (req) {
+        var photo      = req.photo,
+            photos     = this.get('photos'),
+            place      = this.get('place'),
+            activeView = this.get('activeView');
+
+        if (activeView instanceof this.views.lightbox.type) {
+            activeView.set('model', photo);
+        } else {
+            this.showView('lightbox', {
+                model    : photo,
+                modelList: photos,
+                place    : place
+            });
+        }
     },
 
     morePhotos: function () {
@@ -142,11 +157,15 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     ATTRS: {
         place : {value: new Y.Place},
         photos: {value: new Y.Photos},
+
         routes: {
             value: [
-                {path: '/',            callback: 'handleLocate'},
-                {path: '/place/:id/',  callback: 'handlePlace'},
-                {path: '/photo/:id/',  callback: 'handlePhoto'}
+                {path: '/', callback: 'handleLocate'},
+
+                {path: '/place/:id/', callback: 'handlePlace'},
+
+                {path: '/photo/:id/', callback: 'handlePhoto'},
+                {path: '/photo/:id/', callback: 'showLightbox'}
             ]
         }
     }

@@ -61,12 +61,10 @@
     </script>
 
     <script id="lightbox-template" type="text/x-handlebars-template">
-        {{#if photo}}
-            {{> photo photo}}
-        {{/if}}
+        {{> photo photo}}
 
         {{#if nav}}
-            <ul class="nav layout {{#if nav.prev}}{{#if nav.next}} both {{/if}}{{/if}}">
+            <ul class="nav layout {{#if nav.both}}both{{/if}}">
             {{#if nav.prev}}
                 <li class="prev"><a href="{{nav.prev}}">« Previous</a></li>
             {{/if}}
@@ -82,7 +80,7 @@
             <img src="{{largeUrl}}" />
             <div class="photo-info">
                 <h2>{{title}}</h2>
-                <p>{{{description}}}</p>
+                <p><a href="{{pageUrl}}">View on Flickr</a></p>
             </div>
         </div>
     </script>
