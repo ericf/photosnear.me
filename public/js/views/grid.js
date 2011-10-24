@@ -5,6 +5,10 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
     template     : Handlebars.compile(Y.one('#grid-template').getContent()),
     photoTemplate: Handlebars.compile(Y.one('#grid-photo-template').getContent()),
 
+    events: {
+        '.photo': {click: 'select'}
+    },
+
     initializer: function (config) {
         var photos = this.get('modelList');
 
@@ -77,6 +81,11 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
             this.loadingNode.show();
             this.fire('more');
         }
+    },
+
+    select: function (e) {
+        this.get('container').all('.photo.selected').removeClass('selected');
+        e.currentTarget.addClass('selected');
     },
 
     reset: function () {
