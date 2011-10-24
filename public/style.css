@@ -188,6 +188,7 @@ textarea {
 }
 
 h1 {
+    font-size: 2em;
     font-family: "myriad-pro-1", "myriad-pro-2", sans-serif;
     font-weight: 600;
     text-shadow: 0 1px 0 #fff;
@@ -231,9 +232,16 @@ h1 a:visited {
     background: url(img/spinner.gif) no-repeat center;
 }
 
+#wrap {
+    margin: auto;
+    width: auto;
+    max-width: 880px;
+    padding: 20px;
+}
 #wrap.loading {
     position: absolute;
     width: 100%;
+    max-width: 100%;
     height: 100%;
     margin: 0;
     padding: 0;
@@ -247,6 +255,9 @@ h1 a:visited {
     zoom: 1; *display: inline;
     position: relative;
     background: url(img/cross_hair.png) center bottom no-repeat;
+    width: 42px;
+    height: 54px;
+    margin: 0 12px -17px -50px;
 }
 #logo .pin {
     display: block;
@@ -257,6 +268,8 @@ h1 a:visited {
     -webkit-transform: translateY(-100%);
     -moz-transform: translateY(-100%);
     transform: translateY(-100%);
+    width: 18px;
+    height: 36px;
 }
 #logo .pin-shadow {
     display: block;
@@ -268,6 +281,8 @@ h1 a:visited {
     -webkit-transform: translate(50%, -50%);
     -moz-transform: translate(50%, -50%);
     transform: translate(50%, -50%);
+    right: -8px;
+    height: 35px;
 }
 .located #logo .pin,
 .located #logo .pin-shadow {
@@ -299,6 +314,8 @@ h1 a:visited {
     -moz-border-radius: 3px;
     border-radius: 3px;
     background: #fff;
+    width: 75px;
+    height: 75px;
 }
 #photos .photo img {
     display: block;
@@ -325,16 +342,30 @@ h1 a:visited {
     display: inline-block;
     zoom: 1; *display: inline;
     position: relative;
+    padding: 4px;
+    background: #fff;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
 }
 #lightbox .photo img {
     display: block;
     max-width: 100%;
     margin: 0 auto;
-    -webkit-box-shadow: 0 5px 30px -1px rgba(0,0,0, 0.65);
-    -moz-box-shadow: 0 5px 30px -1px rgba(0,0,0, 0.65);
-    box-shadow: 0 5px 30px -1px rgba(0,0,0, 0.65);
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
 }
 #lightbox .photo-info {
+    text-align: left;
+    padding: 0 16px;
+}
+#lightbox .photo-info h2 {
+    font-family: "myriad-pro-1", "myriad-pro-2", sans-serif;
+    font-weight: 400;
+}
+
+/*#lightbox .photo-info {
     position: absolute;
     bottom: 0;
     width: 100%;
@@ -371,52 +402,18 @@ h1 a:visited {
 #lightbox .nav a {
     display: block;
     text-decoration: none;
-}
+}*/
 
-@media only screen and (min-width: 320px) {
-
-    h1 {
-        font-size: 1em;
-        padding-left: 27px;
-    }
-
-    #wrap {
-        width: auto;
-        margin: 5px 10px;
-        padding: 0;
-    }
-
-    #logo {
-        background-size: 21px 13px;
-        width: 21px;
-        height: 25px;
-        margin: 0 6px -9px -27px;
-    }
-    #logo .pin {
-        background-size: 9px 18px;
-        width: 9px;
-        height: 18px;
-    }
-    #logo .pin-shadow {
-        background-size: 16px 11px;
-        right: -4px;
-        height: 18px;
-    }
-
-    #photos ul { margin: 10px -4px; }
-    #photos .photo { padding: 4px; }
-    #photos .photo a {
-        width: 65px;
-        height: 65px;
-    }
-
-}
-
-@media only screen and (min-width: 480px) {
+@media only screen and (min-width: 0px) {
 
     h1 {
         font-size: 1.5em;
         padding-left: 41px;
+    }
+
+    #wrap {
+        margin: 5px 10px;
+        padding: 0;
     }
 
     #logo {
@@ -436,14 +433,63 @@ h1 a:visited {
         height: 27px;
     }
 
+    #photos ul { margin: 10px -4px; }
+    #photos .photo { padding: 4px; }
     #photos .photo a {
         width: 66px;
         height: 66px;
     }
 
+    #lightbox .photo {
+        margin: 0 -10px;
+    }
+    #lightbox .photo-info {
+        padding: 0 6px;
+    }
+    #lightbox .photo-info h2 {
+        font-size: 1.25em;
+    }
+
 }
 
-@media only screen and (min-width: 720px) {
+/* iPhone in portriat mode gets a smaller heading */
+@media only screen and (max-device-width: 480px) and (max-width: 320px) {
+
+    h1 {
+        font-size: 1em;
+        padding-left: 27px;
+    }
+
+    #logo {
+        background-size: 21px 13px;
+        width: 21px;
+        height: 25px;
+        margin: 0 6px -9px -27px;
+    }
+    #logo .pin {
+        background-size: 9px 18px;
+        width: 9px;
+        height: 18px;
+    }
+    #logo .pin-shadow {
+        background-size: 16px 11px;
+        right: -4px;
+        height: 18px;
+    }
+
+    #photos .photo a {
+        width: 65px;
+        height: 65px;
+    }
+
+    #lightbox .photo-info h2 {
+        font-size: 1em;
+    }
+
+}
+
+/* iPad portriat */
+@media only screen and (min-width: 768px) {
 
     h1 {
         font-size: 2em;
@@ -452,12 +498,7 @@ h1 a:visited {
 
     #wrap {
         margin: auto;
-        width: auto;
-        max-width: 880px;
         padding: 20px;
-    }
-    #wrap.loading {
-        max-width: 100%;
     }
 
     #logo {
@@ -479,6 +520,24 @@ h1 a:visited {
 
     #photos ul { margin: 20px -5px; }
     #photos .photo { padding: 5px; }
+    #photos .photo a {
+        width: 68px;
+        height: 68px;
+    }
+
+    #lightbox .photo-info {
+        padding: 0 16px;
+    }
+    #lightbox .photo-info h2 {
+        font-size: 1.5em;
+    }
+
+}
+
+@media only screen and (min-width: 880px) {
+
+    #wrap { max-width: 880px;}
+
     #photos .photo a {
         width: 75px;
         height: 75px;
