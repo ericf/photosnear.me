@@ -98,5 +98,6 @@ Y.Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
               , 'cache-offline'
               , 'model'
               , 'place'
+              , 'yql'
               ]
 });

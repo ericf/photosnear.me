@@ -50,5 +50,6 @@ Y.Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
               , 'gallery-model-sync-yql'
               , 'model-list'
               , 'photo'
+              , 'yql'
               ]
 });

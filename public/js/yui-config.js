@@ -22,6 +22,7 @@ YUI_config = {
                     requires: [ 'cache-offline'
                               , 'gallery-model-sync-yql'
                               , 'model'
+                              , 'yql'
                               ]
                 },
 
@@ -31,6 +32,7 @@ YUI_config = {
                               , 'cache-offline'
                               , 'model'
                               , 'place'
+                              , 'yql'
                               ]
                 },
 
@@ -40,6 +42,7 @@ YUI_config = {
                               , 'gallery-model-sync-yql'
                               , 'model-list'
                               , 'photo'
+                              , 'yql'
                               ]
                 },
 
