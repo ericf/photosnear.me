@@ -18,12 +18,10 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     },
 
     initializer: function () {
-        this.after('placeChange', function (e) {
-            this.get('photos').load({place: e.newVal});
-            this.render();
-        });
+        this.after('placeChange', this.render);
+        this.after('placeChange', this.loadPhotos);
 
-        this.on('gridView:more', this.morePhotos);
+        this.on('gridView:more', this.loadMorePhotos);
 
         // Do initial dispatch.
         if (Y.config.win.navigator.standalone) {
@@ -48,7 +46,7 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
         doc && (doc.title = this.titleTemplate({place: placeText}));
 
         content = this.headerTemplate({
-            place: !place.isNew() && {
+            place: place.isNew() ? null : {
                 id  : place.get('id'),
                 text: placeText
             }
@@ -136,10 +134,14 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
         }
     },
 
-    morePhotos: function () {
+    loadPhotos: function () {
+        this.get('photos').load({place: this.get('place')});
+    },
+
+    loadMorePhotos: function () {
         var place     = this.get('place'),
             photos    = this.get('photos'),
-            newPhotos = new Y.Photos();
+            newPhotos = new Y.Photos;
 
         newPhotos.load({
             place: place,
