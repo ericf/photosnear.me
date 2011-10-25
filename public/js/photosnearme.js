@@ -2,8 +2,8 @@ YUI.add('photosnearme', function (Y) {
 
 Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
-    titleTemplate : Handlebars.compile(Y.one('#title-template').getContent()),
-    headerTemplate: Handlebars.compile(Y.one('#header-template').getContent()),
+    titleTemplate : Y.Handlebars.compile(Y.one('#title-template').getContent()),
+    headerTemplate: Y.Handlebars.compile(Y.one('#header-template').getContent()),
 
     views: {
         grid: {
@@ -177,6 +177,7 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 }, '0.3.2', {
     requires: [ 'app-base'
               , 'gallery-geo'
+              , 'handlebars'
               , 'place'
               , 'photos'
               , 'grid-view'

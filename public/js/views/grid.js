@@ -2,8 +2,8 @@ YUI.add('grid-view', function (Y) {
 
 Y.GridView = Y.Base.create('gridView', Y.View, [], {
 
-    template     : Handlebars.compile(Y.one('#grid-template').getContent()),
-    photoTemplate: Handlebars.compile(Y.one('#grid-photo-template').getContent()),
+    template     : Y.Handlebars.compile(Y.one('#grid-template').getContent()),
+    photoTemplate: Y.Handlebars.compile(Y.one('#grid-photo-template').getContent()),
 
     events: {
         '.photo': {click: 'select'}
@@ -107,7 +107,8 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
 });
 
 }, '0.3.2', {
-    requires: [ 'node-style'
+    requires: [ 'handlebars'
+              , 'node-style'
               , 'node-screen'
               , 'photos'
               , 'view'

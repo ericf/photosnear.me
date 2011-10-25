@@ -48,7 +48,8 @@ YUI_config = {
 
                 'grid-view': {
                     path    : 'views/grid.js',
-                    requires: [ 'node-style'
+                    requires: [ 'handlebars'
+                              , 'node-style'
                               , 'node-screen'
                               , 'photos'
                               , 'view'
@@ -57,7 +58,8 @@ YUI_config = {
 
                 'lightbox-view': {
                     path    : 'views/lightbox.js',
-                    requires: [ 'photos'
+                    requires: [ 'handlebars'
+                              , 'photos'
                               , 'place'
                               , 'view'
                               ]
@@ -67,6 +69,7 @@ YUI_config = {
                     path    : 'photosnearme.js',
                     requires: [ 'app-base'
                               , 'gallery-geo'
+                              , 'handlebars'
                               , 'place'
                               , 'photos'
                               , 'grid-view'

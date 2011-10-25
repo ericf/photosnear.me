@@ -2,8 +2,8 @@ YUI.add('lightbox-view', function (Y) {
 
 Y.LightboxView = Y.Base.create('lightboxView', Y.View, [], {
 
-    template     : Handlebars.compile(Y.one('#lightbox-template').getContent()),
-    photoTemplate: Handlebars.compile(Y.one('#lightbox-photo-template').getContent()),
+    template     : Y.Handlebars.compile(Y.one('#lightbox-template').getContent()),
+    photoTemplate: Y.Handlebars.compile(Y.one('#lightbox-photo-template').getContent()),
 
     initializer: function () {
         this.after('modelChange', this.render);
@@ -69,7 +69,8 @@ Y.LightboxView = Y.Base.create('lightboxView', Y.View, [], {
 });
 
 }, '0.3.2', {
-    requires: [ 'photos'
+    requires: [ 'handlebars'
+              , 'photos'
               , 'place'
               , 'view'
               ]
