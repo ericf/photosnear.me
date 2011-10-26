@@ -20,7 +20,6 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     initializer: function () {
         this.after('placeChange', this.render);
         this.after('placeChange', this.loadPhotos);
-
         this.on('gridView:more', this.loadMorePhotos);
 
         // Do initial dispatch.
@@ -53,7 +52,8 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
         });
 
         container.removeClass('loading').one('#header').setContent(content);
-        Y.later(1, container, 'addClass', 'located');
+        // Delay adding `located` class so the CSS transitions run.
+        !place.isNew() && Y.later(1, container, 'addClass', 'located');
 
         return this;
     },
