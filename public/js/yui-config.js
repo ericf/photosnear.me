@@ -4,8 +4,8 @@ var filter = (window.location.search.match(/[?&]filter=([^&]+)/) || [])[1] || 'm
 
 // YUI Config.
 YUI_config = {
-    comboBase  : '/yui?',
-    root       : '/build/',
+    comboBase  : 'http://yui.ericf.me/?',
+    root       : '/',
     filter     : filter,
     combine    : filter === 'min',
     allowRollup: false,
