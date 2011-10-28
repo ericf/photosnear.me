@@ -2,79 +2,76 @@ YUI.add('lightbox-view', function (Y) {
 
 Y.LightboxView = Y.Base.create('lightboxView', Y.View, [], {
 
-    container: '<div id="lightbox" />',
-    template : Handlebars.compile(Y.one('#lightbox-template').getContent()),
-    events   : {
-        '.show-photos': { 'click': 'showPhotos' },
-        '.prev'       : { 'click': 'prev' },
-        '.next'       : { 'click': 'next' }
-    },
+    template     : Y.Handlebars.compile(Y.one('#lightbox-template').getContent()),
+    photoTemplate: Y.Handlebars.compile(Y.one('#lightbox-photo-template').getContent()),
 
-    initializer: function (config) {
-        config || (config = {});
-
-        this.place  = config.place;
-        this.photos = config.photos;
-
-        this.publish({
-            navigate  : { preventable: false },
-            showPhotos: { preventable: false }
-        });
+    initializer: function () {
+        this.after('modelChange', this.render);
     },
 
     render: function () {
-        var photo  = this.model,
-            place  = this.place,
-            photos = this.photos,
-            nav, prev, next;
+        var photo  = this.get('model'),
+            photos = this.get('modelList'),
+            place  = this.get('place'),
+            content, nav, prev, next;
 
-        if ( ! photos.isEmpty()) {
+        if (!photos.isEmpty()) {
             nav  = {};
             prev = photos.getPrev(photo);
             next = photos.getNext(photo);
 
-            prev && (nav.prev = '../' + prev.get('id') + '/');
-            next && (nav.next = '../' + next.get('id') + '/');
+            if (prev) {
+                prev.loadImg();
+                nav.prev = '../' + prev.get('id') + '/';
+            }
+
+            if (next) {
+                next.loadImg();
+                nav.next = '../' + next.get('id') + '/';
+            }
+
+            nav.both = !!prev && !!next;
         }
 
-        this.container.setContent(this.template({
-            placeId    : place.get('id'),
-            placeText  : place.toString(),
-            title      : photo.get('title') || 'Photo',
-            description: photo.get('description') || '',
-            largeUrl   : photo.get('largeUrl'),
-            nav        : nav
-        }));
+        content = this.template({
+            place: {
+                id  : place.get('id'),
+                text: place.toString()
+            },
 
+            photo: {
+                title   : photo.get('title') || 'Photo',
+                largeUrl: photo.get('largeUrl'),
+                pageUrl : photo.get('pageUrl')
+            },
+
+            nav: nav
+        }, {
+            partials: {photo: this.photoTemplate}
+        });
+
+        this.get('container').setContent(content);
         return this;
-    },
+    }
 
-    showPhotos: function (e) {
-        e.preventDefault();
-        this.fire('showPhotos');
-    },
+}, {
 
-    prev: function (e) {
-        e.preventDefault();
-        var photo = this.photos.getPrev(this.model);
-        if (photo) {
-            this.fire('navigate', { photo: photo });
-        }
-    },
+    ATTRS: {
+        container: {
+            valueFn: function () {
+                return Y.Node.create('<div id="lightbox" />');
+            }
+        },
 
-    next: function (e) {
-        e.preventDefault();
-        var photo = this.photos.getNext(this.model);
-        if (photo) {
-            this.fire('navigate', { photo: photo });
-        }
+        place: {}
     }
 
 });
 
 }, '0.3.2', {
-    requires: [ 'view'
-              , 'place'
+    requires: [ 'handlebars'
               , 'photos'
+              , 'place'
+              , 'view'
               ]
 });

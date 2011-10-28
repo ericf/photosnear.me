@@ -1,8 +1,6 @@
 YUI.add('photo', function (Y) {
 
-var Lang     = Y.Lang,
-    sub      = Lang.sub,
-    isString = Lang.isString,
+var Lang = Y.Lang,
 
     FLICKR_API_KEY = YUI.namespace('Env.Flickr').API_KEY || '';
 
@@ -14,7 +12,7 @@ Y.Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
     pageUrl: 'http://www.flickr.com/photos/{user}/{id}/',
 
     buildQuery: function () {
-        return sub(this.query, {
+        return Lang.sub(this.query, {
             api_key: FLICKR_API_KEY,
             id     : this.get('id')
         });
@@ -42,7 +40,7 @@ Y.Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
     },
 
     getImgUrl: function (size) {
-        return sub(this.imgUrl, {
+        return Lang.sub(this.imgUrl, {
             id    : this.get('id'),
             farm  : this.get('farm'),
             server: this.get('server'),
@@ -52,11 +50,12 @@ Y.Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
     },
 
     loadImg: function (callback) {
-        // insired by: Lucas Smith
+        // Insired by: Lucas Smith
         // (http://lucassmith.name/2008/11/is-my-image-loaded.html)
-
         var img  = new Image(),
             prop = img.naturalWidth ? 'naturalWidth' : 'width';
+
+        Lang.isFunction(callback) || (callback = function() {});
 
         img.src = this.get('largeUrl');
 
@@ -69,6 +68,7 @@ Y.Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
     }
 
 }, {
+
     ATTRS: {
         farm       : {},
         server     : {},
@@ -81,7 +81,8 @@ Y.Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
         place: {
             value : {},
             setter: function (place) {
-                return ((place instanceof Y.Place) ? place : new Y.Place(place));
+                (place instanceof Y.Place) || (place = new Y.Place(place));
+                return place;
             }
         },
 
@@ -100,20 +101,21 @@ Y.Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
         pageUrl: {
             getter: function () {
                 var user = this.get('pathalias') || this.get('owner');
-                return sub(this.pageUrl, {
+                return Lang.sub(this.pageUrl, {
                     id  : this.get('id'),
-                    user: isString(user) ? user : user.nsid
+                    user: Lang.isString(user) ? user : user.nsid
                 });
             }
         }
     }
+
 });
 
 }, '0.3.2', {
-    requires: [ 'model'
-              , 'yql'
-              , 'gallery-model-sync-yql'
+    requires: [ 'gallery-model-sync-yql'
               , 'cache-offline'
+              , 'model'
               , 'place'
+              , 'yql'
               ]
 });

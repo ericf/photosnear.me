@@ -1,9 +1,9 @@
 var express = require('express'),
     combo   = require('combohandler'),
 
-    app     = express.createServer(),
-    port    = process.env.PORT || 3000,
-    pubDir  = __dirname + '/public';
+    app    = express.createServer(),
+    port   = process.env.PORT || 3000,
+    pubDir = __dirname + '/public';
 
 app.configure(function () {
     app.use(express.static(pubDir));

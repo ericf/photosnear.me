@@ -1,8 +1,6 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-
     <meta charset="utf-8" />
 
     <title>Photos Near Me</title>
@@ -10,82 +8,63 @@
     <meta name="author" content="Eric Ferraiuolo" />
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="format-detection" content="telephone=no" />
 
     <link rel="stylesheet" href="/style.css" />
-
 </head>
-
 <body>
-
     <div id="wrap" class="loading">
         <div id="header"></div>
         <div id="main"></div>
     </div>
 
     <script id="title-template" type="text/x-handlebars-template">
-
         {{#if place}}
             Photos Near: {{place}}
         {{else}}
             Photos Near Me
         {{/if}}
-
     </script>
 
     <script id="header-template" type="text/x-handlebars-template">
-
         <h1>
             <a href="/" id="logo">
                 <span class="pin-shadow"></span>
                 <span class="pin"></span>
             </a>
-            Photos Near
-            <span id="location">
-                {{#if place}}
-                    {{place}}
-                {{else}}
-                    Me
-                {{/if}}
-            </span>
+            {{#if place}}
+                <a href="/place/{{place.id}}/">
+                    Photos Near <span id="location">{{place.text}}</span>
+                </a>
+            {{else}}
+                Photos Near <span id="location">Me</span>
+            {{/if}}
         </h1>
-
     </script>
 
     <script id="grid-template" type="text/x-handlebars-template">
-
         <ul class="layout">
         {{#each photos}}
             {{> photo}}
         {{/each}}
         </ul>
 
-        <p class="loading">Loading Photos…</p>
-
+        <p class="loading"></p>
     </script>
 
     <script id="grid-photo-template" type="text/x-handlebars-template">
-
         <li class="photo" id="{{clientId}}">
             <a href="{{pageUrl}}"><img src="{{thumbUrl}}" /></a>
         </li>
-
     </script>
 
     <script id="lightbox-template" type="text/x-handlebars-template">
-
-        <div class="photo">
-            <img src="{{largeUrl}}" />
-            <div class="photo-info">
-                <h2>{{title}}</h2>
-                <p>{{{description}}}</p>
-            </div>
-        </div>
+        {{> photo photo}}
 
         {{#if nav}}
-            <ul class="nav layout {{#if nav.prev}}{{#if nav.next}} both {{/if}}{{/if}}">
+            <ul class="nav layout {{#if nav.both}}both{{/if}}">
             {{#if nav.prev}}
                 <li class="prev"><a href="{{nav.prev}}">« Previous</a></li>
             {{/if}}
@@ -94,15 +73,20 @@
             {{/if}}
             </ul>
         {{/if}}
-
-        <p><a class="show-photos" href="/place/{{placeId}}/">Photos Near: {{placeText}}</a></p>
-
     </script>
 
+    <script id="lightbox-photo-template" type="text/x-handlebars-template">
+        <div class="photo">
+            <img src="{{largeUrl}}" />
+            <div class="photo-info">
+                <h2>{{title}}</h2>
+                <p><a href="{{pageUrl}}">View on Flickr</a></p>
+            </div>
+        </div>
+    </script>
 
-    <script src="http://yui.yahooapis.com/3.4.0/build/yui/yui-min.js"></script>
     <script src="http://use.typekit.com/wkh7ffm.js"></script>
-    <script src="/js/handlebars.js"></script>
+    <script src="http://yui.ericf.me/?/yui/yui-min.js"></script>
     <script src="/js/yui-config.js"></script>
     <script>
     // Load Typekit.
@@ -110,9 +94,13 @@
 
     // Load YUI and start PhotosNearMe App.
     YUI().use('photosnearme', function (Y) {
-        new Y.PhotosNearMe();
+
+        new Y.PhotosNearMe({
+            container    : '#wrap',
+            viewContainer: '#main'
+        });
+
     });
     </script>
-
 </body>
 </html>
