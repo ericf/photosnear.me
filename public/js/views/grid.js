@@ -24,6 +24,10 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
         Y.one('win').on(['scroll', 'resize'], this.more, this);
     },
 
+    create: function () {
+        return Y.Node.create('<div id="photos" />');
+    },
+
     render: function () {
         var photos    = this.get('modelList'),
             container = this.get('container');
@@ -92,16 +96,6 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
         this._maxKnownHeight = 0;
         this.get('container').all('.photo.selected').removeClass('selected');
         return this;
-    }
-
-}, {
-
-    ATTRS: {
-        container: {
-            valueFn: function () {
-                return Y.Node.create('<div id="photos" />');
-            }
-        }
     }
 
 });

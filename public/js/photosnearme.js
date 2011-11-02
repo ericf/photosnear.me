@@ -20,7 +20,10 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     initializer: function () {
         this.after('placeChange', this.render);
         this.after('placeChange', this.loadPhotos);
+
         this.on('gridView:more', this.loadMorePhotos);
+
+        this.on(['lightboxView:prev', 'lightboxView:next'], this.navigateToPhoto);
 
         // Do initial dispatch.
         if (Y.config.win.navigator.standalone) {
@@ -118,20 +121,13 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     },
 
     showLightbox: function (req) {
-        var photo      = req.photo,
-            photos     = this.get('photos'),
-            place      = this.get('place'),
-            activeView = this.get('activeView');
+        var photo  = req.photo,
+            photos = this.get('photos');
 
-        if (activeView instanceof this.views.lightbox.type) {
-            activeView.set('model', photo);
-        } else {
-            this.showView('lightbox', {
-                model    : photo,
-                modelList: photos,
-                place    : place
-            });
-        }
+        this.showView('lightbox', {
+            model    : photo,
+            modelList: photos
+        });
     },
 
     loadPhotos: function () {
@@ -152,6 +148,10 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
             // clean up temp ModelList
             newPhotos.destroy();
         });
+    },
+
+    navigateToPhoto: function (e) {
+        this.navigate('/photo/' + e.photo.get('id') + '/');
     }
 
 }, {
