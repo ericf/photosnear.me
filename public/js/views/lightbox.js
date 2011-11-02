@@ -2,17 +2,31 @@ YUI.add('lightbox-view', function (Y) {
 
 Y.LightboxView = Y.Base.create('lightboxView', Y.View, [], {
 
-    template     : Y.Handlebars.compile(Y.one('#lightbox-template').getContent()),
-    photoTemplate: Y.Handlebars.compile(Y.one('#lightbox-photo-template').getContent()),
+    template: Y.Handlebars.compile(Y.one('#lightbox-template').getContent()),
 
     initializer: function () {
         this.after('modelChange', this.render);
     },
 
+    create: function (container) {
+        return Y.Node.create('<div id="lightbox" />');
+    },
+
+    attachEvents: function () {
+        Y.LightboxView.superclass.attachEvents.apply(this, arguments);
+
+        var photoKeyNav = Y.one('doc').on('key', function (e) {
+            if (!e.metaKey) {
+                this[e.keyCode === 37 ? 'prev' : 'next']();
+            }
+        }, 'down:37,39', this);
+
+        this._attachedViewEvents.push(photoKeyNav);
+    },
+
     render: function () {
         var photo  = this.get('model'),
             photos = this.get('modelList'),
-            place  = this.get('place'),
             content, nav, prev, next;
 
         if (!photos.isEmpty()) {
@@ -34,11 +48,6 @@ Y.LightboxView = Y.Base.create('lightboxView', Y.View, [], {
         }
 
         content = this.template({
-            place: {
-                id  : place.get('id'),
-                text: place.toString()
-            },
-
             photo: {
                 title   : photo.get('title') || 'Photo',
                 largeUrl: photo.get('largeUrl'),
@@ -46,32 +55,31 @@ Y.LightboxView = Y.Base.create('lightboxView', Y.View, [], {
             },
 
             nav: nav
-        }, {
-            partials: {photo: this.photoTemplate}
         });
 
         this.get('container').setContent(content);
         return this;
+    },
+
+    prev: function () {
+        var photo = this.get('modelList').getPrev(this.get('model'));
+        if (photo) {
+            this.fire('prev', {photo: photo});
+        }
+    },
+
+    next: function () {
+        var photo = this.get('modelList').getNext(this.get('model'));
+        if (photo) {
+            this.fire('next', {photo: photo});
+        }
     }
-
-}, {
-
-    ATTRS: {
-        container: {
-            valueFn: function () {
-                return Y.Node.create('<div id="lightbox" />');
-            }
-        },
-
-        place: {}
-    }
-
 });
 
 }, '0.3.2', {
-    requires: [ 'handlebars'
+    requires: [ 'event-key'
+              , 'handlebars'
               , 'photos'
-              , 'place'
               , 'view'
               ]
 });

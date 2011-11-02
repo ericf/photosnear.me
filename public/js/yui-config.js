@@ -58,9 +58,9 @@ YUI_config = {
 
                 'lightbox-view': {
                     path    : 'views/lightbox.js',
-                    requires: [ 'handlebars'
+                    requires: [ 'event-key'
+                              , 'handlebars'
                               , 'photos'
-                              , 'place'
                               , 'view'
                               ]
                 },

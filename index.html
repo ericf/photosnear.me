@@ -22,9 +22,9 @@
 
     <script id="title-template" type="text/x-handlebars-template">
         {{#if place}}
-            Photos Near: {{place}}
+        Photos Near: {{place}}
         {{else}}
-            Photos Near Me
+        Photos Near Me
         {{/if}}
     </script>
 
@@ -35,11 +35,11 @@
                 <span class="pin"></span>
             </a>
             {{#if place}}
-                <a href="/place/{{place.id}}/">
-                    Photos Near <span id="location">{{place.text}}</span>
-                </a>
+            <a href="/place/{{place.id}}/">
+                Photos Near <span id="location">{{place.text}}</span>
+            </a>
             {{else}}
-                Photos Near <span id="location">Me</span>
+            Photos Near <span id="location">Me</span>
             {{/if}}
         </h1>
     </script>
@@ -61,28 +61,27 @@
     </script>
 
     <script id="lightbox-template" type="text/x-handlebars-template">
-        {{> photo photo}}
-
-        {{#if nav}}
-            <ul class="nav layout {{#if nav.both}}both{{/if}}">
-            {{#if nav.prev}}
-                <li class="prev"><a href="{{nav.prev}}">« Previous</a></li>
-            {{/if}}
-            {{#if nav.next}}
-                <li class="next"><a href="{{nav.next}}">Next »</a></li>
-            {{/if}}
-            </ul>
-        {{/if}}
-    </script>
-
-    <script id="lightbox-photo-template" type="text/x-handlebars-template">
+        {{#with photo}}
         <div class="photo">
-            <img src="{{largeUrl}}" />
+            <div class="photo-img"><img src="{{largeUrl}}" /></div>
             <div class="photo-info">
                 <h2>{{title}}</h2>
                 <p><a href="{{pageUrl}}">View on Flickr</a></p>
             </div>
         </div>
+        {{/with}}
+
+        {{#with nav}}
+        <ul class="nav layout {{#if both}}both{{/if}}">
+            {{#if prev}}
+            <li class="prev"><a href="{{prev}}">« Previous</a></li>
+            {{/if}}
+
+            {{#if next}}
+            <li class="next"><a href="{{next}}">Next »</a></li>
+            {{/if}}
+        </ul>
+        {{/with}}
     </script>
 
     <script src="http://use.typekit.com/wkh7ffm.js"></script>
