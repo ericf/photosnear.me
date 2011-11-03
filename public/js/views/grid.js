@@ -100,7 +100,7 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
 
 });
 
-}, '0.3.2', {
+}, '0.4.0', {
     requires: [ 'handlebars'
               , 'node-style'
               , 'node-screen'
