@@ -78,7 +78,7 @@ Y.Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
 
 });
 
-}, '0.3.2', {
+}, '0.4.0', {
     requires: [ 'cache-offline'
               , 'gallery-model-sync-yql'
               , 'model'

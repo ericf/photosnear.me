@@ -45,7 +45,7 @@ Y.Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
 
 });
 
-}, '0.3.2', {
+}, '0.4.0', {
     requires: [ 'cache-offline'
               , 'gallery-model-sync-yql'
               , 'model-list'

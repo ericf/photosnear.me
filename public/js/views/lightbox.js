@@ -76,7 +76,7 @@ Y.LightboxView = Y.Base.create('lightboxView', Y.View, [], {
     }
 });
 
-}, '0.3.2', {
+}, '0.4.0', {
     requires: [ 'event-key'
               , 'handlebars'
               , 'photos'

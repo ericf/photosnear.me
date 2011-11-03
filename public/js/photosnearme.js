@@ -174,7 +174,7 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
 });
 
-}, '0.3.2', {
+}, '0.4.0', {
     requires: [ 'app-base'
               , 'gallery-geo'
               , 'handlebars'
