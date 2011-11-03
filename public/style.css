@@ -348,6 +348,9 @@ h1 a:visited {
     -moz-border-radius: 6px;
     border-radius: 6px;
 }
+#lightbox .photo-img {
+    position: relative;
+}
 #lightbox .photo img {
     display: block;
     max-width: 100%;
@@ -355,6 +358,28 @@ h1 a:visited {
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
+}
+#lightbox .photo-nav {
+    margin: 0;
+    padding: 0;
+}
+#lightbox .photo-nav .prev,
+#lightbox .photo-nav .next {
+    position: absolute;
+    top: 0;
+    width: 25%;
+    height: 100%;
+}
+#lightbox .photo-nav .prev {
+    left: 0;
+}
+#lightbox .photo-nav .next {
+    right: 0;
+}
+#lightbox .photo-nav a {
+    display: block;
+    height: 100%;
+    text-indent: -9999px;
 }
 #lightbox .photo-info {
     text-align: left;
