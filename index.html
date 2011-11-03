@@ -61,27 +61,28 @@
     </script>
 
     <script id="lightbox-template" type="text/x-handlebars-template">
-        {{#with photo}}
         <div class="photo">
-            <div class="photo-img"><img src="{{largeUrl}}" /></div>
+            <div class="photo-img">
+                <img src="{{photo.largeUrl}}" />
+
+                {{#with nav}}
+                <ul class="photo-nav layout {{#if both}}both{{/if}}">
+                    {{#if prev}}
+                    <li class="prev"><a href="{{prev}}">« Previous</a></li>
+                    {{/if}}
+
+                    {{#if next}}
+                    <li class="next"><a href="{{next}}">Next »</a></li>
+                    {{/if}}
+                </ul>
+                {{/with}}
+            </div>
+
             <div class="photo-info">
-                <h2>{{title}}</h2>
-                <p><a href="{{pageUrl}}">View on Flickr</a></p>
+                <h2>{{photo.title}}</h2>
+                <p><a href="{{photo.pageUrl}}">View on Flickr</a></p>
             </div>
         </div>
-        {{/with}}
-
-        {{#with nav}}
-        <ul class="nav layout {{#if both}}both{{/if}}">
-            {{#if prev}}
-            <li class="prev"><a href="{{prev}}">« Previous</a></li>
-            {{/if}}
-
-            {{#if next}}
-            <li class="next"><a href="{{next}}">Next »</a></li>
-            {{/if}}
-        </ul>
-        {{/with}}
     </script>
 
     <script src="http://use.typekit.com/wkh7ffm.js"></script>
