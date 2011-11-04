@@ -10,6 +10,7 @@ Y.Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
     cache: new Y.CacheOffline(),
     query: 'SELECT * FROM flickr.photos.search({start},{num}) ' +
                 'WHERE api_key={api_key} ' +
+                'AND safe_search=1 ' +
                 'AND woe_id={woeid} ' +
                 'AND sort="interestingness-desc" ' +
                 'AND extras="path_alias"',
