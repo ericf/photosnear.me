@@ -28,9 +28,10 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
 
     render: function () {
         var photos    = this.get('modelList'),
-            container = this.get('container');
+            container = this.get('container'),
+            content;
 
-        container.setContent(this.template({
+        content = this.template({
             photos: photos.map(function (photo) {
                 return {
                     clientId: photo.get('clientId'),
@@ -40,11 +41,16 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
             })
         }, {
             partials: {photo: this.photoTemplate}
-        }));
+        });
 
+        container.setContent(content);
         this.loadingNode = container.one('.loading');
 
-        Y.later(1, this, 'more');
+        // Only try to load more photos if we already have some photos. This
+        // prevents the lazily-loaded photos from duplicating.
+        if (!photos.isEmpty()) {
+            Y.later(1, this, 'more');
+        }
 
         return this;
     },
