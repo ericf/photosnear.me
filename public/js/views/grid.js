@@ -13,8 +13,6 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
         var photos = this.get('modelList');
 
         photos.after('reset', this.render, this);
-        photos.after('add', this.addPhoto, this);
-        photos.after('remove', this.removePhoto, this);
 
         this.loadingNode     = null;
         this._maxKnownHeight = 0;
@@ -49,26 +47,6 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
         Y.later(1, this, 'more');
 
         return this;
-    },
-
-    addPhoto: function (e) {
-        var container = this.get('container'),
-            photo     = e.model,
-            list      = container.one('ul'),
-            content;
-
-        content = this.photoTemplate({
-            clientId: photo.get('clientId'),
-            pageUrl : photo.get('pageUrl'),
-            thumbUrl: photo.get('thumbUrl')
-        });
-
-        this.loadingNode.hide();
-        list.insert(content, list.all('.photo').item(e.index));
-    },
-
-    removePhoto: function (e) {
-        this.get('container').all('.photo').splice(e.index, 1);
     },
 
     more: function (e) {
