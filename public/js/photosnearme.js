@@ -98,22 +98,27 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
     handlePhoto: function (req, res, next) {
         var params = req.params,
-            photo  = this.get('photos').getById(params.id),
+            photos = this.get('photos'),
+            photo  = photos.getById(params.id),
             self   = this;
 
         if (photo) {
-            req.photo = photo;
             photo.loadImg(function () {
+                req.photo = photo;
                 next();
             });
         } else {
-            photo = req.photo = new Y.Photo(params);
+            photo = new Y.Photo(params);
             photo.load(function () {
+                // Use the photo's place if we do not have a loaded place.
                 if (self.get('place').isNew()) {
                     self.set('place', photo.get('place'));
                 }
 
                 photo.loadImg(function () {
+                    // Prefer Photo instance already in Photos list.
+                    req.photo = photos.getById(params.id) || photo;
+
                     next();
                 });
             });
@@ -121,12 +126,9 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     },
 
     showLightbox: function (req) {
-        var photo  = req.photo,
-            photos = this.get('photos');
-
         this.showView('lightbox', {
-            model    : photo,
-            modelList: photos
+            model    : req.photo,
+            modelList: this.get('photos')
         });
     },
 

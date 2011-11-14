@@ -61,6 +61,7 @@ YUI_config = {
                     requires: [ 'event-key'
                               , 'handlebars'
                               , 'photos'
+                              , 'transition'
                               , 'view'
                               ]
                 },

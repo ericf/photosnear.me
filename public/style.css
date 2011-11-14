@@ -339,17 +339,13 @@ h1 a:visited {
 
 #lightbox { text-align: center; }
 #lightbox .photo {
+    position: relative;
     display: inline-block;
     zoom: 1; *display: inline;
-    position: relative;
-    padding: 4px;
-    background: #fff;
+    border: #fff 4px solid;
     -webkit-border-radius: 6px;
     -moz-border-radius: 6px;
     border-radius: 6px;
-}
-#lightbox .photo-img {
-    position: relative;
 }
 #lightbox .photo img {
     display: block;
@@ -367,7 +363,7 @@ h1 a:visited {
 #lightbox .photo-nav .next {
     position: absolute;
     top: 0;
-    width: 25%;
+    width: 10%;
     height: 100%;
 }
 #lightbox .photo-nav .prev {
@@ -382,52 +378,27 @@ h1 a:visited {
     text-indent: -9999px;
 }
 #lightbox .photo-info {
-    text-align: left;
-    padding: 0 16px;
-}
-#lightbox .photo-info h2 {
-    font-family: "myriad-pro-1", "myriad-pro-2", sans-serif;
-    font-weight: 400;
-}
-
-/*#lightbox .photo-info {
     position: absolute;
-    bottom: 0;
+    left: 0;
+    bottom: 24px;
     width: 100%;
-    color: #f8ffff;
-    background: #2D2930;
-    background: rgba(0,0,0, 0.80);
+    color: #fff;
     text-align: left;
+    background: #222;
+    background: rgba(0,0,0, 0.65);
 }
-#lightbox .photo-info h2 {
+#lightbox .photo-info a:link,
+#lightbox .photo-info a:visited {
+    color: #fff;
+    text-decoration: none;
+}
+#lightbox .photo-title {
     font-family: "myriad-pro-1", "myriad-pro-2", sans-serif;
     font-weight: 400;
-    padding: 0 20px;
 }
-#lightbox .photo-info p {
-    display: none;
-    padding: 0 20px;
+#lightbox .photo-title a {
+    padding: 0 10px;
 }
-#lightbox .photo-info:hover p {
-    display: block;
-}
-#lightbox .nav { margin: 10px 0; }
-#lightbox .nav li {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    width: 50%;
-}
-#lightbox .nav .prev { text-align: left; }
-#lightbox .nav .next {
-    margin-left: 50%;
-    text-align: right;
-}
-#lightbox .nav.both .next { margin-left: 0; }
-#lightbox .nav a {
-    display: block;
-    text-decoration: none;
-}*/
 
 @media only screen and (min-width: 0px) {
 
@@ -469,9 +440,9 @@ h1 a:visited {
         margin: 0 -10px;
     }
     #lightbox .photo-info {
-        padding: 0 6px;
+        bottom: 14px;
     }
-    #lightbox .photo-info h2 {
+    #lightbox .photo-title {
         font-size: 1.25em;
     }
 
@@ -507,7 +478,7 @@ h1 a:visited {
         height: 65px;
     }
 
-    #lightbox .photo-info h2 {
+    #lightbox .photo-title {
         font-size: 1em;
     }
 
@@ -551,9 +522,9 @@ h1 a:visited {
     }
 
     #lightbox .photo-info {
-        padding: 0 16px;
+        bottom: 24px;
     }
-    #lightbox .photo-info h2 {
+    #lightbox .photo-title {
         font-size: 1.5em;
     }
 

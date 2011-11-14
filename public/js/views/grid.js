@@ -13,8 +13,6 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
         var photos = this.get('modelList');
 
         photos.after('reset', this.render, this);
-        photos.after('add', this.addPhoto, this);
-        photos.after('remove', this.removePhoto, this);
 
         this.loadingNode     = null;
         this._maxKnownHeight = 0;
@@ -30,9 +28,10 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
 
     render: function () {
         var photos    = this.get('modelList'),
-            container = this.get('container');
+            container = this.get('container'),
+            content;
 
-        container.setContent(this.template({
+        content = this.template({
             photos: photos.map(function (photo) {
                 return {
                     clientId: photo.get('clientId'),
@@ -42,33 +41,18 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
             })
         }, {
             partials: {photo: this.photoTemplate}
-        }));
-
-        this.loadingNode = container.one('.loading');
-
-        Y.later(1, this, 'more');
-
-        return this;
-    },
-
-    addPhoto: function (e) {
-        var container = this.get('container'),
-            photo     = e.model,
-            list      = container.one('ul'),
-            content;
-
-        content = this.photoTemplate({
-            clientId: photo.get('clientId'),
-            pageUrl : photo.get('pageUrl'),
-            thumbUrl: photo.get('thumbUrl')
         });
 
-        this.loadingNode.hide();
-        list.insert(content, list.all('.photo').item(e.index));
-    },
+        container.setContent(content);
+        this.loadingNode = container.one('.loading');
 
-    removePhoto: function (e) {
-        this.get('container').all('.photo').splice(e.index, 1);
+        // Only try to load more photos if we already have some photos. This
+        // prevents the lazily-loaded photos from duplicating.
+        if (!photos.isEmpty()) {
+            Y.later(1, this, 'more');
+        }
+
+        return this;
     },
 
     more: function (e) {

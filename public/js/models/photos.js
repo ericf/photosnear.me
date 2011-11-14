@@ -13,7 +13,7 @@ Y.Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
                 'AND safe_search=1 ' +
                 'AND woe_id={woeid} ' +
                 'AND sort="interestingness-desc" ' +
-                'AND extras="path_alias"',
+                'AND extras="path_alias,url_sq,url_z"',
 
     buildQuery: function (options) {
         options || (options = {});

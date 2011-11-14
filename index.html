@@ -56,31 +56,34 @@
 
     <script id="grid-photo-template" type="text/x-handlebars-template">
         <li class="photo" id="{{clientId}}">
-            <a href="{{pageUrl}}"><img src="{{thumbUrl}}" /></a>
+            <a href="{{pageUrl}}">
+                {{#if thumbUrl}}
+                <img src="{{thumbUrl}}" />
+                {{/if}}
+            </a>
         </li>
     </script>
 
     <script id="lightbox-template" type="text/x-handlebars-template">
         <div class="photo">
-            <div class="photo-img">
-                <img src="{{photo.largeUrl}}" />
+            <img src="{{photo.largeUrl}}" />
 
-                {{#with nav}}
-                <ul class="photo-nav layout {{#if both}}both{{/if}}">
-                    {{#if prev}}
-                    <li class="prev"><a href="{{prev}}">« Previous</a></li>
-                    {{/if}}
+            {{#if nav}}
+            <ul class="photo-nav layout {{#if nav.both}}both{{/if}}">
+                {{#if nav.prev}}
+                <li class="prev"><a href="{{nav.prev}}">« Previous</a></li>
+                {{/if}}
 
-                    {{#if next}}
-                    <li class="next"><a href="{{next}}">Next »</a></li>
-                    {{/if}}
-                </ul>
-                {{/with}}
-            </div>
+                {{#if nav.next}}
+                <li class="next"><a href="{{nav.next}}">Next »</a></li>
+                {{/if}}
+            </ul>
+            {{/if}}
 
             <div class="photo-info">
-                <h2>{{photo.title}}</h2>
-                <p><a href="{{photo.pageUrl}}">View on Flickr</a></p>
+                <h2 class="photo-title">
+                    <a href="{{photo.pageUrl}}" title="View on Flickr">{{photo.title}}</a>
+                </h2>
             </div>
         </div>
     </script>
