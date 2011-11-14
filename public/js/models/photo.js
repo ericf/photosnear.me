@@ -40,13 +40,20 @@ Y.Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
     },
 
     getImgUrl: function (size) {
-        return Lang.sub(this.imgUrl, {
-            id    : this.get('id'),
-            farm  : this.get('farm'),
-            server: this.get('server'),
-            secret: this.get('secret'),
-            size  : size
-        });
+        var url = Lang.sub(this.imgUrl, {
+                id    : this.get('id'),
+                farm  : this.get('farm'),
+                server: this.get('server'),
+                secret: this.get('secret'),
+                size  : size
+            });
+
+        // Append dynamic flag "zz=1" if we are generating the URL.
+        if (size === 'z') {
+            url += '?zz=1';
+        }
+
+        return url;
     },
 
     loadImg: function (callback) {
@@ -77,6 +84,8 @@ Y.Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
         pathalias  : {},
         title      : {},
         description: {},
+        url_sq     : {},
+        url_z      : {},
 
         place: {
             value : {},
@@ -87,19 +96,22 @@ Y.Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
         },
 
         thumbUrl: {
-            getter: function () {
-                return this.getImgUrl('s');
+            readOnly: true,
+            getter  : function () {
+                return this.get('url_sq') || this.getImgUrl('s');
             }
         },
 
         largeUrl: {
-            getter: function () {
-                return this.getImgUrl('z');
+            readOnly: true,
+            getter  : function () {
+                return this.get('url_z') || this.getImgUrl('z');
             }
         },
 
         pageUrl: {
-            getter: function () {
+            readOnly: true,
+            getter  : function () {
                 var user = this.get('pathalias') || this.get('owner');
                 return Lang.sub(this.pageUrl, {
                     id  : this.get('id'),
