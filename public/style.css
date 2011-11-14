@@ -395,8 +395,6 @@ h1 a:visited {
 #lightbox .photo-title {
     font-family: "myriad-pro-1", "myriad-pro-2", sans-serif;
     font-weight: 400;
-}
-#lightbox .photo-title a {
     padding: 0 10px;
 }
 

@@ -77,15 +77,14 @@ Y.Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
 }, {
 
     ATTRS: {
-        farm       : {},
-        server     : {},
-        secret     : {},
-        owner      : {},
-        pathalias  : {},
-        title      : {},
-        description: {},
-        url_sq     : {},
-        url_z      : {},
+        farm     : {},
+        server   : {},
+        secret   : {},
+        owner    : {},
+        pathalias: {},
+        title    : {},
+        url_sq   : {},
+        url_z    : {},
 
         place: {
             value : {},
