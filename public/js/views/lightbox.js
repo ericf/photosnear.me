@@ -64,9 +64,9 @@ Y.LightboxView = Y.Base.create('lightboxView', Y.View, [], {
         });
 
         container.setContent(content);
-
         this.infoNode = container.one('.photo-info');
-        Y.later(1, this.infoNode, 'hide', ['fadeOut', {delay: 5}]);
+        // Fade out the photo info after 4 seconds.
+        Y.later(1, this.infoNode, 'hide', ['fadeOut', {delay: 4}]);
 
         return this;
     },
