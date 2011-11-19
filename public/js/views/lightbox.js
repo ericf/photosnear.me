@@ -41,15 +41,13 @@ Y.LightboxView = Y.Base.create('lightboxView', Y.View, [], {
 
             if (prev) {
                 prev.loadImg();
-                nav.prev = '../' + prev.get('id') + '/';
+                nav.prev = prev.get('id');
             }
 
             if (next) {
                 next.loadImg();
-                nav.next = '../' + next.get('id') + '/';
+                nav.next = next.get('id');
             }
-
-            nav.both = !!prev && !!next;
         }
 
         content = this.template({
