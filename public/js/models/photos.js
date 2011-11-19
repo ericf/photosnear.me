@@ -31,15 +31,15 @@ Y.Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
     },
 
     getPrev: function (photo) {
+        // Check that the photo is in the list first.
         if (photo && this.getByClientId(photo.get('clientId'))) {
-            // We have a photo in the list
             return this.item(this.indexOf(photo) - 1);
         }
     },
 
     getNext: function (photo) {
+        // Check that the photo is in the list first.
         if (photo && this.getByClientId(photo.get('clientId'))) {
-            // We have a photo in the list
             return this.item(this.indexOf(photo) + 1);
         }
     }

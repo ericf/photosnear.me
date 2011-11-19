@@ -62,7 +62,7 @@ Y.Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
         var img  = new Image(),
             prop = img.naturalWidth ? 'naturalWidth' : 'width';
 
-        Lang.isFunction(callback) || (callback = function() {});
+        Lang.isFunction(callback) || (callback = function () {});
 
         img.src = this.get('largeUrl');
 
