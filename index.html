@@ -88,15 +88,12 @@
         </div>
     </script>
 
-    <script src="http://use.typekit.com/wkh7ffm.js"></script>
     <script src="http://yui.ericf.me/?/yui/yui-min.js"></script>
     <script src="/js/config.js"></script>
     <script>
-    // Load Typekit.
-    try { Typekit.load(); } catch (e) {}
+    YUI().use('pnm-app', 'typekit', function (Y) {
 
-    // Load YUI and start PhotosNearMe App.
-    YUI().use('pnm-app', function (Y) {
+        try { Typekit.load(); } catch (e) {}
 
         new Y.PNM.App({
             container    : '#wrap',
