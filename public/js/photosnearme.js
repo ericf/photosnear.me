@@ -56,7 +56,7 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
         container.removeClass('loading').one('#header').setContent(content);
         // Delay adding `located` class so the CSS transitions run.
-        !place.isNew() && Y.later(1, container, 'addClass', 'located');
+        place.isNew() || Y.later(1, container, 'addClass', 'located');
 
         return this;
     },
@@ -78,11 +78,10 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
         });
     },
 
-    handlePlace: function (req) {
-        var placeId = req.params.id,
-            place   = this.get('place'),
-            photos  = this.get('photos'),
-            self    = this;
+    handlePlace: function (req, res, next) {
+        var self    = this,
+            place   = self.get('place'),
+            placeId = req.params.id;
 
         if (place.get('id') !== placeId) {
             place = new Y.Place({id: placeId});
@@ -91,9 +90,10 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
             });
         }
 
-        this.showView('grid', {modelList: photos}, function (gridView) {
-            gridView.reset();
-        });
+        req.place  = place;
+        req.photos = self.get('photos');
+
+        next();
     },
 
     handlePhoto: function (req, res, next) {
@@ -123,6 +123,14 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
                 });
             });
         }
+    },
+
+    showGrid: function (req) {
+        this.showView('grid', {
+            modelList: req.photos
+        }, function (grid) {
+            grid.reset();
+        });
     },
 
     showLightbox: function (req) {
@@ -167,6 +175,7 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
                 {path: '/', callback: 'handleLocate'},
 
                 {path: '/place/:id/', callback: 'handlePlace'},
+                {path: '/place/:id/', callback: 'showGrid'},
 
                 {path: '/photo/:id/', callback: 'handlePhoto'},
                 {path: '/photo/:id/', callback: 'showLightbox'}
