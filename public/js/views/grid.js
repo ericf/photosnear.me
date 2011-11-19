@@ -86,7 +86,7 @@ var GridView = Y.Base.create('gridView', Y.View, [], {
 
 Y.namespace('PNM').GridView = GridView;
 
-}, '0.4.0', {
+}, '0.4.1', {
     requires: [ 'handlebars'
               , 'node-style'
               , 'node-screen'
