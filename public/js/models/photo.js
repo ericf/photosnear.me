@@ -1,12 +1,14 @@
-YUI.add('photo', function (Y) {
+YUI.add('pnm-photo', function (Y) {
 
-var Lang = Y.Lang,
+var FLICKR_API_KEY = YUI.namespace('Env.Flickr').API_KEY || '',
 
-    FLICKR_API_KEY = YUI.namespace('Env.Flickr').API_KEY || '';
+    Lang  = Y.Lang,
+    Place = Y.PNM.Place,
+    Photo;
 
-Y.Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
+Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
 
-    cache  : new Y.CacheOffline(),
+    cache  : new Y.CacheOffline,
     query  : 'SELECT * FROM flickr.photos.info WHERE api_key={api_key} AND photo_id={id}',
     imgUrl : 'http://farm{farm}.static.flickr.com/{server}/{id}_{secret}_{size}.jpg',
     pageUrl: 'http://www.flickr.com/photos/{user}/{id}/',
@@ -89,7 +91,7 @@ Y.Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
         place: {
             value : {},
             setter: function (place) {
-                (place instanceof Y.Place) || (place = new Y.Place(place));
+                (place instanceof Place) || (place = new Place(place));
                 return place;
             }
         },
@@ -122,11 +124,13 @@ Y.Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
 
 });
 
-}, '0.4.0', {
+Y.namespace('PNM').Photo = Photo;
+
+}, '0.4.1', {
     requires: [ 'gallery-model-sync-yql'
               , 'cache-offline'
               , 'model'
-              , 'place'
+              , 'pnm-place'
               , 'yql'
               ]
 });

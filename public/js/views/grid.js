@@ -1,6 +1,6 @@
-YUI.add('grid-view', function (Y) {
+YUI.add('pnm-grid-view', function (Y) {
 
-Y.GridView = Y.Base.create('gridView', Y.View, [], {
+var GridView = Y.Base.create('gridView', Y.View, [], {
 
     template     : Y.Handlebars.compile(Y.one('#grid-template').getContent()),
     photoTemplate: Y.Handlebars.compile(Y.one('#grid-photo-template').getContent()),
@@ -84,11 +84,13 @@ Y.GridView = Y.Base.create('gridView', Y.View, [], {
 
 });
 
-}, '0.4.0', {
+Y.namespace('PNM').GridView = GridView;
+
+}, '0.4.1', {
     requires: [ 'handlebars'
               , 'node-style'
               , 'node-screen'
-              , 'photos'
+              , 'pnm-photos'
               , 'view'
               ]
 });

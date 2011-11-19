@@ -1,13 +1,15 @@
-YUI.add('photos', function (Y) {
+YUI.add('pnm-photos', function (Y) {
 
-var Lang = Y.Lang,
+var FLICKR_API_KEY = YUI.namespace('Env.Flickr').API_KEY || '',
 
-    FLICKR_API_KEY = YUI.namespace('Env.Flickr').API_KEY || '';
+    Lang  = Y.Lang,
+    Photo = Y.PNM.Photo,
+    Photos;
 
-Y.Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
+Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
 
-    model: Y.Photo,
-    cache: new Y.CacheOffline(),
+    model: Y.PNM.Photo,
+    cache: new Y.CacheOffline,
     query: 'SELECT * FROM flickr.photos.search({start},{num}) ' +
                 'WHERE api_key={api_key} ' +
                 'AND safe_search=1 ' +
@@ -46,11 +48,13 @@ Y.Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
 
 });
 
-}, '0.4.0', {
+Y.namespace('PNM').Photos = Photos;
+
+}, '0.4.1', {
     requires: [ 'cache-offline'
               , 'gallery-model-sync-yql'
               , 'model-list'
-              , 'photo'
+              , 'pnm-photo'
               , 'yql'
               ]
 });

@@ -1,6 +1,6 @@
-YUI.add('lightbox-view', function (Y) {
+YUI.add('pnm-lightbox-view', function (Y) {
 
-Y.LightboxView = Y.Base.create('lightboxView', Y.View, [], {
+var LightboxView = Y.Base.create('lightboxView', Y.View, [], {
 
     template: Y.Handlebars.compile(Y.one('#lightbox-template').getContent()),
 
@@ -17,7 +17,7 @@ Y.LightboxView = Y.Base.create('lightboxView', Y.View, [], {
     },
 
     attachEvents: function () {
-        Y.LightboxView.superclass.attachEvents.apply(this, arguments);
+        LightboxView.superclass.attachEvents.apply(this, arguments);
 
         var photoKeyNav = Y.one('doc').on('key', function (e) {
             if (!e.metaKey) {
@@ -95,10 +95,12 @@ Y.LightboxView = Y.Base.create('lightboxView', Y.View, [], {
     }
 });
 
-}, '0.4.0', {
+Y.namespace('PNM').LightboxView = LightboxView;
+
+}, '0.4.1', {
     requires: [ 'event-key'
               , 'handlebars'
-              , 'photos'
+              , 'pnm-photos'
               , 'transition'
               , 'view'
               ]

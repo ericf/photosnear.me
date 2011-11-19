@@ -1,13 +1,14 @@
-YUI.add('place', function (Y) {
+YUI.add('pnm-place', function (Y) {
 
-var Lang = Y.Lang,
+var FLICKR_API_KEY = YUI.namespace('Env.Flickr').API_KEY || '',
 
-    FLICKR_API_KEY = YUI.namespace('Env.Flickr').API_KEY || '';
+    Lang = Y.Lang,
+    Place;
 
-Y.Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
+Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
 
     idAttribute: 'woeid',
-    cache      : new Y.CacheOffline(),
+    cache      : new Y.CacheOffline,
     queries    : {
         placeFromId    : 'SELECT * FROM geo.places WHERE woeid={id}',
         placeFromLatLon: 'SELECT * FROM geo.places WHERE woeid ' +
@@ -78,7 +79,9 @@ Y.Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
 
 });
 
-}, '0.4.0', {
+Y.namespace('PNM').Place = Place;
+
+}, '0.4.1', {
     requires: [ 'cache-offline'
               , 'gallery-model-sync-yql'
               , 'model'
