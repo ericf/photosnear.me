@@ -1,18 +1,26 @@
-YUI.add('photosnearme', function (Y) {
+YUI.add('pnm-app', function (Y) {
 
-Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
+var PNM          = Y.PNM,
+    GridView     = PNM.GridView,
+    LightboxView = PNM.LightboxView,
+    Photo        = PNM.Photo,
+    Photos       = PNM.Photos,
+    Place        = PNM.Place,
+    PhotosNearMe;
+
+PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
     titleTemplate : Y.Handlebars.compile(Y.one('#title-template').getContent()),
     headerTemplate: Y.Handlebars.compile(Y.one('#header-template').getContent()),
 
     views: {
         grid: {
-            type    : Y.GridView,
+            type    : GridView,
             preserve: true
         },
 
         lightbox: {
-            type  : Y.LightboxView,
+            type  : LightboxView,
             parent: 'grid'
         }
     },
@@ -29,14 +37,14 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
         if (Y.config.win.navigator.standalone) {
             // iOS saved to home screen,
             // always route to / so geolocation lookup is preformed.
-            this.handleLocate();
+            this.locate();
         } else {
             this.dispatch();
         }
     },
 
     render: function () {
-        Y.PhotosNearMe.superclass.render.apply(this, arguments);
+        PhotosNearMe.superclass.render.apply(this, arguments);
 
         var place     = this.get('place'),
             placeText = place.toString(),
@@ -61,7 +69,7 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
         return this;
     },
 
-    handleLocate: function () {
+    locate: function () {
         var self = this;
 
         Y.Geo.getCurrentPosition(function (res) {
@@ -70,7 +78,7 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
                 return;
             }
 
-            var place = new Y.Place(res.coords);
+            var place = new Place(res.coords);
             place.load(function () {
                 self.set('place', place);
                 self.replace('/place/' + place.get('id') + '/');
@@ -84,7 +92,7 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
             placeId = req.params.id;
 
         if (place.get('id') !== placeId) {
-            place = new Y.Place({id: placeId});
+            place = new Place({id: placeId});
             place.load(function () {
                 self.set('place', place);
             });
@@ -108,7 +116,7 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
                 next();
             });
         } else {
-            photo = new Y.Photo(params);
+            photo = new Photo(params);
             photo.load(function () {
                 // Use the photo's place if we do not have a loaded place.
                 if (self.get('place').isNew()) {
@@ -147,7 +155,7 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     loadMorePhotos: function () {
         var place     = this.get('place'),
             photos    = this.get('photos'),
-            newPhotos = new Y.Photos;
+            newPhotos = new Photos;
 
         newPhotos.load({
             place: place,
@@ -167,12 +175,12 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 }, {
 
     ATTRS: {
-        place : {value: new Y.Place},
-        photos: {value: new Y.Photos},
+        place : {value: new Place},
+        photos: {value: new Photos},
 
         routes: {
             value: [
-                {path: '/', callback: 'handleLocate'},
+                {path: '/', callback: 'locate'},
 
                 {path: '/place/:id/', callback: 'handlePlace'},
                 {path: '/place/:id/', callback: 'showGrid'},
@@ -185,13 +193,15 @@ Y.PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
 });
 
+Y.namespace('PNM').App = PhotosNearMe;
+
 }, '0.4.0', {
     requires: [ 'app-base'
               , 'gallery-geo'
               , 'handlebars'
-              , 'place'
-              , 'photos'
-              , 'grid-view'
-              , 'lightbox-view'
+              , 'pnm-grid-view'
+              , 'pnm-lightbox-view'
+              , 'pnm-photos'
+              , 'pnm-place'
               ]
 });

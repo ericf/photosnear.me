@@ -17,7 +17,7 @@ YUI_config = {
             combine  : filter === 'min',
             root     : '',
             modules  : {
-                'place': {
+                'pnm-place': {
                     path    : 'models/place.js',
                     requires: [ 'cache-offline'
                               , 'gallery-model-sync-yql'
@@ -26,55 +26,55 @@ YUI_config = {
                               ]
                 },
 
-                'photo': {
+                'pnm-photo': {
                     path    : 'models/photo.js',
                     requires: [ 'gallery-model-sync-yql'
                               , 'cache-offline'
                               , 'model'
-                              , 'place'
+                              , 'pnm-place'
                               , 'yql'
                               ]
                 },
 
-                'photos': {
+                'pnm-photos': {
                     path    : 'models/photos.js',
                     requires: [ 'cache-offline'
                               , 'gallery-model-sync-yql'
                               , 'model-list'
-                              , 'photo'
+                              , 'pnm-photo'
                               , 'yql'
                               ]
                 },
 
-                'grid-view': {
+                'pnm-grid-view': {
                     path    : 'views/grid.js',
                     requires: [ 'handlebars'
                               , 'node-style'
                               , 'node-screen'
-                              , 'photos'
+                              , 'pnm-photos'
                               , 'view'
                               ]
                 },
 
-                'lightbox-view': {
+                'pnm-lightbox-view': {
                     path    : 'views/lightbox.js',
                     requires: [ 'event-key'
                               , 'handlebars'
-                              , 'photos'
+                              , 'pnm-photos'
                               , 'transition'
                               , 'view'
                               ]
                 },
 
-                'photosnearme': {
-                    path    : 'photosnearme.js',
+                'pnm-app': {
+                    path    : 'app.js',
                     requires: [ 'app-base'
                               , 'gallery-geo'
                               , 'handlebars'
-                              , 'place'
-                              , 'photos'
-                              , 'grid-view'
-                              , 'lightbox-view'
+                              , 'pnm-grid-view'
+                              , 'pnm-lightbox-view'
+                              , 'pnm-photos'
+                              , 'pnm-place'
                               ]
                 }
             }

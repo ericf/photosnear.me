@@ -90,15 +90,15 @@
 
     <script src="http://use.typekit.com/wkh7ffm.js"></script>
     <script src="http://yui.ericf.me/?/yui/yui-min.js"></script>
-    <script src="/js/yui-config.js"></script>
+    <script src="/js/config.js"></script>
     <script>
     // Load Typekit.
     try { Typekit.load(); } catch (e) {}
 
     // Load YUI and start PhotosNearMe App.
-    YUI().use('photosnearme', function (Y) {
+    YUI().use('pnm-app', function (Y) {
 
-        new Y.PhotosNearMe({
+        new Y.PNM.App({
             container    : '#wrap',
             viewContainer: '#main'
         });
