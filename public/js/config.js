@@ -1,21 +1,32 @@
 (function () {
 
-var filter = (window.location.search.match(/[?&]filter=([^&]+)/) || [])[1] || 'min';
+var FLICKR_API_KEY = '0984607e2222db7a1be6a5692741ca08',
+    TYPEKIT_ID     = 'wkh7ffm',
 
-// YUI Config.
+    filter = (window.location.search.match(/[?&]filter=([^&]+)/) || [])[1] || 'min';
+
+// YUI Config (this is suppose to be a global var).
 YUI_config = {
+    base       : 'http://yui.ericf.me/?/',
     comboBase  : 'http://yui.ericf.me/?',
     root       : '/',
     filter     : filter,
     combine    : filter === 'min',
     allowRollup: false,
     gallery    : 'gallery-2011.10.20-23-28',
-    groups     : {
-        app: {
+
+    modules: {
+        typekit: {
+            fullpath: 'http://use.typekit.com/' + TYPEKIT_ID + '.js'
+        }
+    },
+
+    groups: {
+        photosnearme: {
             base     : '/js/',
             comboBase: '/js/?',
             combine  : filter === 'min',
-            root     : '',
+            root     : '/',
             modules  : {
                 'pnm-place': {
                     path    : 'models/place.js',
@@ -82,7 +93,7 @@ YUI_config = {
     }
 };
 
-// Flickr API Key.
-YUI && (YUI.namespace('Env.Flickr').API_KEY = '0984607e2222db7a1be6a5692741ca08');
+// Namespace Flickr API Key.
+YUI && (YUI.namespace('Env.Flickr').API_KEY = FLICKR_API_KEY);
 
 }());
