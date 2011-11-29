@@ -9,11 +9,16 @@ app.configure(function () {
     app.use(express.static(pubDir));
 });
 
+// Combo-handler for JavaScript.
 app.get('/js', combo.combine({rootPath: pubDir + '/js'}), function (req, res) {
     res.send(res.body, 200);
 });
 
-app.get('*', function (req, res) {
+// Restrict to only known paths that the app can respond to:
+// "/"
+// "/place/:id/"
+// "/photo/:id/"
+app.get(/^\/(?:(?:place|photo)\/\d+\/)?$/, function (req, res) {
     res.sendfile('index.html');
 });
 
