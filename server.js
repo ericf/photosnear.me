@@ -14,12 +14,20 @@ app.get('/js', combo.combine({rootPath: pubDir + '/js'}), function (req, res) {
     res.send(res.body, 200);
 });
 
-// Restrict to only known paths that the app can respond to:
-// "/"
-// "/place/:id/"
-// "/photo/:id/"
-app.get(/^\/(?:(?:place|photo)\/\d+\/)?$/, function (req, res) {
+app.get('/', function (req, res) {
     res.sendfile('index.html');
+});
+
+/**
+Restrict to only known paths that the app can respond to:
+
+  - "/place/:id/"
+  - "/photo/:id/"
+
+Redirects back to "/" with the URL as a fragment, e.g. "/#/photo/:id/"
+**/
+app.get(/^\/(?:(?:place|photo)\/\d+\/)$/, function (req, res) {
+    res.redirect('/#' + req.url, 302);
 });
 
 app.listen(port, function () {
