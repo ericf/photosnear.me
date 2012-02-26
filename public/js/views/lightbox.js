@@ -91,7 +91,7 @@ var LightboxView = Y.Base.create('lightboxView', Y.View, [], {
 
 Y.namespace('PNM').LightboxView = LightboxView;
 
-}, '0.4.1', {
+}, '0.4.2', {
     requires: [ 'event-key'
               , 'handlebars'
               , 'pnm-photos'
