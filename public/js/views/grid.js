@@ -2,15 +2,16 @@ YUI.add('pnm-grid-view', function (Y) {
 
 var GridView = Y.Base.create('gridView', Y.View, [], {
 
-    template     : Y.Handlebars.compile(Y.one('#grid-template').getContent()),
-    photoTemplate: Y.Handlebars.compile(Y.one('#grid-photo-template').getContent()),
+    containerTemplate: '<div id="photos" />',
+    template         : Y.Handlebars.compile(Y.one('#grid-template').getContent()),
+    photoTemplate    : Y.Handlebars.compile(Y.one('#grid-photo-template').getContent()),
 
     events: {
         '.photo': {click: 'select'}
     },
 
     initializer: function (config) {
-        var photos = this.get('modelList');
+        var photos = this.get('photos');
 
         photos.after('reset', this.render, this);
 
@@ -22,22 +23,14 @@ var GridView = Y.Base.create('gridView', Y.View, [], {
         Y.one('win').on(['scroll', 'resize'], this.more, this);
     },
 
-    create: function () {
-        return Y.Node.create('<div id="photos" />');
-    },
-
     render: function () {
-        var photos    = this.get('modelList'),
+        var photos    = this.get('photos'),
             container = this.get('container'),
             content;
 
         content = this.template({
             photos: photos.map(function (photo) {
-                return {
-                    clientId: photo.get('clientId'),
-                    pageUrl : '/photo/' + photo.get('id') + '/',
-                    thumbUrl: photo.get('thumbUrl')
-                };
+                return photo.getAttrs(['id', 'clientId', 'thumbUrl']);
             })
         }, {
             partials: {photo: this.photoTemplate}
