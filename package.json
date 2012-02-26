@@ -5,7 +5,9 @@
     "version"     : "0.4.1",
     "author"      : "Eric Ferraiuolo <eferraiuolo@gmail.com> (http://github.com/ericf)",
     "dependencies": {
-        "express"     : ">=2.4.0 <2.5.0",
+        "connect"     : ">=1.8.0 <2.0.0",
+        "connect-gzip": "~0.1",
+        "express"     : ">=2.4.0 <3.0.0",
         "combohandler": "~0.1"
     }
 }
