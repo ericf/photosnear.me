@@ -135,7 +135,7 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
     showGrid: function (req) {
         this.showView('grid', {
-            modelList: req.photos
+            photos: req.photos
         }, function (grid) {
             grid.reset();
         });
