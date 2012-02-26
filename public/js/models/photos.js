@@ -8,7 +8,7 @@ var FLICKR_API_KEY = YUI.namespace('Env.Flickr').API_KEY || '',
 
 Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
 
-    model: Y.PNM.Photo,
+    model: Photo,
     cache: new Y.CacheOffline,
     query: 'SELECT * FROM flickr.photos.search({start},{num}) ' +
                 'WHERE api_key={api_key} ' +

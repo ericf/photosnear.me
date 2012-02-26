@@ -42,13 +42,8 @@ Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
     },
 
     getImgUrl: function (size) {
-        var url = Lang.sub(this.imgUrl, {
-                id    : this.get('id'),
-                farm  : this.get('farm'),
-                server: this.get('server'),
-                secret: this.get('secret'),
-                size  : size
-            });
+        var attrs = this.getAttrs(['id', 'farm', 'server', 'secret']),
+            url   = Lang.sub(this.imgUrl, Y.merge(attrs, {size: size}));
 
         // Append dynamic flag "zz=1" if we are generating the URL.
         if (size === 'z') {
@@ -58,9 +53,9 @@ Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
         return url;
     },
 
+    // Insired by: Lucas Smith
+    // (http://lucassmith.name/2008/11/is-my-image-loaded.html)
     loadImg: function (callback) {
-        // Insired by: Lucas Smith
-        // (http://lucassmith.name/2008/11/is-my-image-loaded.html)
         var img  = new Image(),
             prop = img.naturalWidth ? 'naturalWidth' : 'width';
 

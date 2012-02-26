@@ -9,7 +9,8 @@ Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
 
     idAttribute: 'woeid',
     cache      : new Y.CacheOffline,
-    queries    : {
+
+    queries: {
         placeFromId    : 'SELECT * FROM geo.places WHERE woeid={id}',
         placeFromLatLon: 'SELECT * FROM geo.places WHERE woeid ' +
                             'IN (SELECT place.woeid FROM flickr.places ' +
@@ -28,7 +29,7 @@ Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
             });
         }
 
-        return Lang.sub(this.queries.placeFromId, { id: this.get('id') });
+        return Lang.sub(this.queries.placeFromId, {id: this.get('id')});
     },
 
     parse: function (results) {
