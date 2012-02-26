@@ -13,8 +13,8 @@ Running
 You need **node.js** and **npm** on your system.
 
 ```bash
-$ npm install
-$ node server.js
+npm install
+node server.js
 ```
 
 License
