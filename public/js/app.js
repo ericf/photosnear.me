@@ -155,7 +155,7 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     loadMorePhotos: function () {
         var place     = this.get('place'),
             photos    = this.get('photos'),
-            newPhotos = new Photos;
+            newPhotos = new Photos();
 
         newPhotos.load({
             place: place,
@@ -175,8 +175,8 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 }, {
 
     ATTRS: {
-        place : {value: new Place},
-        photos: {value: new Photos},
+        place : {value: new Place()},
+        photos: {value: new Photos()},
 
         routes: {
             value: [
