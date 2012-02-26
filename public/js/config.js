@@ -5,8 +5,7 @@ var FLICKR_API_KEY = '0984607e2222db7a1be6a5692741ca08',
 
     filter = (window.location.search.match(/[?&]filter=([^&]+)/) || [])[1] || 'min';
 
-// YUI Config (this is suppose to be a global var).
-YUI_config = {
+YUI.GlobalConfig = {
     base       : 'http://yui.ericf.me/?/',
     comboBase  : 'http://yui.ericf.me/?',
     root       : '/',
@@ -16,9 +15,7 @@ YUI_config = {
     gallery    : 'gallery-2011.10.20-23-28',
 
     modules: {
-        typekit: {
-            fullpath: 'http://use.typekit.com/' + TYPEKIT_ID + '.js'
-        }
+        typekit: 'http://use.typekit.com/' + TYPEKIT_ID + '.js'
     },
 
     groups: {
@@ -94,6 +91,6 @@ YUI_config = {
 };
 
 // Namespace Flickr API Key.
-YUI && (YUI.namespace('Env.Flickr').API_KEY = FLICKR_API_KEY);
+YUI.namespace('Env.Flickr').API_KEY = FLICKR_API_KEY;
 
 }());
