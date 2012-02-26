@@ -2,7 +2,7 @@
     "name"        : "photosnearme",
     "description" : "Photos Near Me",
     "homepage"    : "http://photosnear.me/",
-    "version"     : "0.4.1",
+    "version"     : "0.4.2",
     "author"      : "Eric Ferraiuolo <eferraiuolo@gmail.com> (http://github.com/ericf)",
     "dependencies": {
         "connect"     : ">=1.8.0 <2.0.0",
