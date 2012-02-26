@@ -143,8 +143,8 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
     showLightbox: function (req) {
         this.showView('lightbox', {
-            model    : req.photo,
-            modelList: this.get('photos')
+            photo : req.photo,
+            photos: this.get('photos')
         });
     },
 

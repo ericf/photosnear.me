@@ -2,20 +2,18 @@ YUI.add('pnm-lightbox-view', function (Y) {
 
 var LightboxView = Y.Base.create('lightboxView', Y.View, [], {
 
-    template: Y.Handlebars.compile(Y.one('#lightbox-template').getContent()),
+    containerTemplate: '<div id="lightbox" />',
+    template         : Y.Handlebars.compile(Y.one('#lightbox-template').getContent()),
 
     events: {
         '.photo img': {click: 'toggleInfo'}
     },
 
     initializer: function () {
-        this.after('modelChange', this.render);
+        this.after('photoChange', this.render);
     },
 
-    create: function (container) {
-        return Y.Node.create('<div id="lightbox" />');
-    },
-
+    // TODO: figure out a better way to do this:
     attachEvents: function () {
         LightboxView.superclass.attachEvents.apply(this, arguments);
 
@@ -29,8 +27,8 @@ var LightboxView = Y.Base.create('lightboxView', Y.View, [], {
     },
 
     render: function () {
-        var photo     = this.get('model'),
-            photos    = this.get('modelList'),
+        var photo     = this.get('photo'),
+            photos    = this.get('photos'),
             container = this.get('container'),
             content, nav, prev, next;
 
@@ -51,14 +49,10 @@ var LightboxView = Y.Base.create('lightboxView', Y.View, [], {
         }
 
         content = this.template({
-            photo: {
-                title      : photo.get('title') || 'Photo',
-                largeUrl   : photo.get('largeUrl'),
-                pageUrl    : photo.get('pageUrl'),
-                description: photo.get('description')
-            },
-
-            nav: nav
+            nav  : nav,
+            photo: Y.merge({title: 'Photo'}, photo.getAttrs([
+                'title', 'largeUrl', 'pageUrl', 'description'
+            ]))
         });
 
         container.setContent(content);
@@ -81,14 +75,14 @@ var LightboxView = Y.Base.create('lightboxView', Y.View, [], {
     },
 
     prev: function () {
-        var photo = this.get('modelList').getPrev(this.get('model'));
+        var photo = this.get('photos').getPrev(this.get('photo'));
         if (photo) {
             this.fire('prev', {photo: photo});
         }
     },
 
     next: function () {
-        var photo = this.get('modelList').getNext(this.get('model'));
+        var photo = this.get('photos').getNext(this.get('photo'));
         if (photo) {
             this.fire('next', {photo: photo});
         }
