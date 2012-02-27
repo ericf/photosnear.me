@@ -1,14 +1,12 @@
 var connect = require('connect'),
     combo   = require('combohandler'),
     express = require('express'),
-    gzip    = require('connect-gzip'),
 
     app    = express.createServer(),
     port   = process.env.PORT || 3000,
     pubDir = __dirname + '/public';
 
 app.configure(function () {
-    app.use(gzip.gzip());
     app.use(express.favicon());
     app.use(express.staticCache());
     app.use(express.static(pubDir));
