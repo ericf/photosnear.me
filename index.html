@@ -7,8 +7,7 @@
     <meta name="description" content="Look at interesting photos of things taken near your current location" />
     <meta name="author" content="Eric Ferraiuolo" />
 
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="format-detection" content="telephone=no" />
 
@@ -91,7 +90,7 @@
     <script src="http://yui.ericf.me/?/yui/yui-min.js"></script>
     <script src="/js/config.js"></script>
     <script>
-    YUI().use('pnm-app', 'typekit', function (Y) {
+    YUI().use('pnm-app', 'typekit', 'ios-oc-fix', function (Y) {
 
         try { Typekit.load(); } catch (e) {}
 
