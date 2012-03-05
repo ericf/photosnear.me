@@ -15,7 +15,8 @@ YUI.GlobalConfig = {
     gallery    : 'gallery-2011.10.20-23-28',
 
     modules: {
-        typekit: 'http://use.typekit.com/' + TYPEKIT_ID + '.js'
+        'typekit'   : 'http://use.typekit.com/' + TYPEKIT_ID + '.js',
+        'ios-oc-fix': '/vendor/ios-orientationchange-fix.js'
     },
 
     groups: {
@@ -77,6 +78,7 @@ YUI.GlobalConfig = {
                 'pnm-app': {
                     path    : 'app.js',
                     requires: [ 'app-base'
+                              , 'app-transitions'
                               , 'gallery-geo'
                               , 'handlebars'
                               , 'pnm-grid-view'

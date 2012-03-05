@@ -136,15 +136,34 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     showGrid: function (req) {
         this.showView('grid', {
             photos: req.photos
+        }, {
+            transition: 'fade'
         }, function (grid) {
             grid.reset();
         });
     },
 
     showLightbox: function (req) {
+        var activeView  = this.get('activeView'),
+            activePhoto = activeView && activeView.get('photo'),
+            photos      = this.get('photos'),
+            photo       = req.photo,
+            options     = {transition: 'fade'};
+
+        if (activePhoto) {
+            if (photos.getNext(photo) === activePhoto) {
+                options.transition = 'slideRight';
+                options.prepend    = true;
+            } else if (photos.getPrev(photo) === activePhoto) {
+                options.transition = 'slideLeft';
+            }
+        }
+
         this.showView('lightbox', {
             photo : req.photo,
             photos: this.get('photos')
+        }, options, function (lightbox) {
+            lightbox.fadeInfo();
         });
     },
 
@@ -197,6 +216,7 @@ Y.namespace('PNM').App = PhotosNearMe;
 
 }, '0.4.2', {
     requires: [ 'app-base'
+              , 'app-transitions'
               , 'gallery-geo'
               , 'handlebars'
               , 'pnm-grid-view'

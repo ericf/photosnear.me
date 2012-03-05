@@ -301,7 +301,7 @@ h1 a:visited {
 }
 
 #photos ul {
-    margin: 20px -5px;
+    margin: 0 -5px;
     padding: 0;
     word-spacing: inherit;
 }
@@ -427,7 +427,7 @@ h1 a:visited {
         height: 27px;
     }
 
-    #photos ul { margin: 10px -4px; }
+    #photos ul { margin: 0 -4px; }
     #photos .photo { padding: 4px; }
     #photos .photo a {
         width: 66px;
@@ -512,7 +512,7 @@ h1 a:visited {
         height: 35px;
     }
 
-    #photos ul { margin: 20px -5px; }
+    #photos ul { margin: 0 -5px; }
     #photos .photo { padding: 5px; }
     #photos .photo a {
         width: 68px;
