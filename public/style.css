@@ -300,6 +300,13 @@ h1 a:visited {
     color: #75607F;
 }
 
+#no-location {
+    font-size: 150%;
+    text-align: center;
+    margin: 0 auto;
+    padding: 1em 0;
+}
+
 #photos ul {
     margin: 0 -5px;
     padding: 0;

@@ -74,7 +74,7 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
         Y.Geo.getCurrentPosition(function (res) {
             if (!res.success) {
-                // TODO: Show problem View: unable to locate you.
+                self.showNoLocation();
                 return;
             }
 
@@ -131,6 +131,20 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
                 });
             });
         }
+    },
+
+    showNoLocation: function () {
+        var view = new Y.View({
+            containerTemplate: '<div id="no-location" />',
+            template         : Y.Handlebars.compile(Y.one('#no-location-template').getContent())
+        });
+
+        view.render = function () {
+            this.get('container').setContent(this.template());
+            return this;
+        };
+
+        this.render().showView(view.render());
     },
 
     showGrid: function (req) {
