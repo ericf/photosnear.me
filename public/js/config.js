@@ -78,6 +78,7 @@ YUI.GlobalConfig = {
                 'pnm-app': {
                     path    : 'app.js',
                     requires: [ 'app-base'
+                              , 'app-transitions'
                               , 'gallery-geo'
                               , 'handlebars'
                               , 'pnm-grid-view'

@@ -57,8 +57,6 @@ var LightboxView = Y.Base.create('lightboxView', Y.View, [], {
 
         container.setContent(content);
         this.infoNode = container.one('.photo-info');
-        // Fade out the photo info after 4 seconds.
-        Y.later(1, this.infoNode, 'hide', ['fadeOut', {delay: 4}]);
 
         return this;
     },
@@ -86,6 +84,11 @@ var LightboxView = Y.Base.create('lightboxView', Y.View, [], {
         if (photo) {
             this.fire('next', {photo: photo});
         }
+    },
+
+    fadeInfo: function () {
+        // Fade out the photo info after 4 seconds.
+        Y.later(1, this.infoNode, 'hide', ['fadeOut', {delay: 4}]);
     }
 });
 
