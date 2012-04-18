@@ -307,13 +307,13 @@ h1 a:visited {
     padding: 1em 0;
 }
 
-#photos ul {
+.grid ul {
     margin: 0 -5px;
     padding: 0;
     word-spacing: inherit;
 }
-#photos .photo { padding: 5px; }
-#photos .photo a {
+.grid .photo { padding: 5px; }
+.grid .photo a {
     display: block;
     position: relative;
     padding: 2px;
@@ -324,14 +324,14 @@ h1 a:visited {
     width: 75px;
     height: 75px;
 }
-#photos .photo img {
+.grid .photo img {
     display: block;
     width: 100%;
     -webkit-border-radius: 2px;
     -moz-border-radius: 2px;
     border-radius: 2px;
 }
-#photos .selected a:after {
+.grid .selected a:after {
     content: "";
     display: block;
     position: absolute;
@@ -342,10 +342,10 @@ h1 a:visited {
     background: #fff url(img/spinner.gif) center no-repeat;
     opacity: 0.5;
 }
-#photos .selected img { opacity: 0.5; }
+.grid .selected img { opacity: 0.5; }
 
-#lightbox { text-align: center; }
-#lightbox .photo {
+.lightbox { text-align: center; }
+.lightbox .photo {
     position: relative;
     display: inline-block;
     zoom: 1; *display: inline;
@@ -354,37 +354,36 @@ h1 a:visited {
     -moz-border-radius: 6px;
     border-radius: 6px;
 }
-#lightbox .photo img {
+.lightbox .photo img {
     display: block;
     max-width: 100%;
-    margin: 0 auto;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
 }
-#lightbox .photo-nav {
+.lightbox .photo-nav {
     margin: 0;
     padding: 0;
 }
-#lightbox .photo-nav .prev,
-#lightbox .photo-nav .next {
+.lightbox .photo-nav .prev,
+.lightbox .photo-nav .next {
     position: absolute;
     top: 0;
     width: 10%;
     height: 100%;
 }
-#lightbox .photo-nav .prev {
+.lightbox .photo-nav .prev {
     left: 0;
 }
-#lightbox .photo-nav .next {
+.lightbox .photo-nav .next {
     right: 0;
 }
-#lightbox .photo-nav a {
+.lightbox .photo-nav a {
     display: block;
     height: 100%;
     text-indent: -9999px;
 }
-#lightbox .photo-info {
+.lightbox .photo-info {
     position: absolute;
     left: 0;
     bottom: 24px;
@@ -394,12 +393,12 @@ h1 a:visited {
     background: #222;
     background: rgba(0,0,0, 0.65);
 }
-#lightbox .photo-info a:link,
-#lightbox .photo-info a:visited {
+.lightbox .photo-info a:link,
+.lightbox .photo-info a:visited {
     color: #fff;
     text-decoration: none;
 }
-#lightbox .photo-title {
+.lightbox .photo-title {
     font-family: "myriad-pro-1", "myriad-pro-2", sans-serif;
     font-weight: 400;
     padding: 0 10px;
@@ -413,8 +412,12 @@ h1 a:visited {
     }
 
     #wrap {
-        margin: 5px 10px;
+        margin: 5px 0;
         padding: 0;
+    }
+
+    #header {
+        margin: 0 10px;
     }
 
     #logo {
@@ -434,20 +437,17 @@ h1 a:visited {
         height: 27px;
     }
 
-    #photos ul { margin: 0 -4px; }
-    #photos .photo { padding: 4px; }
-    #photos .photo a {
+    .grid ul { margin: 0 6px; }
+    .grid .photo { padding: 4px; }
+    .grid .photo a {
         width: 66px;
         height: 66px;
     }
 
-    #lightbox .photo {
-        margin: 0 -10px;
-    }
-    #lightbox .photo-info {
+    .lightbox .photo-info {
         bottom: 14px;
     }
-    #lightbox .photo-title {
+    .lightbox .photo-title {
         font-size: 1.25em;
     }
 
@@ -478,12 +478,12 @@ h1 a:visited {
         height: 18px;
     }
 
-    #photos .photo a {
+    .grid .photo a {
         width: 65px;
         height: 65px;
     }
 
-    #lightbox .photo-title {
+    .lightbox .photo-title {
         font-size: 1em;
     }
 
@@ -519,17 +519,17 @@ h1 a:visited {
         height: 35px;
     }
 
-    #photos ul { margin: 0 -5px; }
-    #photos .photo { padding: 5px; }
-    #photos .photo a {
+    .grid ul { margin: 0 -5px; }
+    .grid .photo { padding: 5px; }
+    .grid .photo a {
         width: 68px;
         height: 68px;
     }
 
-    #lightbox .photo-info {
+    .lightbox .photo-info {
         bottom: 24px;
     }
-    #lightbox .photo-title {
+    .lightbox .photo-title {
         font-size: 1.5em;
     }
 
@@ -539,7 +539,7 @@ h1 a:visited {
 
     #wrap { max-width: 880px;}
 
-    #photos .photo a {
+    .grid .photo a {
         width: 75px;
         height: 75px;
     }
@@ -557,7 +557,7 @@ only screen and (min-device-pixel-ratio: 1.5) {
     }
 
     .loading,
-    #photos .selected a:after {
+    .grid .selected a:after {
         background-image: url(img/spinner-2x.gif);
         background-size: 32px 32px;
     }

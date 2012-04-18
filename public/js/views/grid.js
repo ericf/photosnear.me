@@ -2,7 +2,7 @@ YUI.add('pnm-grid-view', function (Y) {
 
 var GridView = Y.Base.create('gridView', Y.View, [], {
 
-    containerTemplate: '<div id="photos" />',
+    containerTemplate: '<div class="grid" />',
     template         : Y.Handlebars.compile(Y.one('#grid-template').getContent()),
     photoTemplate    : Y.Handlebars.compile(Y.one('#grid-photo-template').getContent()),
 

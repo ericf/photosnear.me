@@ -2,7 +2,7 @@ YUI.add('pnm-lightbox-view', function (Y) {
 
 var LightboxView = Y.Base.create('lightboxView', Y.View, [], {
 
-    containerTemplate: '<div id="lightbox" />',
+    containerTemplate: '<div class="lightbox" />',
     template         : Y.Handlebars.compile(Y.one('#lightbox-template').getContent()),
 
     events: {
