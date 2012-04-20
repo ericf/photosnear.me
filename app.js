@@ -144,8 +144,7 @@ app.get('/photos/:id/', function (req, res) {
             ])),
 
             initialData: {
-                place : JSON.stringify(place),
-                photos: null
+                place: JSON.stringify(place)
             }
         });
     });

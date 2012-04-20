@@ -36,8 +36,8 @@
 
     {{#initialData}}
         YUI.namespace('Env.PNM').DATA = {
-            place : {{{place}}},
-            photos: {{{photos}}}
+            place : {{#if place}} {{{place}}} {{else}} null {{/if}},
+            photos: {{#if photos}} {{{photos}}} {{else}} null {{/if}}
         };
     {{/initialData}}
     </script>
