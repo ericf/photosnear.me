@@ -1,9 +1,15 @@
 {
-    "name"        : "photosnearme",
-    "description" : "Photos Near Me",
-    "homepage"    : "http://photosnear.me/",
-    "version"     : "0.4.2",
-    "author"      : "Eric Ferraiuolo <eferraiuolo@gmail.com> (http://github.com/ericf)",
+    "name"       : "photosnearme",
+    "description": "Photos Near Me",
+    "homepage"   : "http://photosnear.me/",
+    "version"    : "0.4.2",
+    "author"     : "Eric Ferraiuolo <eferraiuolo@gmail.com> (http://github.com/ericf)",
+
+    "engines": {
+        "node": "0.6.x",
+        "npm" : "1.1.x"
+    },
+
     "dependencies": {
         "combohandler": "~0.1",
         "connect"     : ">=1.8.0 <2.0.0",
