@@ -3,7 +3,7 @@ require('./conf/config');
 var connect = require('connect'),
     combo   = require('combohandler'),
     express = require('express'),
-    Y       = require('yui').use('handlebars'),
+    Y       = require('yui/yui-base'),
 
     app    = express.createServer(),
     pubDir = global.config.pubDir;
