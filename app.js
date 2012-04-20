@@ -3,10 +3,11 @@ require('./conf/config');
 var connect = require('connect'),
     combo   = require('combohandler'),
     express = require('express'),
-    Y       = require('yui/yui-base'),
+    YUI     = require('yui').YUI,
 
     app    = express.createServer(),
-    pubDir = global.config.pubDir;
+    pubDir = global.config.pubDir,
+    Y      = YUI(global.config.yui.server).use('pnm-place');
 
 // -- Express config -----------------------------------------------------------
 app.configure('development', function () {
@@ -87,5 +88,20 @@ app.get('/templates.js', (function () {
         });
     };
 }()));
+
+app.get('/place', function (req, res) {
+    var place = new Y.PNM.Place({
+        id: '28288771'
+    });
+
+    place.load(function () {
+        res.render('index', {
+            place: {
+                id  : place.get('id'),
+                text: place.toString()
+            }
+        });
+    });
+});
 
 module.exports = app;
