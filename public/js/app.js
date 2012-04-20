@@ -6,12 +6,13 @@ var PNM          = Y.PNM,
     Photo        = PNM.Photo,
     Photos       = PNM.Photos,
     Place        = PNM.Place,
+    Templates    = PNM.Templates,
     PhotosNearMe;
 
 PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
-    titleTemplate : Y.Handlebars.compile(Y.one('#title-template').getContent()),
-    headerTemplate: Y.Handlebars.compile(Y.one('#header-template').getContent()),
+    titleTemplate : Templates['title'],
+    headerTemplate: Templates['header'],
 
     views: {
         grid: {
@@ -26,6 +27,12 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     },
 
     initializer: function () {
+        var initialView = new Y.View({
+            container: this.get('viewContainer').one('div')
+        });
+
+        this.showView(initialView, null, {transition: false});
+
         this.after('placeChange', this.render);
         this.after('placeChange', this.loadPhotos);
 
@@ -81,7 +88,7 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
             var place = new Place(res.coords);
             place.load(function () {
                 self.set('place', place);
-                self.replace('/place/' + place.get('id') + '/');
+                self.replace('/places/' + place.get('id') + '/');
             });
         });
     },
@@ -136,7 +143,7 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     showNoLocation: function () {
         var view = new Y.View({
             containerTemplate: '<div id="no-location" />',
-            template         : Y.Handlebars.compile(Y.one('#no-location-template').getContent())
+            template         : Templates['no-location']
         });
 
         view.render = function () {
@@ -202,7 +209,7 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     },
 
     navigateToPhoto: function (e) {
-        this.navigate('/photo/' + e.photo.get('id') + '/');
+        this.navigate('/photos/' + e.photo.get('id') + '/');
     }
 
 }, {
@@ -215,11 +222,11 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
             value: [
                 {path: '/', callback: 'locate'},
 
-                {path: '/place/:id/', callback: 'handlePlace'},
-                {path: '/place/:id/', callback: 'showGrid'},
+                {path: '/places/:id/', callback: 'handlePlace'},
+                {path: '/places/:id/', callback: 'showGrid'},
 
-                {path: '/photo/:id/', callback: 'handlePhoto'},
-                {path: '/photo/:id/', callback: 'showLightbox'}
+                {path: '/photos/:id/', callback: 'handlePhoto'},
+                {path: '/photos/:id/', callback: 'showLightbox'}
             ]
         }
     }
@@ -229,13 +236,14 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 Y.namespace('PNM').App = PhotosNearMe;
 
 }, '0.4.2', {
-    requires: [ 'app-base'
-              , 'app-transitions'
-              , 'gallery-geo'
-              , 'handlebars'
-              , 'pnm-grid-view'
-              , 'pnm-lightbox-view'
-              , 'pnm-photos'
-              , 'pnm-place'
-              ]
+    requires: [
+        'app-base',
+        'app-transitions',
+        'gallery-geo',
+        'pnm-grid-view',
+        'pnm-lightbox-view',
+        'pnm-photos',
+        'pnm-place',
+        'pnm-templates'
+    ]
 });

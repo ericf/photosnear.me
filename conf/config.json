@@ -71,10 +71,10 @@
                 "pnm-grid-view": {
                     "path"    : "views/grid.js",
                     "requires": [
-                        "handlebars",
                         "node-style",
                         "node-screen",
                         "pnm-photos",
+                        "pnm-templates",
                         "view"
                     ]
                 },
@@ -83,8 +83,8 @@
                     "path"    : "views/lightbox.js",
                     "requires": [
                         "event-key",
-                        "handlebars",
                         "pnm-photos",
+                        "pnm-templates",
                         "transition",
                         "view"
                     ]

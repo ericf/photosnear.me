@@ -57,7 +57,9 @@ app.configure('production', function () {
 
 // Root.
 app.get('/', function (req, res) {
-    res.render('index');
+    res.render('index', {
+        located: false
+    });
 });
 
 // Combo-handler for JavaScript.
@@ -112,7 +114,12 @@ app.get('/places/:id/', function (req, res) {
 
             photos: photos.map(function (photo) {
                 return photo.getAttrs(['id', 'clientId', 'thumbUrl']);
-            })
+            }),
+
+            initialData: {
+                place : JSON.stringify(place),
+                photos: JSON.stringify(photos)
+            }
         });
     });
 });
@@ -134,7 +141,11 @@ app.get('/photos/:id/', function (req, res) {
 
             photo: Y.merge({title: 'Photo'}, photo.getAttrs([
                 'title', 'largeUrl', 'pageUrl', 'description'
-            ]))
+            ])),
+
+            initialData: {
+                place: JSON.stringify(place)
+            }
         });
     });
 });

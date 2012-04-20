@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-    <div id="wrap" {{#located}}class="located"{{/located}}>
+    <div id="wrap" class="{{#if located}}located{{else}}loading{{/if}}">
         <div id="header">
             {{> header}}
         </div>
@@ -33,18 +33,32 @@
     {{#config.flickr}}
         YUI.namespace('Env.Flickr').API_KEY = '{{api_key}}';
     {{/config.flickr}}
+
+    {{#initialData}}
+        YUI.namespace('Env.PNM').DATA = {
+            place : {{{place}}},
+            photos: {{{photos}}}
+        };
+    {{/initialData}}
     </script>
 
     <script>
-    YUI().use('typekit', 'ios-oc-fix', function (Y) {
+    YUI().use('pnm-app', 'ios-oc-fix', function (Y) {
 
-        try { Typekit.load(); } catch (e) {}
+        // try { Typekit.load(); } catch (e) {}
 
-        // new Y.PNM.App({
-        //     container    : '#wrap',
-        //     viewContainer: '#main',
-        //     transitions  : true
-        // });
+        var data   = YUI.namespace('Env.PNM.DATA'),
+            place  = new Y.PNM.Place(data.place),
+            photos = new Y.PNM.Photos().reset(data.photos || []);
+
+        new Y.PNM.App({
+            container    : '#wrap',
+            viewContainer: '#main',
+            transitions  : false,
+            serverRouting: true,
+            place        : place,
+            photos       : photos
+        });
 
     });
     </script>
