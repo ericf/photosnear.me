@@ -7,7 +7,11 @@ var connect = require('connect'),
 
     app    = express.createServer(),
     pubDir = global.config.pubDir,
-    Y      = YUI(global.config.yui.server).use('pnm-place');
+    Y      = YUI(global.config.yui.server);
+
+// -- YUI config ---------------------------------------------------------------
+YUI.namespace('Env.Flickr').API_KEY = global.config.flickr.api_key;
+Y.use('parallel', 'pnm-place', 'pnm-photo', 'pnm-photos');
 
 // -- Express config -----------------------------------------------------------
 app.configure('development', function () {
@@ -89,17 +93,48 @@ app.get('/templates.js', (function () {
     };
 }()));
 
-app.get('/place', function (req, res) {
-    var place = new Y.PNM.Place({
-        id: '28288771'
-    });
+app.get('/places/:id/', function (req, res) {
+    var place    = new Y.PNM.Place({id: req.params.id}),
+        photos   = new Y.PNM.Photos(),
+        requests = new Y.Parallel();
 
-    place.load(function () {
-        res.render('index', {
+    place.load(requests.add());
+    photos.load({place: place}, requests.add());
+
+    requests.done(function () {
+        res.render('place', {
+            located: true,
+
             place: {
                 id  : place.get('id'),
                 text: place.toString()
-            }
+            },
+
+            photos: photos.map(function (photo) {
+                return photo.getAttrs(['id', 'clientId', 'thumbUrl']);
+            })
+        });
+    });
+});
+
+app.get('/photos/:id/', function (req, res) {
+    var photo = new Y.PNM.Photo({id: req.params.id}),
+        place;
+
+    photo.load(function () {
+        place = photo.get('place');
+
+        res.render('photo', {
+            located: true,
+
+            place: {
+                id  : place.get('id'),
+                text: place.toString()
+            },
+
+            photo: Y.merge({title: 'Photo'}, photo.getAttrs([
+                'title', 'largeUrl', 'pageUrl', 'description'
+            ]))
         });
     });
 });

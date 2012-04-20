@@ -11,8 +11,10 @@
         "version": "3.5.0",
 
         "client": {
-            "ios-oc-fix": "/vendor/ios-orientationchange-fix.js",
-            "typekit"   : "http://use.typekit.com/wkh7ffm.js"
+            "modules": {
+                "ios-oc-fix": "/vendor/ios-orientationchange-fix.js",
+                "typekit"   : "http://use.typekit.com/wkh7ffm.js"
+            }
         },
 
         "server": {

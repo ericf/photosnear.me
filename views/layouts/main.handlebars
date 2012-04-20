@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-    <div id="wrap" class="loading">
+    <div id="wrap" {{#located}}class="located"{{/located}}>
         <div id="header">
             {{> header}}
         </div>
@@ -25,12 +25,15 @@
     </div>
 
     <script src="http://yui.yahooapis.com/{{yui_version}}/build/yui/yui{{min}}.js"></script>
-
-    {{#yui_config}}
     <script>
+    {{#yui_config}}
         var YUI_config = {{{.}}};
-    </script>
     {{/yui_config}}
+
+    {{#config.flickr}}
+        YUI.namespace('Env.Flickr').API_KEY = '{{api_key}}';
+    {{/config.flickr}}
+    </script>
 
     <script>
     YUI().use('typekit', 'ios-oc-fix', function (Y) {
