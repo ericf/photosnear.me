@@ -1,10 +1,14 @@
 YUI.add('pnm-grid-view', function (Y) {
 
-var GridView = Y.Base.create('gridView', Y.View, [], {
+var PNM       = Y.PNM,
+    Templates = PNM.Templates,
+    GridView;
 
-    containerTemplate: '<div id="photos" />',
-    template         : Y.Handlebars.compile(Y.one('#grid-template').getContent()),
-    photoTemplate    : Y.Handlebars.compile(Y.one('#grid-photo-template').getContent()),
+GridView = Y.Base.create('gridView', Y.View, [], {
+
+    containerTemplate: '<div class="grid" />',
+    template         : Templates['grid'],
+    photoTemplate    : Templates['grid-photo'],
 
     events: {
         '.photo': {click: 'select'}
@@ -33,7 +37,7 @@ var GridView = Y.Base.create('gridView', Y.View, [], {
                 return photo.getAttrs(['id', 'clientId', 'thumbUrl']);
             })
         }, {
-            partials: {photo: this.photoTemplate}
+            partials: {'grid-photo': this.photoTemplate}
         });
 
         container.setContent(content);
@@ -80,10 +84,11 @@ var GridView = Y.Base.create('gridView', Y.View, [], {
 Y.namespace('PNM').GridView = GridView;
 
 }, '0.4.2', {
-    requires: [ 'handlebars'
-              , 'node-style'
-              , 'node-screen'
-              , 'pnm-photos'
-              , 'view'
-              ]
+    requires: [
+        'node-style',
+        'node-screen',
+        'pnm-photos',
+        'pnm-templates',
+        'view'
+    ]
 });

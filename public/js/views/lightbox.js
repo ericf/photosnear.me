@@ -1,9 +1,13 @@
 YUI.add('pnm-lightbox-view', function (Y) {
 
-var LightboxView = Y.Base.create('lightboxView', Y.View, [], {
+var PNM       = Y.PNM,
+    Templates = PNM.Templates,
+    LightboxView;
 
-    containerTemplate: '<div id="lightbox" />',
-    template         : Y.Handlebars.compile(Y.one('#lightbox-template').getContent()),
+LightboxView = Y.Base.create('lightboxView', Y.View, [], {
+
+    containerTemplate: '<div class="lightbox" />',
+    template         : Templates['lightbox'],
 
     events: {
         '.photo img': {click: 'toggleInfo'}
@@ -95,10 +99,11 @@ var LightboxView = Y.Base.create('lightboxView', Y.View, [], {
 Y.namespace('PNM').LightboxView = LightboxView;
 
 }, '0.4.2', {
-    requires: [ 'event-key'
-              , 'handlebars'
-              , 'pnm-photos'
-              , 'transition'
-              , 'view'
-              ]
+    requires: [
+        'event-key',
+        'pnm-photos',
+        'pnm-templates',
+        'transition',
+        'view'
+    ]
 });

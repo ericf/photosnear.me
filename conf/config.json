@@ -1,0 +1,114 @@
+{
+    "layout"      : "layouts/main",
+    "pubDir"      : "public/",
+    "templatesDir": "shared/templates/",
+
+    "flickr": {
+        "api_key": "0984607e2222db7a1be6a5692741ca08"
+    },
+
+    "yui": {
+        "version": "3.5.0",
+
+        "client": {
+            "modules": {
+                "ios-oc-fix": "/vendor/ios-orientationchange-fix.js",
+                "typekit"   : "http://use.typekit.com/wkh7ffm.js"
+            }
+        },
+
+        "server": {
+            "base": "/vendor/",
+
+            "modules": {
+                "gallery-model-sync-yql": {
+                    "requires": [
+                        "model",
+                        "yql"
+                    ]
+                }
+            }
+        },
+
+        "pnm": {
+            "base"     : "/js/",
+            "comboBase": "/combo?",
+            "root"     : "/",
+
+            "modules": {
+                "pnm-place": {
+                    "path"    : "models/place.js",
+                    "requires": [
+                        "cache-offline",
+                        "gallery-model-sync-yql",
+                        "model",
+                        "yql"
+                    ]
+                },
+
+                "pnm-photo": {
+                    "path"    : "models/photo.js",
+                    "requires": [
+                        "gallery-model-sync-yql",
+                        "cache-offline",
+                        "model",
+                        "pnm-place",
+                        "yql"
+                    ]
+                },
+
+                "pnm-photos": {
+                    "path"    : "models/photos.js",
+                    "requires": [
+                        "cache-offline",
+                        "gallery-model-sync-yql",
+                        "model-list",
+                        "pnm-photo",
+                        "yql"
+                    ]
+                },
+
+                "pnm-grid-view": {
+                    "path"    : "views/grid.js",
+                    "requires": [
+                        "node-style",
+                        "node-screen",
+                        "pnm-photos",
+                        "pnm-templates",
+                        "view"
+                    ]
+                },
+
+                "pnm-lightbox-view": {
+                    "path"    : "views/lightbox.js",
+                    "requires": [
+                        "event-key",
+                        "pnm-photos",
+                        "pnm-templates",
+                        "transition",
+                        "view"
+                    ]
+                },
+
+                "pnm-templates": {
+                    "fullpath": "/templates.js",
+                    "requires": ["handlebars-base"]
+                },
+
+                "pnm-app": {
+                    "path"    : "app.js",
+                    "requires": [
+                        "app-base",
+                        "app-transitions",
+                        "gallery-geo",
+                        "pnm-grid-view",
+                        "pnm-lightbox-view",
+                        "pnm-photos",
+                        "pnm-place",
+                        "pnm-templates"
+                    ]
+                }
+            }
+        }
+    }
+}

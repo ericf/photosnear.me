@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+
+    <title>{{> title}}</title>
+    <meta name="description" content="Look at interesting photos of things taken near your current location" />
+    <meta name="author" content="Eric Ferraiuolo" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+    <div id="wrap" class="{{#if located}}located{{else}}loading{{/if}}">
+        <div id="header">
+            {{> header}}
+        </div>
+
+        <div id="main">
+            {{{body}}}
+        </div>
+    </div>
+
+    <script src="http://yui.yahooapis.com/{{yui_version}}/build/yui/yui{{min}}.js"></script>
+    <script>
+    {{#yui_config}}
+        var YUI_config = {{{.}}};
+    {{/yui_config}}
+
+    {{#config.flickr}}
+        YUI.namespace('Env.Flickr').API_KEY = '{{api_key}}';
+    {{/config.flickr}}
+
+    {{#initialData}}
+        YUI.namespace('Env.PNM').DATA = {
+            place : {{{place}}},
+            photos: {{{photos}}}
+        };
+    {{/initialData}}
+    </script>
+
+    <script>
+    YUI().use('pnm-app', 'ios-oc-fix', function (Y) {
+
+        // try { Typekit.load(); } catch (e) {}
+
+        var data   = YUI.namespace('Env.PNM.DATA'),
+            place  = new Y.PNM.Place(data.place),
+            photos = new Y.PNM.Photos().reset(data.photos || []);
+
+        new Y.PNM.App({
+            container    : '#wrap',
+            viewContainer: '#main',
+            transitions  : false,
+            serverRouting: true,
+            place        : place,
+            photos       : photos
+        });
+
+    });
+    </script>
+</body>
+</html>
