@@ -26,7 +26,14 @@ config.templatesDir = path.join(appRoot, config.templatesDir);
 
 // YUI on the server.
 config.yui.server = {
+    useSync: true,
+
     groups: {
+        server: Y.merge(config.yui.server, {
+            base   : path.join(config.pubDir, config.yui.server.base),
+            combine: false
+        }),
+
         pnm: Y.merge(config.yui.pnm, {
             base   : path.join(config.pubDir, config.yui.pnm.base),
             combine: false
@@ -39,9 +46,10 @@ config.yui.client = {
     allowRollup: false,
     combine    : ENV.production,
     filter     : ENV.production ? 'min' : 'raw',
-    modules    : config.yui.modules,
 
     groups: {
+        client: config.yui.client,
+
         pnm: Y.merge(config.yui.pnm, {
             combine: ENV.production
         })

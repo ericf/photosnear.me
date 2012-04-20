@@ -10,9 +10,22 @@
     "yui": {
         "version": "3.5.0",
 
-        "modules": {
+        "client": {
             "ios-oc-fix": "/vendor/ios-orientationchange-fix.js",
             "typekit"   : "http://use.typekit.com/wkh7ffm.js"
+        },
+
+        "server": {
+            "base": "/vendor/",
+
+            "modules": {
+                "gallery-model-sync-yql": {
+                    "requires": [
+                        "model",
+                        "yql"
+                    ]
+                }
+            }
         },
 
         "pnm": {
