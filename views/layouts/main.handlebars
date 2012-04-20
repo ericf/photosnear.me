@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+
+    <title>{{> title}}</title>
+    <meta name="description" content="Look at interesting photos of things taken near your current location" />
+    <meta name="author" content="Eric Ferraiuolo" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+    <div id="wrap" class="loading">
+        <div id="header">
+            {{> header}}
+        </div>
+
+        <div id="main">
+            {{{body}}}
+        </div>
+    </div>
+
+    <script src="http://yui.yahooapis.com/{{yui_version}}/build/yui/yui{{min}}.js"></script>
+
+    {{#yui_config}}
+    <script>
+        var YUI_config = {{{.}}};
+    </script>
+    {{/yui_config}}
+
+    <script>
+    YUI().use('typekit', 'ios-oc-fix', function (Y) {
+
+        try { Typekit.load(); } catch (e) {}
+
+        // new Y.PNM.App({
+        //     container    : '#wrap',
+        //     viewContainer: '#main',
+        //     transitions  : true
+        // });
+
+    });
+    </script>
+</body>
+</html>

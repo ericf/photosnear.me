@@ -1,0 +1,11 @@
+YUI.add('pnm-templates', function (Y) {
+
+var Templates = Y.namespace('PNM').Templates = {};
+
+{{#templates}}
+    Templates['{{{name}}}'] = Y.Handlebars.template({{{template}}});
+{{/templates}}
+
+}, '0.4.2', {
+    requires: ['handlebars-base']
+});
