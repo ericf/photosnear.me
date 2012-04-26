@@ -9,7 +9,7 @@ var FLICKR_API_KEY = YUI.namespace('Env.Flickr').API_KEY || '',
 Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
 
     model: Photo,
-    cache: new Y.CacheOffline,
+    cache: new Y.CacheOffline(),
     query: 'SELECT * FROM flickr.photos.search({start},{num}) ' +
                 'WHERE api_key={api_key} ' +
                 'AND safe_search=1 ' +
@@ -50,11 +50,12 @@ Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
 
 Y.namespace('PNM').Photos = Photos;
 
-}, '0.4.2', {
-    requires: [ 'cache-offline'
-              , 'gallery-model-sync-yql'
-              , 'model-list'
-              , 'pnm-photo'
-              , 'yql'
-              ]
+}, '0.5.0', {
+    requires: [
+        'cache-offline',
+        'gallery-model-sync-yql',
+        'model-list',
+        'pnm-photo',
+        'yql'
+    ]
 });

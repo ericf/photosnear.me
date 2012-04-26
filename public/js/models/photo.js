@@ -8,7 +8,7 @@ var FLICKR_API_KEY = YUI.namespace('Env.Flickr').API_KEY || '',
 
 Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
 
-    cache  : new Y.CacheOffline,
+    cache  : new Y.CacheOffline(),
     query  : 'SELECT * FROM flickr.photos.info WHERE api_key={api_key} AND photo_id={id}',
     imgUrl : 'http://farm{farm}.static.flickr.com/{server}/{id}_{secret}_{size}.jpg',
     pageUrl: 'http://www.flickr.com/photos/{user}/{id}/',
@@ -121,11 +121,12 @@ Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
 
 Y.namespace('PNM').Photo = Photo;
 
-}, '0.4.2', {
-    requires: [ 'gallery-model-sync-yql'
-              , 'cache-offline'
-              , 'model'
-              , 'pnm-place'
-              , 'yql'
-              ]
+}, '0.5.0', {
+    requires: [
+        'gallery-model-sync-yql',
+        'cache-offline',
+        'model',
+        'pnm-place',
+        'yql'
+    ]
 });
