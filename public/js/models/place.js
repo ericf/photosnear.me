@@ -8,7 +8,7 @@ var FLICKR_API_KEY = YUI.namespace('Env.Flickr').API_KEY || '',
 Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
 
     idAttribute: 'woeid',
-    cache      : new Y.CacheOffline,
+    cache      : new Y.CacheOffline(),
 
     queries: {
         placeFromId    : 'SELECT * FROM geo.places WHERE woeid={id}',
@@ -83,9 +83,10 @@ Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
 Y.namespace('PNM').Place = Place;
 
 }, '0.5.0', {
-    requires: [ 'cache-offline'
-              , 'gallery-model-sync-yql'
-              , 'model'
-              , 'yql'
-              ]
+    requires: [
+        'cache-offline',
+        'gallery-model-sync-yql',
+        'model',
+        'yql'
+    ]
 });
