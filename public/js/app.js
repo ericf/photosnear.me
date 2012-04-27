@@ -57,17 +57,17 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
             placeText = place.toString(),
             container = this.get('container'),
             doc       = Y.config.doc,
-            content;
+            placeData, content;
+
+        placeData = place.isNew() ? null : {
+            id  : place.get('id'),
+            text: placeText
+        };
 
         // Update the title of the browser window.
-        doc && (doc.title = this.titleTemplate({place: placeText}));
+        doc && (doc.title = this.titleTemplate({place: placeData}));
 
-        content = this.headerTemplate({
-            place: place.isNew() ? null : {
-                id  : place.get('id'),
-                text: placeText
-            }
-        });
+        content = this.headerTemplate({place: placeData});
 
         container.removeClass('loading').one('#header').setContent(content);
         // Delay adding `located` class so the CSS transitions run.
