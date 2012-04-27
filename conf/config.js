@@ -1,6 +1,6 @@
 var fs   = require('fs'),
     path = require('path'),
-    Y    = require('yui/yui-base'),
+    Y    = require('yui/oop'),
 
     CONFIG_FILE = 'config.json',
     NODE_ENV    = process.env.NODE_ENV,
@@ -29,12 +29,12 @@ config.yui.server = {
     useSync: true,
 
     groups: {
-        server: Y.merge(config.yui.server, {
+        server: Y.merge(Y.clone(config.yui.server), {
             base   : path.join(config.pubDir, config.yui.server.base),
             combine: false
         }),
 
-        pnm: Y.merge(config.yui.pnm, {
+        pnm: Y.merge(Y.clone(config.yui.pnm), {
             base   : path.join(config.pubDir, config.yui.pnm.base),
             combine: false
         })
@@ -48,9 +48,9 @@ config.yui.client = {
     filter     : ENV.production ? 'min' : 'raw',
 
     groups: {
-        client: config.yui.client,
+        client: Y.clone(config.yui.client),
 
-        pnm: Y.merge(config.yui.pnm, {
+        pnm: Y.merge(Y.clone(config.yui.pnm), {
             combine: ENV.production
         })
     }
