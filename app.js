@@ -104,7 +104,7 @@ app.get('/places/:id/', function (req, res) {
     photos.load({place: place}, requests.add());
 
     requests.done(function () {
-        res.render('place', {
+        res.render('grid', {
             located: true,
 
             place: {
@@ -131,7 +131,7 @@ app.get('/photos/:id/', function (req, res) {
     photo.load(function () {
         place = photo.get('place');
 
-        res.render('photo', {
+        res.render('lightbox', {
             located: true,
 
             place: {
