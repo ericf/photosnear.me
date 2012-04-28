@@ -27,6 +27,7 @@ config.templatesDir = path.join(appRoot, config.templatesDir);
 // YUI on the server.
 config.yui.server = {
     useSync: true,
+    filter : ENV.production ? 'min' : 'raw',
 
     groups: {
         server: Y.merge(Y.clone(config.yui.server), {
