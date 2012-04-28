@@ -11,8 +11,8 @@ Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
     cache      : new Y.CacheOffline(),
 
     queries: {
-        placeFromId    : 'SELECT * FROM geo.places WHERE woeid={id}',
-        placeFromLatLon: 'SELECT * FROM geo.places WHERE woeid ' +
+        placeFromId    : 'SELECT {attrs} FROM geo.places WHERE woeid={id}',
+        placeFromLatLon: 'SELECT {attrs} FROM geo.places WHERE woeid ' +
                             'IN (SELECT place.woeid FROM flickr.places ' +
                             'WHERE api_key={api_key} ' +
                             'AND lat={latitude} ' +
@@ -25,11 +25,15 @@ Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
             return Lang.sub(this.queries.placeFromLatLon, {
                 api_key  : FLICKR_API_KEY,
                 latitude : this.get('latitude'),
-                longitude: this.get('longitude')
+                longitude: this.get('longitude'),
+                attrs    : Place.YQL_ATTRS
             });
         }
 
-        return Lang.sub(this.queries.placeFromId, {id: this.get('id')});
+        return Lang.sub(this.queries.placeFromId, {
+            id   : this.get('id'),
+            attrs: Place.YQL_ATTRS
+        });
     },
 
     parse: function (results) {
@@ -76,7 +80,9 @@ Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
         country  : {},
         region   : {},
         locality : {}
-    }
+    },
+
+    YQL_ATTRS: ['woeid', 'centroid', 'country', 'admin1', 'locality1']
 
 });
 

@@ -27,12 +27,6 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     },
 
     initializer: function () {
-        var initialView = new Y.View({
-            container: this.get('viewContainer').one('div')
-        });
-
-        this.showView(initialView, null, {transition: false});
-
         this.after('placeChange', this.render);
         this.after('placeChange', this.loadPhotos);
 
@@ -125,9 +119,9 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
         } else {
             photo = new Photo(params);
             photo.load(function () {
-                // Use the photo's place if we do not have a loaded place.
+                // Use the photo's location if we do not have a loaded place.
                 if (self.get('place').isNew()) {
-                    self.set('place', photo.get('place'));
+                    self.set('place', photo.get('location'));
                 }
 
                 photo.loadImg(function () {

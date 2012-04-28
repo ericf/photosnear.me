@@ -55,7 +55,7 @@ LightboxView = Y.Base.create('lightboxView', Y.View, [], {
         content = this.template({
             nav  : nav,
             photo: Y.merge({title: 'Photo'}, photo.getAttrs([
-                'title', 'largeUrl', 'pageUrl', 'description'
+                'title', 'largeUrl', 'pageUrl'
             ]))
         });
 

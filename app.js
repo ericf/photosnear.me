@@ -104,7 +104,7 @@ app.get('/places/:id/', function (req, res) {
     photos.load({place: place}, requests.add());
 
     requests.done(function () {
-        res.render('place', {
+        res.render('grid', {
             located: true,
 
             place: {
@@ -113,13 +113,15 @@ app.get('/places/:id/', function (req, res) {
             },
 
             photos: photos.map(function (photo) {
-                return photo.getAttrs(['id', 'clientId', 'thumbUrl']);
+                return photo.getAttrs(['id', 'title', 'thumbUrl']);
             }),
 
             initialData: {
                 place : JSON.stringify(place),
                 photos: JSON.stringify(photos)
-            }
+            },
+
+            initialView: 'grid'
         });
     });
 });
@@ -129,9 +131,9 @@ app.get('/photos/:id/', function (req, res) {
         place;
 
     photo.load(function () {
-        place = photo.get('place');
+        place = photo.get('location');
 
-        res.render('photo', {
+        res.render('lightbox', {
             located: true,
 
             place: {
@@ -140,14 +142,47 @@ app.get('/photos/:id/', function (req, res) {
             },
 
             photo: Y.merge({title: 'Photo'}, photo.getAttrs([
-                'title', 'largeUrl', 'pageUrl', 'description'
+                'title', 'largeUrl', 'pageUrl'
             ])),
 
             initialData: {
-                place: JSON.stringify(place)
-            }
+                place: JSON.stringify(place),
+                photo: JSON.stringify(photo)
+            },
+
+            initialView: 'lightbox'
         });
     });
+});
+
+app.get('/cache/', function (req, res) {
+    var caches = {};
+
+    ['Place', 'Photo', 'Photos'].forEach(function (model) {
+        var cache = Y.PNM[model].prototype.cache;
+
+        caches[model] = {
+            entries: cache.get('size'),
+            bytes  : Buffer.byteLength(JSON.stringify(cache.get('entries')))
+        };
+    });
+
+    res.json(caches);
+});
+
+app.del('/cache/', function (req, res) {
+    ['Place', 'Photo', 'Photos'].forEach(function (model) {
+        Y.PNM[model].prototype.cache.flush();
+    });
+
+    res.send('Flushed caches.');
+});
+
+app.get('/stats/', function (req, res) {
+    res.json({
+        uptime: process.uptime(),
+        memory: process.memoryUsage()
+    })
 });
 
 module.exports = app;
