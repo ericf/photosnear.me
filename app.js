@@ -129,7 +129,7 @@ app.get('/photos/:id/', function (req, res) {
         place;
 
     photo.load(function () {
-        place = photo.get('place');
+        place = photo.get('location');
 
         res.render('lightbox', {
             located: true,

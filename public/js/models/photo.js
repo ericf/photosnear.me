@@ -22,18 +22,18 @@ Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
     },
 
     parse: function (results) {
-        if ( ! results) { return; }
+        if (!results) { return; }
 
-        var photo    = results.photo,
-            place    = photo.location,
-            country  = place.country,
-            region   = place.region,
-            locality = place.locality;
+        var photo    = Y.merge(results.photo),
+            location = photo.location,
+            country  = location.country,
+            region   = location.region,
+            locality = location.locality;
 
-        photo.place = {
-            woeid    : place.woeid,
-            latitude : place.latitude,
-            longitude: place.longitude,
+        photo.location = {
+            woeid    : location.woeid,
+            latitude : location.latitude,
+            longitude: location.longitude,
             country  : country && country.content,
             region   : region && region.content,
             locality : locality && locality.content
@@ -84,11 +84,11 @@ Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
         url_sq   : {},
         url_z    : {},
 
-        place: {
+        location: {
             value : {},
-            setter: function (place) {
-                (place instanceof Place) || (place = new Place(place));
-                return place;
+            setter: function (location) {
+                (location instanceof Place) || (location = new Place(location));
+                return location;
             }
         },
 
