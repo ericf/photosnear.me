@@ -19,12 +19,17 @@ GridView = Y.Base.create('gridView', Y.View, [], {
 
         photos.after('reset', this.render, this);
 
-        this.loadingNode     = null;
         this._maxKnownHeight = 0;
 
         this.publish('more', {preventable: false});
 
         Y.one('win').on(['scroll', 'resize'], this.more, this);
+
+        // Only try to load more photos if we already have some photos. This
+        // prevents the lazily-loaded photos from duplicating.
+        if (!photos.isEmpty()) {
+            Y.later(1, this, 'more');
+        }
     },
 
     render: function () {
@@ -41,29 +46,22 @@ GridView = Y.Base.create('gridView', Y.View, [], {
         });
 
         container.setContent(content);
-        this.loadingNode = container.one('.loading');
-
-        // Only try to load more photos if we already have some photos. This
-        // prevents the lazily-loaded photos from duplicating.
-        if (!photos.isEmpty()) {
-            Y.later(1, this, 'more');
-        }
-
         return this;
     },
 
     more: function (e) {
         var viewportBottom = Y.DOM.viewportRegion().bottom,
             maxKnowHeight  = this._maxKnownHeight,
-            containerBottom;
+            container, containerBottom;
 
         if (viewportBottom <= maxKnowHeight) { return; }
 
-        containerBottom = this.get('container').get('region').bottom;
+        container       = this.get('container');
+        containerBottom = container.get('region').bottom;
 
         if ((viewportBottom + 150) > containerBottom && containerBottom > maxKnowHeight) {
             this._maxKnownHeight = containerBottom;
-            this.loadingNode.show();
+            container.one('.loading').show();
             this.fire('more');
         }
     },
