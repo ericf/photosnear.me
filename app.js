@@ -119,7 +119,9 @@ app.get('/places/:id/', function (req, res) {
             initialData: {
                 place : JSON.stringify(place),
                 photos: JSON.stringify(photos)
-            }
+            },
+
+            initialView: 'grid'
         });
     });
 });
@@ -144,8 +146,11 @@ app.get('/photos/:id/', function (req, res) {
             ])),
 
             initialData: {
-                place: JSON.stringify(place)
-            }
+                place: JSON.stringify(place),
+                photo: JSON.stringify(photo)
+            },
+
+            initialView: 'lightbox'
         });
     });
 });

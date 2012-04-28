@@ -37,9 +37,14 @@
     {{#initialData}}
         YUI.namespace('Env.PNM').DATA = {
             place : {{#if place}} {{{place}}} {{else}} null {{/if}},
-            photos: {{#if photos}} {{{photos}}} {{else}} null {{/if}}
+            photos: {{#if photos}} {{{photos}}} {{else}} null {{/if}},
+            photo : {{#if photo}} {{{photo}}} {{else}} null {{/if}}
         };
     {{/initialData}}
+
+    {{#initialView}}
+        YUI.namespace('Env.PNM').VIEW = '{{.}}';
+    {{/initialView}}
     </script>
 
     <script>
@@ -47,18 +52,39 @@
 
         // try { Typekit.load(); } catch (e) {}
 
-        var data   = YUI.namespace('Env.PNM.DATA'),
-            place  = new Y.PNM.Place(data.place),
-            photos = new Y.PNM.Photos().reset(data.photos || []);
+        var PNMEnv   = YUI.namespace('Env.PNM'),
+            data     = YUI.namespace('Env.PNM.DATA'),
+            place    = new Y.PNM.Place(data.place),
+            photos   = new Y.PNM.Photos().reset(data.photos || []),
+            photo    = new Y.PNM.Photo(data.photo),
+            viewName = PNMEnv.VIEW,
+            views    = {},
+            view, app;
 
-        new Y.PNM.App({
+        if (viewName) {
+            view = new Y.PNM.App.prototype.views[viewName].type({
+                container: Y.one('#main .' + viewName),
+                place    : place,
+                photos   : photos,
+                photo    : photo
+            });
+
+            views[viewName] = {instance: view};
+        }
+
+        app = new Y.PNM.App({
+            place : place,
+            photos: photos,
+            views : views,
+
             container    : '#wrap',
             viewContainer: '#main',
             transitions  : false,
-            serverRouting: true,
-            place        : place,
-            photos       : photos
+            serverRouting: true
         });
+
+        photos.isEmpty() && app.loadPhotos();
+        view && app.showView(view, null, {transition: false});
 
     });
     </script>

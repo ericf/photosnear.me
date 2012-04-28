@@ -27,12 +27,6 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     },
 
     initializer: function () {
-        var initialView = new Y.View({
-            container: this.get('viewContainer').one('div')
-        });
-
-        this.showView(initialView, null, {transition: false});
-
         this.after('placeChange', this.render);
         this.after('placeChange', this.loadPhotos);
 
