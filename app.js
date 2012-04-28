@@ -140,7 +140,7 @@ app.get('/photos/:id/', function (req, res) {
             },
 
             photo: Y.merge({title: 'Photo'}, photo.getAttrs([
-                'title', 'largeUrl', 'pageUrl', 'description'
+                'title', 'largeUrl', 'pageUrl'
             ])),
 
             initialData: {
