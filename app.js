@@ -155,4 +155,34 @@ app.get('/photos/:id/', function (req, res) {
     });
 });
 
+app.get('/cache/', function (req, res) {
+    var caches = {};
+
+    ['Place', 'Photo', 'Photos'].forEach(function (model) {
+        var cache = Y.PNM[model].prototype.cache;
+
+        caches[model] = {
+            entries: cache.get('size'),
+            bytes  : Buffer.byteLength(JSON.stringify(cache.get('entries')))
+        };
+    });
+
+    res.json(caches);
+});
+
+app.del('/cache/', function (req, res) {
+    ['Place', 'Photo', 'Photos'].forEach(function (model) {
+        Y.PNM[model].prototype.cache.flush();
+    });
+
+    res.send('Flushed caches.');
+});
+
+app.get('/stats/', function (req, res) {
+    res.json({
+        uptime: process.uptime(),
+        memory: process.memoryUsage()
+    })
+});
+
 module.exports = app;
