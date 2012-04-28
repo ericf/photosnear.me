@@ -36,9 +36,9 @@ app.configure(function () {
     }));
 
     // Middleware.
+    app.use(express.static(pubDir));
     app.use(app.router);
     app.use(express.favicon());
-    app.use(express.static(pubDir));
 });
 
 app.configure('development', function () {
@@ -183,6 +183,16 @@ app.get('/stats/', function (req, res) {
         uptime: process.uptime(),
         memory: process.memoryUsage()
     })
+});
+
+// Catch-all route to dynamically figure out the place based on text.
+// **Note:** This needs to be the last route.
+app.get('/:place', function (req, res) {
+    var place = new Y.PNM.Place();
+
+    place.load({text: req.params.place}, function () {
+        res.redirect('/places/' + place.get('id') + '/', 302);
+    });
 });
 
 module.exports = app;
