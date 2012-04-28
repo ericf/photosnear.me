@@ -9,14 +9,15 @@ var FLICKR_API_KEY = YUI.namespace('Env.Flickr').API_KEY || '',
 Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
 
     cache  : new Y.CacheOffline(),
-    query  : 'SELECT * FROM flickr.photos.info WHERE api_key={api_key} AND photo_id={id}',
+    query  : 'SELECT {attrs} FROM flickr.photos.info WHERE api_key={api_key} AND photo_id={id}',
     imgUrl : 'http://farm{farm}.static.flickr.com/{server}/{id}_{secret}_{size}.jpg',
     pageUrl: 'http://www.flickr.com/photos/{user}/{id}/',
 
     buildQuery: function () {
         return Lang.sub(this.query, {
             api_key: FLICKR_API_KEY,
-            id     : this.get('id')
+            id     : this.get('id'),
+            attrs  : Photo.YQL_ATTRS
         });
     },
 
@@ -115,7 +116,12 @@ Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
                 });
             }
         }
-    }
+    },
+
+    YQL_ATTRS: [
+        'id', 'farm', 'server', 'secret', 'owner', 'pathalias', 'title',
+        'location', 'url_sq', 'url_z'
+    ]
 
 });
 
