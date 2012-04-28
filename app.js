@@ -113,7 +113,7 @@ app.get('/places/:id/', function (req, res) {
             },
 
             photos: photos.map(function (photo) {
-                return photo.getAttrs(['id', 'clientId', 'thumbUrl']);
+                return photo.getAttrs(['id', 'title', 'thumbUrl']);
             }),
 
             initialData: {

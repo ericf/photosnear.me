@@ -34,7 +34,7 @@ GridView = Y.Base.create('gridView', Y.View, [], {
 
         content = this.template({
             photos: photos.map(function (photo) {
-                return photo.getAttrs(['id', 'clientId', 'thumbUrl']);
+                return photo.getAttrs(['id', 'title', 'thumbUrl']);
             })
         }, {
             partials: {'grid-photo': this.photoTemplate}
