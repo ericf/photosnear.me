@@ -37,8 +37,8 @@ app.configure(function () {
 
     // Middleware.
     app.use(express.static(pubDir));
-    app.use(app.router);
     app.use(express.favicon());
+    app.use(app.router);
 });
 
 app.configure('development', function () {
@@ -191,6 +191,10 @@ app.get('/:place', function (req, res) {
     var place = new Y.PNM.Place();
 
     place.load({text: req.params.place}, function () {
+        if (place.isNew()) {
+            return res.send(404);
+        }
+
         res.redirect('/places/' + place.get('id') + '/', 302);
     });
 });
