@@ -85,7 +85,6 @@ Y.namespace('PNM').GridView = GridView;
     requires: [
         'node-style',
         'node-screen',
-        'pnm-photos',
         'pnm-templates',
         'view'
     ]
