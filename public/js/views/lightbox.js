@@ -101,7 +101,6 @@ Y.namespace('PNM').LightboxView = LightboxView;
 }, '0.5.0', {
     requires: [
         'event-key',
-        'pnm-photos',
         'pnm-templates',
         'transition',
         'view'
