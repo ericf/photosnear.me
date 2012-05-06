@@ -1,6 +1,6 @@
 YUI.add('pnm-place', function (Y) {
 
-var FLICKR_API_KEY = YUI.namespace('Env.Flickr').API_KEY || '',
+var FLICKR_ENV = YUI.namespace('Env.Flickr'),
 
     Lang = Y.Lang,
     Place;
@@ -31,7 +31,7 @@ Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
 
             // assumes we at least have a lat/lon
             return Lang.sub(this.queries.placeFromLatLon, {
-                api_key  : FLICKR_API_KEY,
+                api_key  : FLICKR_ENV.API_KEY || '',
                 latitude : this.get('latitude'),
                 longitude: this.get('longitude'),
                 attrs    : Place.YQL_ATTRS

@@ -73,7 +73,6 @@
                     "requires": [
                         "node-style",
                         "node-screen",
-                        "pnm-photos",
                         "pnm-templates",
                         "view"
                     ]
@@ -83,7 +82,6 @@
                     "path"    : "views/lightbox.js",
                     "requires": [
                         "event-key",
-                        "pnm-photos",
                         "pnm-templates",
                         "transition",
                         "view"
