@@ -1,6 +1,6 @@
 YUI.add('pnm-photo', function (Y) {
 
-var FLICKR_API_KEY,
+var FLICKR_ENV = YUI.namespace('Env.Flickr'),
 
     Lang  = Y.Lang,
     Place = Y.PNM.Place,
@@ -14,11 +14,8 @@ Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
     pageUrl: 'http://www.flickr.com/photos/{user}/{id}/',
 
     buildQuery: function () {
-        // one time initialization for FLICKR_API_KEY in lazy mode
-        FLICKR_API_KEY = FLICKR_API_KEY || YUI.namespace('Env.Flickr').API_KEY || '';
-
         return Lang.sub(this.query, {
-            api_key: FLICKR_API_KEY,
+            api_key: FLICKR_ENV.API_KEY || '',
             id     : this.get('id'),
             attrs  : Photo.YQL_ATTRS
         });
