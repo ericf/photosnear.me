@@ -128,7 +128,7 @@ Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
 
 Y.namespace('PNM').Photo = Photo;
 
-}, '0.5.0', {
+}, '0.5.1', {
     requires: [
         'gallery-model-sync-yql',
         'cache-offline',

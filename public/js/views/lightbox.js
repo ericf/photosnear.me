@@ -106,7 +106,7 @@ LightboxView = Y.Base.create('lightboxView', Y.View, [], {
 
 Y.namespace('PNM').LightboxView = LightboxView;
 
-}, '0.5.0', {
+}, '0.5.1', {
     requires: [
         'event-key',
         'pnm-templates',
