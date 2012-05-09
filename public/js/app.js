@@ -47,12 +47,6 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
         this.on('lightboxView:prev', this.navigateToPhoto);
         this.on('lightboxView:next', this.navigateToPhoto);
-
-        // iOS saved to home screen, always route to "/"" so geolocation lookup
-        // is preformed.
-        if (Y.config.win.navigator.standalone) {
-            this.locate();
-        }
     },
 
     render: function () {

@@ -86,6 +86,13 @@
         photos.isEmpty() && app.loadPhotos();
         view && app.showView(viewName, null, {transition: false});
 
+        // Determine if the user needs to be located. When the app is saved to
+        // the home screen in iOS, always route to "/"" so geolocation lookup
+        // is preformed.
+        if (place.isNew() || Y.config.win.navigator.standalone) {
+            app.locate();
+        }
+
     });
     </script>
 </body>
