@@ -17,19 +17,25 @@ GridView = Y.Base.create('gridView', Y.View, [], {
     initializer: function (config) {
         var photos = this.get('photos');
 
-        photos.after('reset', this.render, this);
-
         this._maxKnownHeight = 0;
-
         this.publish('more', {preventable: false});
 
-        Y.one('win').on(['scroll', 'resize'], this.more, this);
+        photos.after('reset', this.render, this);
 
         // Only try to load more photos if we already have some photos. This
         // prevents the lazily-loaded photos from duplicating.
         if (!photos.isEmpty()) {
             Y.later(1, this, 'more');
         }
+    },
+
+    attachEvents: function () {
+        GridView.superclass.attachEvents.apply(this, arguments);
+
+        this._attachedViewEvents.push(
+            Y.one('win').on(['scroll', 'resize'], this.more, this));
+
+        return this;
     },
 
     render: function () {
