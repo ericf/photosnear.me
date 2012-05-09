@@ -5,7 +5,7 @@ http://photosnear.me/
 
 An application that allows you view photos that were taken near your current,
 physical, location. This is a JavaScript web app built on top of the
-**[YUI App Framework][]**, YQL, and Flickr.
+**[YUI App Framework][]**, [YQL][], and [Flickr][].
 
 Running
 -------
@@ -20,7 +20,7 @@ node server.js
 License
 -------
 
-Copyright (c) 2011 Eric Ferraiuolo <eferraiuolo@gmail.com>.
+Copyright (c) 2011-2012 Eric Ferraiuolo <eferraiuolo@gmail.com>.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -40,3 +40,5 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 [YUI App Framework]: http://yuilibrary.com/yui/docs/app/
+[YQL]: http://developer.yahoo.com/yql/
+[Flickr]: http://www.flickr.com/
