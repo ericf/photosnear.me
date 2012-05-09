@@ -33,6 +33,12 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
         }
     },
 
+    transitions: {
+        navigate: 'fade',
+        toChild : 'fade',
+        toParent: 'fade'
+    },
+
     initializer: function () {
         this.after('placeChange', this.render);
         this.after('placeChange', this.loadPhotos);
