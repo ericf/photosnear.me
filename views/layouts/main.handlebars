@@ -31,25 +31,25 @@
 
     <script src="http://yui.yahooapis.com/{{yui_version}}/build/yui/yui{{min}}.js"></script>
     <script>
-    {{#yui_config}}
+      {{#yui_config}}
         var YUI_config = {{{.}}};
-    {{/yui_config}}
+      {{/yui_config}}
 
-    {{#config.flickr}}
+      {{#config.flickr}}
         YUI.namespace('Env.Flickr').API_KEY = '{{api_key}}';
-    {{/config.flickr}}
+      {{/config.flickr}}
 
-    {{#initialData}}
+      {{#initialData}}
         YUI.namespace('Env.PNM').DATA = {
             place : {{#if place}} {{{place}}} {{else}} null {{/if}},
             photos: {{#if photos}} {{{photos}}} {{else}} null {{/if}},
             photo : {{#if photo}} {{{photo}}} {{else}} null {{/if}}
         };
-    {{/initialData}}
+      {{/initialData}}
 
-    {{#initialView}}
+      {{#initialView}}
         YUI.namespace('Env.PNM').VIEW = '{{.}}';
-    {{/initialView}}
+      {{/initialView}}
     </script>
 
     <script>
