@@ -12,6 +12,11 @@
     <meta name="format-detection" content="telephone=no" />
 
     <link rel="stylesheet" href="/style.css" />
+
+  {{#typekit}}
+    <script src="{{.}}"></script>
+    <script>try{ Typekit.load(); } catch (e) {}</script>
+  {{/typekit}}
 </head>
 <body>
     <div id="wrap" class="{{#if located}}located{{else}}loading{{/if}}">
@@ -49,8 +54,6 @@
 
     <script>
     YUI().use('pnm-app', 'ios-oc-fix', function (Y) {
-
-        // try { Typekit.load(); } catch (e) {}
 
         var PNMEnv   = YUI.namespace('Env.PNM'),
             data     = YUI.namespace('Env.PNM.DATA'),

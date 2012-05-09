@@ -7,13 +7,14 @@
         "api_key": "0984607e2222db7a1be6a5692741ca08"
     },
 
+    "typekit": "http://use.typekit.com/wkh7ffm.js",
+
     "yui": {
         "version": "3.5.1",
 
         "client": {
             "modules": {
-                "ios-oc-fix": "/vendor/ios-orientationchange-fix.js",
-                "typekit"   : "http://use.typekit.com/wkh7ffm.js"
+                "ios-oc-fix": "/vendor/ios-orientationchange-fix.js"
             }
         },
 
