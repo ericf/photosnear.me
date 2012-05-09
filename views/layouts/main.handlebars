@@ -12,6 +12,11 @@
     <meta name="format-detection" content="telephone=no" />
 
     <link rel="stylesheet" href="/style.css" />
+
+  {{#typekit}}
+    <script src="{{.}}"></script>
+    <script>try{ Typekit.load(); } catch (e) {}</script>
+  {{/typekit}}
 </head>
 <body>
     <div id="wrap" class="{{#if located}}located{{else}}loading{{/if}}">
@@ -26,31 +31,29 @@
 
     <script src="http://yui.yahooapis.com/{{yui_version}}/build/yui/yui{{min}}.js"></script>
     <script>
-    {{#yui_config}}
+      {{#yui_config}}
         var YUI_config = {{{.}}};
-    {{/yui_config}}
+      {{/yui_config}}
 
-    {{#config.flickr}}
+      {{#config.flickr}}
         YUI.namespace('Env.Flickr').API_KEY = '{{api_key}}';
-    {{/config.flickr}}
+      {{/config.flickr}}
 
-    {{#initialData}}
+      {{#initialData}}
         YUI.namespace('Env.PNM').DATA = {
             place : {{#if place}} {{{place}}} {{else}} null {{/if}},
             photos: {{#if photos}} {{{photos}}} {{else}} null {{/if}},
             photo : {{#if photo}} {{{photo}}} {{else}} null {{/if}}
         };
-    {{/initialData}}
+      {{/initialData}}
 
-    {{#initialView}}
+      {{#initialView}}
         YUI.namespace('Env.PNM').VIEW = '{{.}}';
-    {{/initialView}}
+      {{/initialView}}
     </script>
 
     <script>
     YUI().use('pnm-app', 'ios-oc-fix', function (Y) {
-
-        // try { Typekit.load(); } catch (e) {}
 
         var PNMEnv   = YUI.namespace('Env.PNM'),
             data     = YUI.namespace('Env.PNM.DATA'),
@@ -85,6 +88,13 @@
 
         photos.isEmpty() && app.loadPhotos();
         view && app.showView(viewName, null, {transition: false});
+
+        // Determine if the user needs to be located. When the app is saved to
+        // the home screen in iOS, always route to "/"" so geolocation lookup
+        // is preformed.
+        if (place.isNew() || Y.config.win.navigator.standalone) {
+            app.locate();
+        }
 
     });
     </script>

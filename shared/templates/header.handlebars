@@ -3,11 +3,12 @@
         <span class="pin-shadow"></span>
         <span class="pin"></span>
     </a>
-    {{#if place}}
+
+  {{#if place}}
     <a href="/places/{{place.id}}/">
         Photos Near <span id="location">{{place.text}}</span>
     </a>
-    {{else}}
+  {{else}}
     Photos Near <span id="location">Me</span>
-    {{/if}}
+  {{/if}}
 </h1>
