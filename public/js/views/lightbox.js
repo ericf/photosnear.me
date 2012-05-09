@@ -17,7 +17,6 @@ LightboxView = Y.Base.create('lightboxView', Y.View, [], {
         this.after('photoChange', this.render);
     },
 
-    // TODO: figure out a better way to do this:
     attachEvents: function () {
         LightboxView.superclass.attachEvents.apply(this, arguments);
 
@@ -28,13 +27,15 @@ LightboxView = Y.Base.create('lightboxView', Y.View, [], {
         }, 'down:37,39', this);
 
         this._attachedViewEvents.push(photoKeyNav);
+
+        return this;
     },
 
     render: function () {
         var photo     = this.get('photo'),
             photos    = this.get('photos'),
             container = this.get('container'),
-            content, nav, prev, next;
+            content, photoNode, nav, prev, next;
 
         if (!photos.isEmpty()) {
             nav  = {};
@@ -60,7 +61,18 @@ LightboxView = Y.Base.create('lightboxView', Y.View, [], {
         });
 
         container.setContent(content);
+
+        photoNode     = container.one('.photo');
         this.infoNode = container.one('.photo-info');
+
+        photoNode.addClass('loading');
+        photo.loadImg(function () {
+            // Make sure photo hasn't changed while waiting for it to load.
+            if (photo === this.get('photo')) {
+                photoNode.removeClass('loading');
+                Y.later(1, this.infoNode, 'hide', ['fadeOut', {delay: 4}]);
+            }
+        }, this);
 
         return this;
     },
@@ -88,17 +100,13 @@ LightboxView = Y.Base.create('lightboxView', Y.View, [], {
         if (photo) {
             this.fire('next', {photo: photo});
         }
-    },
-
-    fadeInfo: function () {
-        // Fade out the photo info after 4 seconds.
-        Y.later(1, this.infoNode, 'hide', ['fadeOut', {delay: 4}]);
     }
+
 });
 
 Y.namespace('PNM').LightboxView = LightboxView;
 
-}, '0.5.0', {
+}, '0.5.1', {
     requires: [
         'event-key',
         'pnm-templates',

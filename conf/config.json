@@ -8,7 +8,7 @@
     },
 
     "yui": {
-        "version": "3.5.0",
+        "version": "3.5.1",
 
         "client": {
             "modules": {
@@ -88,6 +88,14 @@
                     ]
                 },
 
+                "pnm-no-location-view": {
+                    "path"    : "views/no-location.js",
+                    "requires": [
+                        "pnm-templates",
+                        "view"
+                    ]
+                },
+
                 "pnm-templates": {
                     "fullpath": "/templates.js",
                     "requires": ["handlebars-base"]
@@ -101,6 +109,7 @@
                         "gallery-geo",
                         "pnm-grid-view",
                         "pnm-lightbox-view",
+                        "pnm-no-location-view",
                         "pnm-photos",
                         "pnm-place",
                         "pnm-templates"

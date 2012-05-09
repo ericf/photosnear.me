@@ -1,12 +1,13 @@
 YUI.add('pnm-app', function (Y) {
 
-var PNM          = Y.PNM,
-    GridView     = PNM.GridView,
-    LightboxView = PNM.LightboxView,
-    Photo        = PNM.Photo,
-    Photos       = PNM.Photos,
-    Place        = PNM.Place,
-    Templates    = PNM.Templates,
+var PNM            = Y.PNM,
+    GridView       = PNM.GridView,
+    LightboxView   = PNM.LightboxView,
+    NoLocationView = PNM.NoLocationView,
+    Photo          = PNM.Photo,
+    Photos         = PNM.Photos,
+    Place          = PNM.Place,
+    Templates      = PNM.Templates,
     PhotosNearMe;
 
 PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
@@ -21,9 +22,21 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
         },
 
         lightbox: {
-            type  : LightboxView,
-            parent: 'grid'
+            type    : LightboxView,
+            parent  : 'grid',
+            preserve: true
+        },
+
+        noLocation: {
+            type    : NoLocationView,
+            preserve: true
         }
+    },
+
+    transitions: {
+        navigate: 'fade',
+        toChild : 'fade',
+        toParent: 'fade'
     },
 
     initializer: function () {
@@ -32,7 +45,8 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
         this.on('gridView:more', this.loadMorePhotos);
 
-        this.on(['lightboxView:prev', 'lightboxView:next'], this.navigateToPhoto);
+        this.on('lightboxView:prev', this.navigateToPhoto);
+        this.on('lightboxView:next', this.navigateToPhoto);
 
         // Do initial dispatch.
         if (Y.config.win.navigator.standalone) {
@@ -112,73 +126,42 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
             self   = this;
 
         if (photo) {
-            photo.loadImg(function () {
-                req.photo = photo;
-                next();
-            });
-        } else {
-            photo = new Photo(params);
-            photo.load(function () {
-                // Use the photo's location if we do not have a loaded place.
-                if (self.get('place').isNew()) {
-                    self.set('place', photo.get('location'));
-                }
-
-                photo.loadImg(function () {
-                    // Prefer Photo instance already in Photos list.
-                    req.photo = photos.getById(params.id) || photo;
-
-                    next();
-                });
-            });
+            req.photo = photo;
+            next();
         }
+
+        photo = new Photo(params);
+        photo.load(function () {
+            // Use the photo's location if we do not have a loaded place.
+            if (self.get('place').isNew()) {
+                self.set('place', photo.get('location'));
+            }
+
+            // Prefer Photo instance already in Photos list.
+            req.photo = photos.getById(params.id) || photo;
+
+            next();
+        });
     },
 
     showNoLocation: function () {
-        var view = new Y.View({
-            containerTemplate: '<div id="no-location" />',
-            template         : Templates['no-location']
-        });
-
-        view.render = function () {
-            this.get('container').setContent(this.template());
-            return this;
-        };
-
-        this.render().showView(view.render());
+        this.render().showView('noLocation');
     },
 
     showGrid: function (req) {
         this.showView('grid', {
             photos: req.photos
-        }, {
-            transition: 'fade'
         }, function (grid) {
             grid.reset();
         });
     },
 
     showLightbox: function (req) {
-        var activeView  = this.get('activeView'),
-            activePhoto = activeView && activeView.get('photo'),
-            photos      = this.get('photos'),
-            photo       = req.photo,
-            options     = {transition: 'fade'};
-
-        if (activePhoto) {
-            if (photos.getNext(photo) === activePhoto) {
-                options.transition = 'slideRight';
-                options.prepend    = true;
-            } else if (photos.getPrev(photo) === activePhoto) {
-                options.transition = 'slideLeft';
-            }
-        }
-
         this.showView('lightbox', {
             photo : req.photo,
             photos: this.get('photos')
-        }, options, function (lightbox) {
-            lightbox.fadeInfo();
+        }, {
+            update: true
         });
     },
 
@@ -229,13 +212,14 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
 Y.namespace('PNM').App = PhotosNearMe;
 
-}, '0.5.0', {
+}, '0.5.1', {
     requires: [
         'app-base',
         'app-transitions',
         'gallery-geo',
         'pnm-grid-view',
         'pnm-lightbox-view',
+        "pnm-no-location-view",
         'pnm-photos',
         'pnm-place',
         'pnm-templates'
