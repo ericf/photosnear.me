@@ -308,6 +308,9 @@ h1 a:visited {
     padding: 1em 0;
 }
 
+.grid {
+    width: 100%;
+}
 .grid ul {
     margin: 0 -5px;
     padding: 0;
@@ -345,7 +348,10 @@ h1 a:visited {
 }
 .grid .selected img { opacity: 0.5; }
 
-.lightbox { text-align: center; }
+.lightbox {
+    width: 100%;
+    text-align: center;
+}
 .lightbox-nav {
     margin: 0;
     padding: 0;
