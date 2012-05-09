@@ -56,19 +56,20 @@ Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
 
     // Insired by: Lucas Smith
     // (http://lucassmith.name/2008/11/is-my-image-loaded.html)
-    loadImg: function (callback) {
+    loadImg: function (callback, context) {
         var img  = new Image(),
             prop = img.naturalWidth ? 'naturalWidth' : 'width';
 
         Lang.isFunction(callback) || (callback = function () {});
+        context || (context = this);
 
         img.src = this.get('largeUrl');
 
         if (img.complete) {
-            callback.call(this, img[prop] ? img : null);
+            callback.call(context, img[prop] ? img : null);
         } else {
-            img.onload  = Y.bind(callback, this, img);
-            img.onerror = Y.bind(callback, this, null);
+            img.onload  = Y.bind(callback, context, img);
+            img.onerror = Y.bind(callback, context, null);
         }
     }
 
