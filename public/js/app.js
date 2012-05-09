@@ -89,8 +89,7 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
         Y.Geo.getCurrentPosition(function (res) {
             if (!res.success) {
-                self.showNoLocation();
-                return;
+                return self.render().showView('noLocation');
             }
 
             var place = new Place(res.coords);
@@ -142,10 +141,6 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
             next();
         });
-    },
-
-    showNoLocation: function () {
-        this.render().showView('noLocation');
     },
 
     showGrid: function (req) {
