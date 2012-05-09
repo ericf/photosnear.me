@@ -24,7 +24,7 @@
             {{> header}}
         </div>
 
-        <div id="main">
+        <div id="main" class="layout">
             {{{body}}}
         </div>
     </div>
@@ -84,7 +84,7 @@
             viewContainer: '#main',
             transitions  : true,
             serverRouting: true
-        });
+        }).render();
 
         photos.isEmpty() && app.loadPhotos();
         view && app.showView(viewName, null, {transition: false});

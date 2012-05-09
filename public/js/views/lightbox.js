@@ -70,7 +70,6 @@ LightboxView = Y.Base.create('lightboxView', Y.View, [], {
             // Make sure photo hasn't changed while waiting for it to load.
             if (photo === this.get('photo')) {
                 photoNode.removeClass('loading');
-                Y.later(1, this.infoNode, 'hide', ['fadeOut', {delay: 4}]);
             }
         }, this);
 
