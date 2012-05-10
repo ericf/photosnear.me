@@ -60,7 +60,7 @@ LightboxView = Y.Base.create('lightboxView', Y.View, [], {
             ]))
         });
 
-        container.setContent(content);
+        container.setHTML(content);
 
         photoNode     = container.one('.photo');
         this.infoNode = container.one('.photo-info');

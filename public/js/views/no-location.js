@@ -10,7 +10,7 @@ NoLocationView = Y.Base.create('noLocationView', Y.View, [], {
     template         : Templates['no-location'],
 
     render: function () {
-        this.get('container').setContent(this.template());
+        this.get('container').setHTML(this.template());
         return this;
     }
 
