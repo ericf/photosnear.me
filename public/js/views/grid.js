@@ -51,7 +51,7 @@ GridView = Y.Base.create('gridView', Y.View, [], {
             partials: {'grid-photo': this.photoTemplate}
         });
 
-        container.setContent(content);
+        container.setHTML(content);
         return this;
     },
 

@@ -68,7 +68,7 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
         content = this.headerTemplate({place: placeData});
 
-        container.removeClass('loading').one('#header').setContent(content);
+        container.removeClass('loading').one('#header').setHTML(content);
         // Delay adding `located` class so the CSS transitions run.
         place.isNew() || Y.later(1, container, 'addClass', 'located');
 
