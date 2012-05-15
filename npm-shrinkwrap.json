@@ -46,6 +46,9 @@
         }
       }
     },
+    "uglify-js": {
+      "version": "1.2.6"
+    },
     "yui": {
       "version": "3.5.1",
       "dependencies": {

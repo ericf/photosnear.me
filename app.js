@@ -75,8 +75,12 @@ app.get('/combo', combo.combine({rootPath: pubDir + '/js'}), function (req, res)
 
 // Dymanic resource for precompiled templates.
 app.get('/templates.js', (function () {
-    var precompiled = require('./lib/templates').precompiled,
-        templates   = [];
+    var jsp = require('uglify-js').parser,
+        pro = require('uglify-js').uglify,
+
+        precompiled = require('./lib/templates').precompiled,
+
+        templates = [];
 
     Y.Object.each(precompiled, function (template, name) {
         templates.push({
@@ -90,7 +94,16 @@ app.get('/templates.js', (function () {
             layout   : false,
             templates: templates
         }, function (err, view) {
-            res.send(view, {'Content-Type': 'application/javascript'}, 200);
+            if (err) { return next(); }
+
+            var ast = jsp.parse(view),
+                min;
+
+            min = pro.gen_code(
+                    pro.ast_squeeze(
+                        pro.ast_mangle(ast)));
+
+            res.send(min, {'Content-Type': 'application/javascript'}, 200);
         });
     };
 }()));
