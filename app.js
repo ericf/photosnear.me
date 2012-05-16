@@ -189,7 +189,7 @@ app.get('/stats/', function (req, res) {
     res.json({
         uptime: process.uptime(),
         memory: process.memoryUsage()
-    })
+    });
 });
 
 // Catch-all route to dynamically figure out the place based on text.
