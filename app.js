@@ -50,7 +50,7 @@ app.configure('development', function () {
 
 app.configure('production', function () {
     // only minify templates in production
-    app.enable('uglify');
+    app.enable('minify templates');
     app.enable('view cache');
     app.use(express.errorHandler());
 });
@@ -77,7 +77,7 @@ app.get('/combo', combo.combine({rootPath: pubDir + '/js'}), function (req, res)
 
 // Dymanic resource for precompiled templates.
 app.get('/templates.js', (function () {
-    var uglify = app.enabled('uglify') ? require('uglify-js') : function (k) { return k; },
+    var minify = app.enabled('minify templates') ? require('uglify-js') : function (k) { return k; },
 
         precompiled = require('./lib/templates').precompiled,
 
@@ -97,7 +97,7 @@ app.get('/templates.js', (function () {
         }, function (err, view) {
             if (err) { return req.next(); }
 
-            res.send(uglify(view), {'Content-Type': 'application/javascript'}, 200);
+            res.send(minify(view), {'Content-Type': 'application/javascript'}, 200);
         });
     };
 }()));
