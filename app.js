@@ -77,8 +77,8 @@ app.get('/combo', combo.combine({rootPath: pubDir + '/js'}), function (req, res)
 });
 
 // Dymanic resource for precompiled templates.
-app.get('/templates.js', (function () {
-    var precompiled = require('./lib/templates').precompiled,
+app.get('/templates.js', function (req, res, next) {
+    var precompiled = require('./lib/templates').getPrecompiled(),
 
         templates = [];
 
@@ -89,28 +89,26 @@ app.get('/templates.js', (function () {
         });
     });
 
-    return function (req, res, next) {
-        res.render('templates', {
-            layout   : false,
-            templates: templates
-        }, function (err, view) {
-            if (err) { return next(); }
+    res.render('templates', {
+        layout   : false,
+        templates: templates
+    }, function (err, view) {
+        if (err) { return next(); }
 
-            var minify, templates;
+        var minify, templates;
 
-            if (app.enabled('minify templates')) {
-                minify    = require('uglify-js');
-                templates = minify(view);
-            } else {
-                templates = view;
-            }
+        if (app.enabled('minify templates')) {
+            minify    = require('uglify-js');
+            templates = minify(view);
+        } else {
+            templates = view;
+        }
 
-            res.send(templates, {
-                'Content-Type': 'application/javascript'
-            }, 200);
-        });
-    };
-}()));
+        res.send(templates, {
+            'Content-Type': 'application/javascript'
+        }, 200);
+    });
+});
 
 app.get('/places/:id/', function (req, res) {
     var place    = new Y.PNM.Place({id: req.params.id}),
