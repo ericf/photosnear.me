@@ -49,6 +49,9 @@ app.configure('development', function () {
 });
 
 app.configure('production', function () {
+    // Only minify templates in production.
+    app.enable('minify templates');
+
     app.enable('view cache');
     app.use(express.errorHandler());
 });
@@ -74,11 +77,8 @@ app.get('/combo', combo.combine({rootPath: pubDir + '/js'}), function (req, res)
 });
 
 // Dymanic resource for precompiled templates.
-app.get('/templates.js', (function () {
-    var jsp = require('uglify-js').parser,
-        pro = require('uglify-js').uglify,
-
-        precompiled = require('./lib/templates').precompiled,
+app.get('/templates.js', function (req, res, next) {
+    var precompiled = require('./lib/templates').getPrecompiled(),
 
         templates = [];
 
@@ -89,24 +89,26 @@ app.get('/templates.js', (function () {
         });
     });
 
-    return function (req, res) {
-        res.render('templates', {
-            layout   : false,
-            templates: templates
-        }, function (err, view) {
-            if (err) { return next(); }
+    res.render('templates', {
+        layout   : false,
+        templates: templates
+    }, function (err, view) {
+        if (err) { return next(); }
 
-            var ast = jsp.parse(view),
-                min;
+        var minify, templates;
 
-            min = pro.gen_code(
-                    pro.ast_squeeze(
-                        pro.ast_mangle(ast)));
+        if (app.enabled('minify templates')) {
+            minify    = require('uglify-js');
+            templates = minify(view);
+        } else {
+            templates = view;
+        }
 
-            res.send(min, {'Content-Type': 'application/javascript'}, 200);
-        });
-    };
-}()));
+        res.send(templates, {
+            'Content-Type': 'application/javascript'
+        }, 200);
+    });
+});
 
 app.get('/places/:id/', function (req, res) {
     var place    = new Y.PNM.Place({id: req.params.id}),
@@ -195,7 +197,7 @@ app.get('/stats/', function (req, res) {
     res.json({
         uptime: process.uptime(),
         memory: process.memoryUsage()
-    })
+    });
 });
 
 // Catch-all route to dynamically figure out the place based on text.

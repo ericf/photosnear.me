@@ -18,7 +18,7 @@ NoLocationView = Y.Base.create('noLocationView', Y.View, [], {
 
 Y.namespace('PNM').NoLocationView = NoLocationView;
 
-}, '0.5.1', {
+}, '0.5.2', {
     requires: [
         'pnm-templates',
         'view'
