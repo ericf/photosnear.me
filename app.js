@@ -95,7 +95,7 @@ app.get('/templates.js', (function () {
             layout   : false,
             templates: templates
         }, function (err, view) {
-            if (err) { return next(); }
+            if (err) { return req.next(); }
 
             res.send(uglify(view), {'Content-Type': 'application/javascript'}, 200);
         });
