@@ -49,6 +49,8 @@ app.configure('development', function () {
 });
 
 app.configure('production', function () {
+    // only minify templates in production
+    app.enable('minify templates');
     app.enable('view cache');
     app.use(express.errorHandler());
 });
@@ -75,8 +77,7 @@ app.get('/combo', combo.combine({rootPath: pubDir + '/js'}), function (req, res)
 
 // Dymanic resource for precompiled templates.
 app.get('/templates.js', (function () {
-    var jsp = require('uglify-js').parser,
-        pro = require('uglify-js').uglify,
+    var minify = app.enabled('minify templates') ? require('uglify-js') : function (k) { return k; },
 
         precompiled = require('./lib/templates').precompiled,
 
@@ -94,16 +95,9 @@ app.get('/templates.js', (function () {
             layout   : false,
             templates: templates
         }, function (err, view) {
-            if (err) { return next(); }
+            if (err) { return req.next(); }
 
-            var ast = jsp.parse(view),
-                min;
-
-            min = pro.gen_code(
-                    pro.ast_squeeze(
-                        pro.ast_mangle(ast)));
-
-            res.send(min, {'Content-Type': 'application/javascript'}, 200);
+            res.send(minify(view), {'Content-Type': 'application/javascript'}, 200);
         });
     };
 }()));
@@ -195,7 +189,7 @@ app.get('/stats/', function (req, res) {
     res.json({
         uptime: process.uptime(),
         memory: process.memoryUsage()
-    })
+    });
 });
 
 // Catch-all route to dynamically figure out the place based on text.
