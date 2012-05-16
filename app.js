@@ -49,6 +49,8 @@ app.configure('development', function () {
 });
 
 app.configure('production', function () {
+    // only minify templates in production
+    app.enable('uglify');
     app.enable('view cache');
     app.use(express.errorHandler());
 });
@@ -75,7 +77,7 @@ app.get('/combo', combo.combine({rootPath: pubDir + '/js'}), function (req, res)
 
 // Dymanic resource for precompiled templates.
 app.get('/templates.js', (function () {
-    var uglify = require('uglify-js'),
+    var uglify = app.enabled('uglify') ? require('uglify-js') : function (k) { return k; },
 
         precompiled = require('./lib/templates').precompiled,
 
