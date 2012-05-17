@@ -71,7 +71,18 @@ Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
             img.onload  = Y.bind(callback, context, img);
             img.onerror = Y.bind(callback, context, null);
         }
-    }
+    },
+
+    toJSON: function () {
+        var data = Photo.superclass.toJSON.apply(this, arguments);
+
+        delete data.dataURI;
+        delete data.thumbUrl;
+        delete data.largeUrl;
+        delete data.pageUrl;
+
+        return data;
+    },
 
 }, {
 
@@ -84,6 +95,7 @@ Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
         title    : {},
         url_sq   : {},
         url_z    : {},
+        dataURI  : {},
 
         location: {
             value : {},
@@ -96,7 +108,7 @@ Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
         thumbUrl: {
             readOnly: true,
             getter  : function () {
-                return this.get('url_sq') || this.getImgUrl('s');
+                return this.get('dataURI') || this.get('url_sq') || this.getImgUrl('s');
             }
         },
 

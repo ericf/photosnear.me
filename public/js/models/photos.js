@@ -72,7 +72,7 @@ Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
                     var item    = dataURIs.item(i),
                         dataURI = item && item.get('url');
 
-                    dataURI && photo.set('url_sq', dataURI);
+                    dataURI && photo.set('dataURI', dataURI);
                 });
 
                 callback(null, photos);
