@@ -116,7 +116,10 @@ app.get('/places/:id/', function (req, res) {
         requests = new Y.Parallel();
 
     place.load(requests.add());
-    photos.load({place: place}, requests.add());
+    photos.load({
+        place   : place,
+        dataURIs: 60
+    }, requests.add());
 
     requests.done(function () {
         res.render('grid', {

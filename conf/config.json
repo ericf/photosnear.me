@@ -64,7 +64,17 @@
                         "cache-offline",
                         "gallery-model-sync-yql",
                         "model-list",
+                        "pnm-datauris",
                         "pnm-photo",
+                        "yql"
+                    ]
+                },
+
+                "pnm-datauris": {
+                    "path"    : "models/datauris.js",
+                    "requires": [
+                        "gallery-model-sync-yql",
+                        "model-list",
                         "yql"
                     ]
                 },
