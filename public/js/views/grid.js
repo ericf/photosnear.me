@@ -21,6 +21,9 @@ GridView = Y.Base.create('gridView', Y.View, [], {
         this.publish('more', {preventable: false});
 
         photos.after('reset', this.render, this);
+        photos.after('add', this.addPhoto, this);
+
+        this.listNode = this.get('container').one('ul');
 
         // Only try to load more photos if we already have some photos. This
         // prevents the lazily-loaded photos from duplicating.
@@ -52,7 +55,14 @@ GridView = Y.Base.create('gridView', Y.View, [], {
         });
 
         container.setHTML(content);
+        this.listNode = container.one('ul');
+
         return this;
+    },
+
+    addPhoto: function (e) {
+        var photoAttrs = e.model.getAttrs(['id', 'title', 'thumbUrl']);
+        this.listNode.append(this.photoTemplate(photoAttrs));
     },
 
     more: function (e) {

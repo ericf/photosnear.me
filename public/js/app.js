@@ -162,11 +162,12 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
         newPhotos.load({
             place: place,
-            start: photos.size()
+            start: photos.size(),
+            num  : 60
         }, function () {
-            var allPhotos = photos.toArray().concat(newPhotos.toArray());
-            photos.reset(allPhotos);
-            // clean up temp ModelList
+            photos.add(newPhotos);
+
+            // Clean up temp ModelList.
             newPhotos.destroy();
         });
     },
