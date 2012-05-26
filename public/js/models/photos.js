@@ -2,9 +2,8 @@ YUI.add('pnm-photos', function (Y) {
 
 var FLICKR_ENV = YUI.namespace('Env.Flickr'),
 
-    Lang     = Y.Lang,
-    DataURIs = Y.PNM.DataURIs,
-    Photo    = Y.PNM.Photo,
+    Lang  = Y.Lang,
+    Photo = Y.PNM.Photo,
     Photos;
 
 Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
@@ -27,56 +26,6 @@ Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
             num    : options.num || 30,
             woeid  : options.place.get('id'),
             attrs  : Photo.YQL_ATTRS
-        });
-    },
-
-    sync: function (action, options, callback) {
-        options || (options = {});
-
-        var self    = this,
-            yqlSync = Y.ModelSync.YQL.prototype.sync;
-
-        if (!options.dataURIs) {
-            return yqlSync.apply(self, arguments);
-        }
-
-        yqlSync.call(self, action, options, function (err, res) {
-            if (err) { return callback(err, res); }
-
-            var requests     = new Y.Parallel(),
-                dataURILists = [],
-                photos, thumbURLs, getAsync;
-
-            photos = Y.Array.map(res && res.photo, function (photo) {
-                return new self.model(photo);
-            });
-
-            thumbURLs = Y.Array.map(photos, function (photo) {
-                return photo.get('thumbUrl');
-            });
-
-            while (thumbURLs.length) {
-                dataURILists.push(new DataURIs().load({
-                    urls: thumbURLs.splice(0, options.dataURIs)
-                }, requests.add()));
-            }
-
-            requests.done(function () {
-                var dataURIs = new DataURIs();
-
-                Y.Array.each(dataURILists, function (list) {
-                    dataURIs.add(list, {silent: true});
-                });
-
-                Y.Array.each(photos, function (photo, i) {
-                    var item    = dataURIs.item(i),
-                        dataURI = item && item.get('url');
-
-                    dataURI && photo.set('dataURI', dataURI);
-                });
-
-                callback(null, photos);
-            });
         });
     },
 
@@ -112,7 +61,6 @@ Y.namespace('PNM').Photos = Photos;
         'cache-offline',
         'gallery-model-sync-yql',
         'model-list',
-        'pnm-datauris',
         'pnm-photo',
         'yql'
     ]
