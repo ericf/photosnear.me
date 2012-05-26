@@ -24,7 +24,7 @@ Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
         return Lang.sub(this.query, {
             api_key: FLICKR_ENV.API_KEY || '',
             start  : options.start || 0,
-            num    : options.num || 60,
+            num    : options.num || 30,
             woeid  : options.place.get('id'),
             attrs  : Photo.YQL_ATTRS
         });
