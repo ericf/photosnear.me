@@ -162,8 +162,7 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
         newPhotos.load({
             place: place,
-            start: photos.size(),
-            num  : 60
+            start: photos.size()
         }, function () {
             photos.add(newPhotos);
 
