@@ -11,7 +11,7 @@ GridView = Y.Base.create('gridView', Y.View, [], {
     photoTemplate    : Templates['grid-photo'],
 
     events: {
-        '.photo': {click: 'select'}
+        '.photo a': {click: 'select'}
     },
 
     initializer: function (config) {
@@ -84,7 +84,7 @@ GridView = Y.Base.create('gridView', Y.View, [], {
 
     select: function (e) {
         this.get('container').all('.photo.selected').removeClass('selected');
-        e.currentTarget.addClass('selected');
+        e.currentTarget.ancestor('.photo').addClass('selected');
     },
 
     reset: function () {
