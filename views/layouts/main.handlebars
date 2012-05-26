@@ -55,45 +55,47 @@
     <script>
     YUI().use('pnm-app', 'ios-oc-fix', function (Y) {
 
-        var PNMEnv   = YUI.namespace('Env.PNM'),
-            data     = YUI.namespace('Env.PNM.DATA'),
-            place    = new Y.PNM.Place(data.place),
-            photos   = new Y.PNM.Photos().reset(data.photos || []),
-            photo    = new Y.PNM.Photo(data.photo),
+        var PNMEnv = YUI.namespace('Env.PNM'),
+            data   = YUI.namespace('Env.PNM.DATA'),
+
+            place  = new Y.PNM.Place(data.place),
+            photos = new Y.PNM.Photos().reset(data.photos || []),
+            photo  = new Y.PNM.Photo(data.photo),
+
             viewName = PNMEnv.VIEW,
-            views    = {},
-            view, app;
-
-        if (viewName) {
-            view = new Y.PNM.App.prototype.views[viewName].type({
-                container: Y.one('#main .' + viewName),
-                place    : place,
-                photos   : photos,
-                photo    : photo
-            });
-
-            views[viewName] = {instance: view};
-        }
+            app;
 
         app = new Y.PNM.App({
             place : place,
             photos: photos,
-            views : views,
 
             container    : '#wrap',
             viewContainer: '#main',
+
             transitions  : true,
             serverRouting: true
-        }).render();
+        });
 
-        photos.isEmpty() && app.loadPhotos();
-        view && app.showView(viewName, null, {transition: false});
+        if (viewName) {
+            app.showView(viewName, {
+                container: app.get('viewContainer').one('.' + viewName),
+                place    : place,
+                photos   : photos,
+                photo    : photo
+            }, {
+                transition: false,
+                render    : false
+            });
+        }
 
         // Determine if the user needs to be located. When the app is saved to
         // the home screen in iOS, always route to "/"" so geolocation lookup
         // is preformed.
         if (place.isNew() || Y.config.win.navigator.standalone) {
             app.locate();
+        } else {
+            app.render();
+            photos.isEmpty() && app.loadPhotos();
         }
 
     });

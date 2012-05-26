@@ -1,13 +1,10 @@
 YUI.add('pnm-app', function (Y) {
 
-var PNM            = Y.PNM,
-    GridView       = PNM.GridView,
-    LightboxView   = PNM.LightboxView,
-    NoLocationView = PNM.NoLocationView,
-    Photo          = PNM.Photo,
-    Photos         = PNM.Photos,
-    Place          = PNM.Place,
-    Templates      = PNM.Templates,
+var PNM       = Y.PNM,
+    Photo     = PNM.Photo,
+    Photos    = PNM.Photos,
+    Place     = PNM.Place,
+    Templates = PNM.Templates,
     PhotosNearMe;
 
 PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
@@ -17,18 +14,18 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
     views: {
         grid: {
-            type    : GridView,
+            type    : 'PNM.GridView',
             preserve: true
         },
 
         lightbox: {
-            type    : LightboxView,
+            type    : 'PNM.LightboxView',
             parent  : 'grid',
             preserve: true
         },
 
         noLocation: {
-            type    : NoLocationView,
+            type    : 'PNM.NoLocationView',
             preserve: true
         }
     },
@@ -86,7 +83,7 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
             var place = new Place(res.coords);
             place.load(function () {
                 self.set('place', place);
-                self.replace('/places/' + place.get('id') + '/');
+                self.navigate('/places/' + place.get('id') + '/', {replace: true});
             });
         });
     },
