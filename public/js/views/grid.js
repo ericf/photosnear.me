@@ -61,8 +61,29 @@ GridView = Y.Base.create('gridView', Y.View, [], {
     },
 
     addPhoto: function (e) {
-        var photoAttrs = e.model.getAttrs(['id', 'title', 'thumbUrl']);
-        this.listNode.append(this.photoTemplate(photoAttrs));
+        if (!this._addingPhotos) {
+            this._addingPhotos = true;
+            this._newPhotos    = [];
+
+            Y.later(0, this, function () {
+                this.insertPhotos(this._newPhotos);
+                this._addingPhotos = false;
+            });
+        }
+
+        this._newPhotos.push(e.model);
+    },
+
+    insertPhotos: function (photos) {
+        var fragment = Y.one(Y.config.doc.createDocumentFragment());
+
+        Y.Array.each(photos, function (photo) {
+            var photoAttrs = photo.getAttrs(['id', 'title', 'thumbUrl']);
+            fragment.append(this.photoTemplate(photoAttrs));
+        }, this);
+
+        this.listNode.append(fragment);
+        Y.later(1, this, 'more');
     },
 
     more: function (e) {
