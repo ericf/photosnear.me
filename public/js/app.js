@@ -135,7 +135,7 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
         this.showView('grid', {
             photos: req.photos
         }, function (grid) {
-            grid.reset();
+            grid.resetUI();
         });
     },
 

@@ -108,9 +108,10 @@ GridView = Y.Base.create('gridView', Y.View, [], {
         e.currentTarget.ancestor('.photo').addClass('selected');
     },
 
-    reset: function () {
+    resetUI: function () {
         this._maxKnownHeight = 0;
         this.get('container').all('.photo.selected').removeClass('selected');
+        this.more();
         return this;
     }
 
