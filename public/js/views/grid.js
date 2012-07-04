@@ -28,7 +28,9 @@ GridView = Y.Base.create('gridView', Y.View, [], {
         // Only try to load more photos if we already have some photos. This
         // prevents the lazily-loaded photos from duplicating.
         if (!photos.isEmpty()) {
-            Y.later(1, this, 'more');
+            Y.later(0, this, 'more');
+        } else {
+            photos.once('load', this.more, this);
         }
     },
 
@@ -68,6 +70,9 @@ GridView = Y.Base.create('gridView', Y.View, [], {
             Y.later(0, this, function () {
                 this.insertPhotos(this._newPhotos);
                 this._addingPhotos = false;
+
+                // Try to load more photos, if needed.
+                Y.later(0, this, 'more');
             });
         }
 
@@ -83,7 +88,6 @@ GridView = Y.Base.create('gridView', Y.View, [], {
         }, this);
 
         this.listNode.append(fragment);
-        Y.later(1, this, 'more');
     },
 
     more: function (e) {
