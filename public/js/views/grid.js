@@ -108,6 +108,9 @@ GridView = Y.Base.create('gridView', Y.View, [], {
     },
 
     select: function (e) {
+        // Don't want to select photo if they are opening it in a new tab.
+        if (e.button !== 1 || e.ctrlKey || e.metaKey) { return; }
+
         this.get('container').all('.photo.selected').removeClass('selected');
         e.currentTarget.ancestor('.photo').addClass('selected');
     },
