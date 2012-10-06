@@ -195,7 +195,7 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
 Y.namespace('PNM').App = PhotosNearMe;
 
-}, '0.5.2', {
+}, '0.5.3', {
     requires: [
         'app-base',
         'app-transitions',

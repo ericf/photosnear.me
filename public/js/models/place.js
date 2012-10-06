@@ -97,7 +97,7 @@ Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
 
 Y.namespace('PNM').Place = Place;
 
-}, '0.5.2', {
+}, '0.5.3', {
     requires: [
         'cache-offline',
         'gallery-model-sync-yql',
