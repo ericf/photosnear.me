@@ -61,13 +61,17 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
         };
 
         // Update the title of the browser window.
-        doc && (doc.title = this.titleTemplate({place: placeData}));
+        if (doc) {
+            doc.title = this.titleTemplate({place: placeData});
+        }
 
         content = this.headerTemplate({place: placeData});
 
         container.removeClass('loading').one('#header').setHTML(content);
         // Delay adding `located` class so the CSS transitions run.
-        place.isNew() || Y.later(1, container, 'addClass', 'located');
+        if (!place.isNew()) {
+            Y.later(0, container, 'addClass', 'located');
+        }
 
         return this;
     },

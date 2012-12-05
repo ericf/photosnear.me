@@ -78,7 +78,7 @@ LightboxView = Y.Base.create('lightboxView', Y.View, [], {
 
     toggleInfo: function (e) {
         var infoNode = this.infoNode,
-            visible  = !(infoNode.getStyle('display') === 'none');
+            visible  = infoNode.getStyle('display') !== 'none';
 
         if (visible) {
             infoNode.hide('fadeOut');

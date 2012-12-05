@@ -81,7 +81,7 @@ Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
         delete data.pageUrl;
 
         return data;
-    },
+    }
 
 }, {
 
