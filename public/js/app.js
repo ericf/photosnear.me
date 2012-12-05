@@ -181,13 +181,9 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
         routes: {
             value: [
-                {path: '/', callback: 'locate'},
-
-                {path: '/places/:id/', callback: 'handlePlace'},
-                {path: '/places/:id/', callback: 'showGrid'},
-
-                {path: '/photos/:id/', callback: 'handlePhoto'},
-                {path: '/photos/:id/', callback: 'showLightbox'}
+                {path: '/',            callbacks: 'locate'},
+                {path: '/places/:id/', callbacks: ['handlePlace', 'showGrid']},
+                {path: '/photos/:id/', callbacks: ['handlePhoto', 'showLightbox']}
             ]
         }
     }

@@ -10,7 +10,7 @@
     "typekit": "http://use.typekit.com/wkh7ffm.js",
 
     "yui": {
-        "version": "3.5.1",
+        "version": "3.7.3",
 
         "client": {
             "modules": {
