@@ -115,6 +115,7 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
         if (photo) {
             req.photo = photo;
             next();
+            return;
         }
 
         photo = new Photo(params);
