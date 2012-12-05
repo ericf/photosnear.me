@@ -50,7 +50,7 @@
       "version": "1.3.3"
     },
     "yui": {
-      "version": "3.7.2",
+      "version": "3.7.3",
       "dependencies": {
         "request": {
           "version": "2.9.202"
