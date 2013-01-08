@@ -7,14 +7,15 @@
 
     "engines": {
         "node": "0.8.x",
-        "npm" : "1.1.x"
+        "npm" : ">=1.1.2"
     },
 
     "dependencies": {
-        "combohandler": "~0.1",
-        "connect"     : "1.x",
-        "express"     : "2.5.x",
-        "uglify-js"   : "1.x",
-        "yui"         : "3.7.x"
+        "combohandler"       : "latest",
+        "connect"            : "2.x",
+        "express"            : "3.x",
+        "express3-handlebars": "latest",
+        "fresh"              : "latest",
+        "yui"                : "3.8.x"
     }
 }

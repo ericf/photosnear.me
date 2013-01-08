@@ -1,6 +1,7 @@
-var app    = require('./app'),
-    config = require('./conf/config');
+var http = require('http'),
+    app  = require('./app'),
+    port = process.env.PORT || 3000;
 
-app.listen(config.port, function () {
-    console.log(config.name + ' Server listening on ' + config.port);
+http.createServer(app).listen(port, function () {
+    console.log(app.get('name') + ' Server listening on ' + port);
 });

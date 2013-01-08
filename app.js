@@ -4,9 +4,12 @@ var connect = require('connect'),
     Y       = require('yui/oop'),
 
     config     = require('./conf/config'),
+    common     = require('./conf/common'),
     middleware = require('./lib/middleware'),
     routes     = require('./lib/routes'),
-    app        = express.createServer();
+    hbs        = require('./lib/hbs'),
+
+    app = express();
 
 // -- Express config -----------------------------------------------------------
 app.configure('development', function () {
@@ -17,11 +20,12 @@ app.configure('development', function () {
 });
 
 app.configure(function () {
-    var common = require('./conf/common'),
-        dirs   = config.dirs;
+    var dirs = config.dirs;
+
+    app.set('name', config.name);
 
     // Use our custom Handlebars-based view engine as the default.
-    app.register('.handlebars', require('./lib/view'));
+    app.engine('.handlebars', hbs.engine);
     app.set('view engine', 'handlebars');
 
     app.set('views', dirs.views);
@@ -29,7 +33,7 @@ app.configure(function () {
 
     // Local values that will be shared across all views. Locals specified at
     // render time will override these values if they share the same name.
-    app.set('view options', Y.merge(common, {config: config}));
+    app.locals(Y.merge(common, {config: config}));
 
     // Middleware.
     app.use(express.favicon());
@@ -46,10 +50,6 @@ app.configure('development', function () {
 });
 
 app.configure('production', function () {
-    // Renable these when minification is done async!
-    // app.enable('minify templates');
-    // app.enable('minify js');
-
     app.enable('view cache');
     app.use(express.errorHandler());
 });

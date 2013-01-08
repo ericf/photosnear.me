@@ -11,7 +11,7 @@
     },
 
     "layouts": {
-        "main": "layouts/main"
+        "main": "main"
     },
 
     "flickr": {
