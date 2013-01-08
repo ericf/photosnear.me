@@ -4,6 +4,7 @@
     "homepage"   : "http://photosnear.me/",
     "version"    : "0.6.0",
     "author"     : "Eric Ferraiuolo <eferraiuolo@gmail.com> (http://github.com/ericf)",
+    "private"    : true,
 
     "engines": {
         "node": "0.8.x",
