@@ -1,42 +1,32 @@
 {
-    "layout"      : "layouts/main",
-    "pubDir"      : "public/",
-    "templatesDir": "shared/templates/",
+    "name" : "Photos Near Me",
+    "title": "Photos Near Me",
+    "port" : 3000,
+
+    "dirs": {
+        "pub"      : "public/",
+        "views"    : "views/",
+        "shared"   : "shared/",
+        "templates": "shared/templates/"
+    },
+
+    "layouts": {
+        "main": "layouts/main"
+    },
 
     "flickr": {
         "api_key": "0984607e2222db7a1be6a5692741ca08"
     },
 
-    "typekit": "http://use.typekit.com/wkh7ffm.js",
+    "typekit": {
+        "id": "wkh7ffm"
+    },
 
     "yui": {
         "version": "3.7.3",
 
-        "client": {
-            "modules": {
-                "ios-oc-fix": "/vendor/ios-orientationchange-fix.js"
-            }
-        },
-
-        "server": {
-            "base": "/vendor/",
-
-            "modules": {
-                "gallery-model-sync-yql": {
-                    "requires": [
-                        "model",
-                        "yql"
-                    ]
-                }
-            }
-        },
-
-        "pnm": {
-            "base"     : "/js/",
-            "comboBase": "/combo?",
-            "root"     : "/",
-
-            "modules": {
+        "modules": {
+            "shared": {
                 "pnm-place": {
                     "path"    : "models/place.js",
                     "requires": [
@@ -67,6 +57,15 @@
                         "pnm-photo",
                         "yql"
                     ]
+                }
+            },
+
+            "client": {
+                "ios-oc-fix": "/vendor/ios-orientationchange-fix.js",
+
+                "pnm-templates": {
+                    "fullpath": "/templates.js",
+                    "requires": ["handlebars-base"]
                 },
 
                 "pnm-grid-view": {
@@ -97,11 +96,6 @@
                     ]
                 },
 
-                "pnm-templates": {
-                    "fullpath": "/templates.js",
-                    "requires": ["handlebars-base"]
-                },
-
                 "pnm-app": {
                     "path"    : "app.js",
                     "requires": [
@@ -115,6 +109,53 @@
                         "pnm-place",
                         "pnm-templates"
                     ]
+                }
+            },
+
+            "server": {
+                "gallery-model-sync-yql": {
+                    "path": "/vendor/gallery-model-sync-yql/gallery-model-sync-yql-min.js",
+
+                    "requires": [
+                        "model",
+                        "yql"
+                    ],
+
+                    "optional": [
+                        "cache",
+                        "cache-offline"
+                    ]
+                }
+            }
+        },
+
+        "server": {
+            "useSync": true,
+            "combine": false,
+
+            "groups": {
+                "server": {},
+
+                "shared": {
+                    "base": "shared/js/"
+                }
+            }
+        },
+
+        "client": {
+            "allowRollup": false,
+
+            "groups": {
+                "client": {
+                    "base"     : "/js/",
+                    "comboBase": "/combo?",
+                    "root"     : "/"
+                },
+
+                "shared": {
+                    "base"     : "/js/",
+                    "comboBase": "/shared/combo?",
+                    "root"     : "/"
                 }
             }
         }

@@ -4,57 +4,90 @@ var fs   = require('fs'),
 
     CONFIG_FILE = 'config.json',
     NODE_ENV    = process.env.NODE_ENV,
+    PORT        = process.env.PORT,
 
     ENV = {
         development: NODE_ENV !== 'production',
         production : NODE_ENV === 'production'
-    };
+    },
 
-var appRoot    = process.cwd(),
+    appRoot    = process.cwd(),
     configFile = path.join(__dirname, CONFIG_FILE),
-    config     = path.existsSync(configFile) &&
-                    JSON.parse(fs.readFileSync(configFile, 'utf8'));
+    yuiFilter  = ENV.production ? 'min' : 'raw',
+    config;
 
-if (!config) {
+// Poor-mans object clone.
+function clone(config) {
+    return JSON.parse(JSON.stringify(config));
+}
+
+// Wrap crazy YUI API.
+function mix(config, overrides) {
+    return Y.mix(config, overrides, true, null, 0, true);
+}
+
+if (fs.existsSync(configFile)) {
+    try {
+        config = JSON.parse(fs.readFileSync(configFile, 'utf8'));
+    } catch (e) {
+        console.error('Could not parse config file.');
+    }
+} else {
     console.error('Could not read config file: ' + configFile);
+}
+
+// Quit if we cannot process the config file.
+if (!config) {
     process.exit(1);
 }
 
-config.env          = ENV;
-config.pubDir       = path.join(appRoot, config.pubDir);
-config.templatesDir = path.join(appRoot, config.templatesDir);
+config.env  = ENV;
+config.port = PORT || config.port;
+
+Y.Object.each(config.dirs, function (dir, name, dirs) {
+    dirs[name] = path.join(appRoot, dir);
+});
 
 // YUI on the server.
-config.yui.server = {
-    useSync: true,
-    filter : ENV.production ? 'min' : 'raw',
+mix(config.yui.server, {
+    filter: yuiFilter,
 
     groups: {
-        server: Y.merge(Y.clone(config.yui.server), {
-            base   : path.join(config.pubDir, config.yui.server.base),
-            combine: false
-        }),
+        server: {
+            base   : appRoot,
+            filter : yuiFilter,
+            modules: clone(config.yui.modules.server)
+        },
 
-        pnm: Y.merge(Y.clone(config.yui.pnm), {
-            base   : path.join(config.pubDir, config.yui.pnm.base),
-            combine: false
-        })
+        shared: {
+            base   : path.join(appRoot, config.yui.server.groups.shared.base),
+            filter : yuiFilter,
+            modules: clone(config.yui.modules.shared)
+        }
     }
-};
+});
 
 // YUI on the client.
-config.yui.client = {
-    allowRollup: false,
-    combine    : ENV.production,
-    filter     : ENV.production ? 'min' : 'raw',
+mix(config.yui.client, {
+    combine: ENV.production,
+    filter : yuiFilter,
 
     groups: {
-        client: Y.clone(config.yui.client),
+        client: {
+            combine: ENV.production,
+            filter : yuiFilter,
+            modules: clone(config.yui.modules.client)
+        },
 
-        pnm: Y.merge(Y.clone(config.yui.pnm), {
-            combine: ENV.production
-        })
+        shared: {
+            combine: ENV.production,
+            filter : yuiFilter,
+            modules: clone(config.yui.modules.shared)
+        }
     }
-};
+});
 
-global.config = module.exports = config;
+// Remove modules from parsed YUI config.
+delete config.yui.modules;
+
+module.exports = config;

@@ -1,17 +1,12 @@
-require('./conf/config');
-
 var connect = require('connect'),
     combo   = require('combohandler'),
     express = require('express'),
-    YUI     = require('yui').YUI,
+    Y       = require('yui/oop'),
 
-    app    = express.createServer(),
-    pubDir = global.config.pubDir,
-    Y      = YUI(global.config.yui.server);
-
-// -- YUI config ---------------------------------------------------------------
-YUI.namespace('Env.Flickr').API_KEY = global.config.flickr.api_key;
-Y.use('parallel', 'pnm-place', 'pnm-photo', 'pnm-photos');
+    config     = require('./conf/config'),
+    middleware = require('./lib/middleware'),
+    routes     = require('./lib/routes'),
+    app        = express.createServer();
 
 // -- Express config -----------------------------------------------------------
 app.configure('development', function () {
@@ -22,22 +17,24 @@ app.configure('development', function () {
 });
 
 app.configure(function () {
-    // Don't ignore trailing slashes in routes.
-    app.set('strict routing', true);
+    var common = require('./conf/common'),
+        dirs   = config.dirs;
 
     // Use our custom Handlebars-based view engine as the default.
     app.register('.handlebars', require('./lib/view'));
     app.set('view engine', 'handlebars');
 
+    app.set('views', dirs.views);
+    app.set('strict routing', true);
+
     // Local values that will be shared across all views. Locals specified at
     // render time will override these values if they share the same name.
-    app.set('view options', Y.merge(require('./conf/common'), {
-        config: global.config
-    }));
+    app.set('view options', Y.merge(common, {config: config}));
 
     // Middleware.
-    app.use(express.static(pubDir));
     app.use(express.favicon());
+    app.use(express.static(config.dirs.pub));
+    app.use(express.static(config.dirs.shared));
     app.use(app.router);
 });
 
@@ -58,168 +55,16 @@ app.configure('production', function () {
 });
 
 // -- Routes -------------------------------------------------------------------
+app.get('/',            routes.index);
+app.get('/places/:id/', routes.places.place);
+app.get('/photos/:id/', routes.photos);
 
-// Root.
-app.get('/', function (req, res) {
-    res.render('index', {
-        located: false
-    });
-});
-
-// Combo-handler for JavaScript.
-app.get('/combo', combo.combine({rootPath: pubDir + '/js'}), function (req, res) {
-    if (connect.utils.conditionalGET(req)) {
-        if (!connect.utils.modified(req, res)) {
-            return connect.utils.notModified(res);
-        }
-    }
-
-    var js = res.body,
-        minify;
-
-    if (app.enabled('minify js')) {
-        minify = require('uglify-js');
-        js     = minify(js);
-    }
-
-    res.send(js, 200);
-});
-
-// Dymanic resource for precompiled templates.
-app.get('/templates.js', function (req, res, next) {
-    var precompiled = require('./lib/templates').getPrecompiled(),
-
-        templates = [];
-
-    Y.Object.each(precompiled, function (template, name) {
-        templates.push({
-            name    : name,
-            template: template
-        });
-    });
-
-    res.render('templates', {
-        layout   : false,
-        templates: templates
-    }, function (err, view) {
-        if (err) { return next(); }
-
-        var templates = view,
-            minify;
-
-        if (app.enabled('minify templates')) {
-            minify    = require('uglify-js');
-            templates = minify(view);
-        }
-
-        res.send(templates, {
-            'Content-Type': 'application/javascript'
-        }, 200);
-    });
-});
-
-app.get('/places/:id/', function (req, res) {
-    var place    = new Y.PNM.Place({id: req.params.id}),
-        photos   = new Y.PNM.Photos(),
-        requests = new Y.Parallel();
-
-    place.load(requests.add());
-    photos.load({place: place}, requests.add());
-
-    requests.done(function () {
-        res.render('grid', {
-            located: true,
-
-            place: {
-                id  : place.get('id'),
-                text: place.toString()
-            },
-
-            photos: photos.map(function (photo) {
-                return photo.getAttrs(['id', 'title', 'thumbUrl']);
-            }),
-
-            initialData: {
-                place : JSON.stringify(place),
-                photos: JSON.stringify(photos)
-            },
-
-            initialView: 'grid'
-        });
-    });
-});
-
-app.get('/photos/:id/', function (req, res) {
-    var photo = new Y.PNM.Photo({id: req.params.id}),
-        place;
-
-    photo.load(function () {
-        place = photo.get('location');
-
-        res.render('lightbox', {
-            located: true,
-
-            place: {
-                id  : place.get('id'),
-                text: place.toString()
-            },
-
-            photo: Y.merge({title: 'Photo'}, photo.getAttrs([
-                'title', 'largeUrl', 'pageUrl'
-            ])),
-
-            initialData: {
-                place: JSON.stringify(place),
-                photo: JSON.stringify(photo)
-            },
-
-            initialView: 'lightbox'
-        });
-    });
-});
-
-app.get('/cache/', function (req, res) {
-    var caches = {};
-
-    ['Place', 'Photo', 'Photos'].forEach(function (model) {
-        var cache = Y.PNM[model].prototype.cache;
-
-        caches[model] = {
-            entries: cache.get('size'),
-            bytes  : Buffer.byteLength(JSON.stringify(cache.get('entries')))
-        };
-    });
-
-    res.json(caches);
-});
-
-app.del('/cache/', function (req, res) {
-    ['Place', 'Photo', 'Photos'].forEach(function (model) {
-        Y.PNM[model].prototype.cache.flush();
-    });
-
-    res.send('Flushed caches.');
-});
-
-app.get('/stats/', function (req, res) {
-    res.json({
-        uptime: process.uptime(),
-        memory: process.memoryUsage()
-    });
-});
+app.get('/combo',        routes.combo.pub,    middleware.conditional);
+app.get('/shared/combo', routes.combo.shared, middleware.conditional);
+app.get('/templates.js', routes.templates,    middleware.conditional);
 
 // Catch-all route to dynamically figure out the place based on text.
 // **Note:** This needs to be the last route.
-app.get('/:place', function (req, res) {
-    var place = new Y.PNM.Place();
-
-    place.load({text: req.params.place}, function () {
-        if (place.isNew()) {
-            return res.send(404);
-        }
-
-        res.redirect('/places/' + place.get('id') + '/', 302);
-    });
-});
+app.get('/:place', routes.places.lookup('/places/'));
 
 module.exports = app;
