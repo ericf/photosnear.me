@@ -50,7 +50,7 @@ if (app.get('env') === 'development') {
 // -- Routes -------------------------------------------------------------------
 
 app.get('/',            routes.index);
-app.get('/places/:id/', routes.places.place);
+app.get('/places/:id/', routes.places);
 app.get('/photos/:id/', routes.photos);
 
 app.get('/combo',        routes.combo.pub);
