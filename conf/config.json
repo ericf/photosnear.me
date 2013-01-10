@@ -1,7 +1,6 @@
 {
-    "name" : "Photos Near Me",
-    "title": "Photos Near Me",
-    "port" : 3000,
+    "name": "Photos Near Me",
+    "port": 3000,
 
     "dirs": {
         "pub"      : "public/",

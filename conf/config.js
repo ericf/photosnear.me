@@ -6,14 +6,10 @@ var fs   = require('fs'),
     NODE_ENV    = process.env.NODE_ENV,
     PORT        = process.env.PORT,
 
-    ENV = {
-        development: NODE_ENV !== 'production',
-        production : NODE_ENV === 'production'
-    },
-
-    appRoot    = process.cwd(),
-    configFile = path.join(__dirname, CONFIG_FILE),
-    yuiFilter  = ENV.production ? 'min' : 'raw',
+    appRoot      = process.cwd(),
+    configFile   = path.join(__dirname, CONFIG_FILE),
+    isProduction = NODE_ENV === 'production',
+    yuiFilter    = isProduction ? 'min' : 'raw',
     config;
 
 // Poor-mans object clone.
@@ -41,7 +37,7 @@ if (!config) {
     process.exit(1);
 }
 
-config.env  = ENV;
+config.env  = NODE_ENV || 'development';
 config.port = PORT || config.port;
 
 Y.Object.each(config.dirs, function (dir, name, dirs) {
@@ -69,18 +65,18 @@ mix(config.yui.server, {
 
 // YUI on the client.
 mix(config.yui.client, {
-    combine: ENV.production,
+    combine: isProduction,
     filter : yuiFilter,
 
     groups: {
         client: {
-            combine: ENV.production,
+            combine: isProduction,
             filter : yuiFilter,
             modules: clone(config.yui.modules.client)
         },
 
         shared: {
-            combine: ENV.production,
+            combine: isProduction,
             filter : yuiFilter,
             modules: clone(config.yui.modules.shared)
         }

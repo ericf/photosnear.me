@@ -1,67 +1,61 @@
-var connect = require('connect'),
-    combo   = require('combohandler'),
-    express = require('express'),
-    Y       = require('yui/oop'),
+var express = require('express'),
 
-    config     = require('./conf/config'),
-    common     = require('./conf/common'),
-    middleware = require('./lib/middleware'),
-    routes     = require('./lib/routes'),
-    hbs        = require('./lib/hbs'),
+    config = require('./conf/config'),
+    hbs    = require('./lib/hbs'),
+    routes = require('./lib/routes'),
 
     app = express();
 
-// -- Express config -----------------------------------------------------------
-app.configure('development', function () {
-    // Gives us pretty logs in development. Must run before other middleware.
-    app.use(express.logger(
-        '[:date] :req[x-forwarded-for] ":method :url" :status [:response-time ms]'
-    ));
+// -- Config -------------------------------------------------------------------
+
+app.set('name', config.name);
+app.set('env', config.env);
+app.set('port', config.port);
+
+app.engine(hbs.extname, hbs.engine);
+app.set('view engine', hbs.extname.substring(1));
+app.set('views', config.dirs.views);
+
+app.enable('strict routing');
+
+app.locals({
+    flickr     : config.flickr,
+    min        : config.env === 'production' ? '-min' : '',
+    typekit    : config.typekit,
+    yui_config : JSON.stringify(config.yui.client),
+    yui_version: config.yui.version
 });
 
-app.configure(function () {
-    var dirs = config.dirs;
+// -- Middleware ---------------------------------------------------------------
 
-    app.set('name', config.name);
+if (app.get('env') === 'development') {
+    app.use(express.logger('tiny'));
+}
 
-    // Use our custom Handlebars-based view engine as the default.
-    app.engine('.handlebars', hbs.engine);
-    app.set('view engine', 'handlebars');
+app.use(express.compress());
+app.use(express.favicon());
+app.use(express.static(config.dirs.pub));
+app.use(express.static(config.dirs.shared));
+app.use(app.router);
 
-    app.set('views', dirs.views);
-    app.set('strict routing', true);
-
-    // Local values that will be shared across all views. Locals specified at
-    // render time will override these values if they share the same name.
-    app.locals(Y.merge(common, {config: config}));
-
-    // Middleware.
-    app.use(express.favicon());
-    app.use(express.static(config.dirs.pub));
-    app.use(express.static(config.dirs.shared));
-    app.use(app.router);
-});
-
-app.configure('development', function () {
+if (app.get('env') === 'development') {
     app.use(express.errorHandler({
         dumpExceptions: true,
         showStack     : true
     }));
-});
-
-app.configure('production', function () {
-    app.enable('view cache');
+} else {
     app.use(express.errorHandler());
-});
+}
 
 // -- Routes -------------------------------------------------------------------
+
 app.get('/',            routes.index);
 app.get('/places/:id/', routes.places.place);
 app.get('/photos/:id/', routes.photos);
 
-app.get('/combo',        routes.combo.pub,    middleware.conditional);
-app.get('/shared/combo', routes.combo.shared, middleware.conditional);
-app.get('/templates.js', routes.templates,    middleware.conditional);
+app.get('/combo',        routes.combo.pub);
+app.get('/shared/combo', routes.combo.shared);
+app.get('/templates.js', routes.templates);
 
 // Catch-all route to dynamically figure out the place based on text.
 // **Note:** This needs to be the last route.

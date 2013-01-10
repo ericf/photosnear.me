@@ -35,9 +35,9 @@
         var YUI_config = {{{.}}};
       {{/yui_config}}
 
-      {{#config.flickr}}
+      {{#flickr}}
         YUI.namespace('Env.Flickr').API_KEY = '{{api_key}}';
-      {{/config.flickr}}
+      {{/flickr}}
 
       {{#initialData}}
         YUI.namespace('Env.PNM').DATA = {
