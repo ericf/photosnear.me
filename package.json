@@ -13,10 +13,8 @@
 
     "dependencies": {
         "combohandler"       : "latest",
-        "connect"            : "2.x",
         "express"            : "3.x",
         "express3-handlebars": "latest",
-        "fresh"              : "latest",
         "yui"                : "3.8.x"
     }
 }
