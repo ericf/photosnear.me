@@ -56,7 +56,7 @@
             data   = YUI.namespace('Env.PNM.DATA'),
 
             place  = new Y.PNM.Place(data.place),
-            photos = new Y.PNM.Photos().reset(data.photos || []),
+            photos = new Y.PNM.Photos({items: data.photos}),
             photo  = new Y.PNM.Photo(data.photo),
 
             viewName = PNMEnv.VIEW,
@@ -74,14 +74,18 @@
         });
 
         if (viewName) {
-            app.showView(viewName, {
-                container: app.get('viewContainer').one('.' + viewName),
-                place    : place,
-                photos   : photos,
-                photo    : photo
-            }, {
-                render    : false,
-                transition: false
+            app.showContent(Y.one('#main .' + viewName), {
+                view: {
+                    name: viewName,
+
+                    config: {
+                        place : place,
+                        photos: photos,
+                        photo : photo
+                    }
+                },
+
+                transition: true
             });
         }
 
@@ -92,7 +96,10 @@
             app.locate();
         } else {
             app.render();
-            photos.isEmpty() && app.loadPhotos();
+
+            if (photos.isEmpty()) {
+                app.loadPhotos();
+            }
         }
 
     });

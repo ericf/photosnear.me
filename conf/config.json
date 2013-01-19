@@ -85,7 +85,7 @@
                     "path"    : "views/grid.js",
                     "requires": [
                         "node-style",
-                        "node-screen",
+                        "node-scroll-info",
                         "pnm-templates",
                         "view"
                     ]
@@ -113,6 +113,7 @@
                     "path"    : "app.js",
                     "requires": [
                         "app-base",
+                        "app-content",
                         "app-transitions",
                         "gallery-geo",
                         "pnm-grid-view",

@@ -17,7 +17,8 @@ GridView = Y.Base.create('gridView', Y.View, [], {
     initializer: function (config) {
         var photos = this.get('photos');
 
-        this._maxKnownHeight = 0;
+        Y.one('body').plug(Y.Plugin.ScrollInfo, {scrollMargin: 250});
+
         this.publish('more', {preventable: false});
 
         photos.after('reset', this.render, this);
@@ -28,9 +29,9 @@ GridView = Y.Base.create('gridView', Y.View, [], {
         // Only try to load more photos if we already have some photos. This
         // prevents the lazily-loaded photos from duplicating.
         if (!photos.isEmpty()) {
-            Y.later(0, this, 'more');
+            Y.later(0, this, 'moreIfNeeded');
         } else {
-            photos.once('load', this.more, this);
+            photos.once('load', this.moreIfNeeded, this);
         }
     },
 
@@ -38,7 +39,7 @@ GridView = Y.Base.create('gridView', Y.View, [], {
         GridView.superclass.attachEvents.apply(this, arguments);
 
         this._attachedViewEvents.push(
-            Y.one('win').on(['scroll', 'resize'], this.more, this));
+            Y.one('body').scrollInfo.on('scrollToBottom', this.more, this));
 
         return this;
     },
@@ -72,7 +73,7 @@ GridView = Y.Base.create('gridView', Y.View, [], {
                 this._addingPhotos = false;
 
                 // Try to load more photos, if needed.
-                Y.later(0, this, 'more');
+                Y.later(0, this, 'moreIfNeeded');
             });
         }
 
@@ -91,19 +92,16 @@ GridView = Y.Base.create('gridView', Y.View, [], {
     },
 
     more: function (e) {
-        var viewportBottom = Y.DOM.viewportRegion().bottom,
-            maxKnowHeight  = this._maxKnownHeight,
-            container, containerBottom;
+        this.get('container').one('.loading').show();
+        this.fire('more');
+    },
 
-        if (viewportBottom <= maxKnowHeight) { return; }
+    moreIfNeeded: function () {
+        var body            = Y.one('body'),
+            photosOffscreen = body.scrollInfo.getOffscreenNodes('.photo');
 
-        container       = this.get('container');
-        containerBottom = container.get('region').bottom;
-
-        if ((viewportBottom + 150) > containerBottom && containerBottom > maxKnowHeight) {
-            this._maxKnownHeight = containerBottom;
-            container.one('.loading').show();
-            this.fire('more');
+        if (photosOffscreen.isEmpty()) {
+            this.more();
         }
     },
 
@@ -116,9 +114,8 @@ GridView = Y.Base.create('gridView', Y.View, [], {
     },
 
     resetUI: function () {
-        this._maxKnownHeight = 0;
         this.get('container').all('.photo.selected').removeClass('selected');
-        this.more();
+        this.moreIfNeeded();
         return this;
     }
 
@@ -129,7 +126,7 @@ Y.namespace('PNM').GridView = GridView;
 }, '0.6.0', {
     requires: [
         'node-style',
-        'node-screen',
+        'node-scroll-info',
         'pnm-templates',
         'view'
     ]

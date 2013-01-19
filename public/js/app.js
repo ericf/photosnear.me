@@ -60,12 +60,8 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
             text: placeText
         };
 
-        // Update the title of the browser window.
-        if (doc) {
-            doc.title = this.titleTemplate({place: placeData});
-        }
-
-        content = this.headerTemplate({place: placeData});
+        doc.title = this.titleTemplate({place: placeData});
+        content   = this.headerTemplate({place: placeData});
 
         container.removeClass('loading').one('#header').setHTML(content);
         // Delay adding `located` class so the CSS transitions run.
@@ -199,6 +195,7 @@ Y.namespace('PNM').App = PhotosNearMe;
 }, '0.6.0', {
     requires: [
         'app-base',
+        'app-content',
         'app-transitions',
         'gallery-geo',
         'pnm-grid-view',
