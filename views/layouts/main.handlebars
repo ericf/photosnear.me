@@ -31,13 +31,10 @@
 
     <script src="http://yui.yahooapis.com/{{yui_version}}/build/yui/yui{{min}}.js"></script>
     <script>
-      {{#yui_config}}
-        var YUI_config = {{{.}}};
-      {{/yui_config}}
+        YUI.applyConfig({{{yui_config}}});
 
-      {{#flickr}}
-        YUI.namespace('Env.Flickr').API_KEY = '{{api_key}}';
-      {{/flickr}}
+        YUI.namespace('Env.PNM').CACHE  = {{{pnm_cache}}};
+        YUI.namespace('Env.PNM').FLICKR = {{{pnm_flickr}}};
 
       {{#initialData}}
         YUI.namespace('Env.PNM').DATA = {

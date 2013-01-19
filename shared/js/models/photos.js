@@ -1,15 +1,23 @@
 YUI.add('pnm-photos', function (Y) {
 
-var FLICKR_ENV = YUI.namespace('Env.Flickr'),
+var PNM_ENV = YUI.namespace('Env.PNM'),
 
     Lang  = Y.Lang,
     Photo = Y.PNM.Photo,
-    Photos;
+    Photos, cache;
+
+// Create model cache. Server uses a strict maximum number of entries which is
+// not a supported attribute by `CacheOffline`.
+if ('max' in PNM_ENV.CACHE.photos) {
+    cache = new Y.Cache(PNM_ENV.CACHE.photos);
+} else {
+    cache = new Y.CacheOffline(PNM_ENV.CACHE.photos);
+}
 
 Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
 
     model: Photo,
-    cache: new Y.CacheOffline(),
+    cache: cache,
     query: 'SELECT {attrs} FROM flickr.photos.search({start},{num}) ' +
                 'WHERE api_key={api_key} ' +
                 'AND safe_search=1 ' +
@@ -21,7 +29,7 @@ Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
         options || (options = {});
 
         return Lang.sub(this.query, {
-            api_key: FLICKR_ENV.API_KEY || '',
+            api_key: PNM_ENV.FLICKR.api_key || '',
             start  : options.start || 0,
             num    : options.num || 30,
             woeid  : options.place.get('id'),

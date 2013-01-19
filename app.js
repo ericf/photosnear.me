@@ -1,12 +1,23 @@
 var express = require('express'),
+    yui     = require('yui'),
+
+    PNM_ENV = yui.YUI.namespace('Env.PNM'),
 
     config = require('./conf/config'),
-    hbs    = require('./lib/hbs'),
-    routes = require('./lib/routes'),
+    app, hbs, routes;
 
-    app = express();
+// -- Configure YUI ------------------------------------------------------------
 
-// -- Config -------------------------------------------------------------------
+// Applies config to shared YUI instance.
+yui.getInstance().applyConfig(config.yui.server);
+
+PNM_ENV.CACHE  = config.cache.server;
+PNM_ENV.FLICKR = config.flickr;
+
+// -- Configure App ------------------------------------------------------------
+
+app = express();
+hbs = require('./lib/hbs');
 
 app.set('name', config.name);
 app.set('env', config.env);
@@ -19,7 +30,8 @@ app.set('views', config.dirs.views);
 app.enable('strict routing');
 
 app.locals({
-    flickr     : config.flickr,
+    pnm_cache  : JSON.stringify(config.cache.client),
+    pnm_flickr : JSON.stringify(config.flickr),
     min        : config.env === 'production' ? '-min' : '',
     typekit    : config.typekit,
     yui_config : JSON.stringify(config.yui.client),
@@ -49,6 +61,8 @@ if (app.get('env') === 'development') {
 
 // -- Routes -------------------------------------------------------------------
 
+routes = require('./lib/routes');
+
 app.get('/',            routes.index);
 app.get('/places/:id/', routes.places);
 app.get('/photos/:id/', routes.photos);
@@ -60,5 +74,7 @@ app.get('/templates.js', routes.templates);
 // Catch-all route to dynamically figure out the place based on text.
 // **Note:** This needs to be the last route.
 app.get('/:place', routes.places.lookup('/places/'));
+
+// -- Exports ------------------------------------------------------------------
 
 module.exports = app;

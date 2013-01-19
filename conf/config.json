@@ -21,6 +21,20 @@
         "id": "wkh7ffm"
     },
 
+    "cache": {
+        "server": {
+            "photo" : {"max": 100},
+            "photos": {"max": 100},
+            "place" : {"max": 100}
+        },
+
+        "client": {
+            "photo" : {"expires": 3600000},
+            "photos": {"expires": 3600000},
+            "place" : {"expires": 3600000}
+        }
+    },
+
     "yui": {
         "version": "3.8.0",
 

@@ -1,14 +1,22 @@
 YUI.add('pnm-place', function (Y) {
 
-var FLICKR_ENV = YUI.namespace('Env.Flickr'),
+var PNM_ENV = YUI.namespace('Env.PNM'),
 
     Lang = Y.Lang,
-    Place;
+    Place, cache;
+
+// Create model cache. Server uses a strict maximum number of entries which is
+// not a supported attribute by `CacheOffline`.
+if ('max' in PNM_ENV.CACHE.place) {
+    cache = new Y.Cache(PNM_ENV.CACHE.place);
+} else {
+    cache = new Y.CacheOffline(PNM_ENV.CACHE.place);
+}
 
 Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
 
+    cache      : cache,
     idAttribute: 'woeid',
-    cache      : new Y.CacheOffline(),
 
     queries: {
         placeFromId    : 'SELECT {attrs} FROM geo.placefinder WHERE woeid={id}',
@@ -29,7 +37,7 @@ Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
 
             // Assume we at least have a lat/lon.
             return Lang.sub(this.queries.placeFromLatLon, {
-                api_key  : FLICKR_ENV.API_KEY || '',
+                api_key  : PNM_ENV.FLICKR.api_key || '',
                 latitude : this.get('latitude'),
                 longitude: this.get('longitude'),
                 attrs    : Place.YQL_ATTRS
