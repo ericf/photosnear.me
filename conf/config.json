@@ -157,7 +157,8 @@
         },
 
         "client": {
-            "allowRollup": false,
+            "allowRollup" : false,
+            "maxURLLength": 2048,
 
             "groups": {
                 "client": {
