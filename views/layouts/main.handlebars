@@ -33,32 +33,20 @@
     <script>
         YUI.applyConfig({{{yui_config}}});
 
-        YUI.namespace('Env.PNM').CACHE  = {{{pnm_cache}}};
-        YUI.namespace('Env.PNM').FLICKR = {{{pnm_flickr}}};
-
-      {{#initialData}}
-        YUI.namespace('Env.PNM').DATA = {
-            place : {{#if place}} {{{place}}} {{else}} null {{/if}},
-            photos: {{#if photos}} {{{photos}}} {{else}} null {{/if}},
-            photo : {{#if photo}} {{{photo}}} {{else}} null {{/if}}
-        };
-      {{/initialData}}
-
-      {{#initialView}}
-        YUI.namespace('Env.PNM').VIEW = '{{.}}';
-      {{/initialView}}
+        {{{pnm_env}}}
     </script>
 
     <script>
-    YUI().use('pnm-app', 'ios-oc-fix', function (Y) {
+    YUI().use('pnm-app', 'json-parse', 'ios-oc-fix', function (Y) {
 
         var PNMEnv = YUI.namespace('Env.PNM'),
             data   = YUI.namespace('Env.PNM.DATA'),
 
-            place  = new Y.PNM.Place(data.place),
-            photos = new Y.PNM.Photos({items: data.photos}),
-            photo  = new Y.PNM.Photo(data.photo),
+            place  = new Y.PNM.Place(data.place ? Y.JSON.parse(data.place) : {}),
+            photos = new Y.PNM.Photos({items: data.photos ? Y.JSON.parse(data.photos) : []}),
+            photo  = new Y.PNM.Photo(data.photo ? Y.JSON.parse(data.photo) : {}),
 
+            routes   = PNMEnv.ROUTES,
             viewName = PNMEnv.VIEW,
             app;
 
@@ -71,6 +59,10 @@
 
             transitions  : true,
             serverRouting: true
+        });
+
+        Y.each(routes, function (route) {
+            app.route(route.path, app.routeCallbacks[route.name]);
         });
 
         if (viewName) {

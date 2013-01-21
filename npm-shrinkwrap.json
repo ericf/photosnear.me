@@ -126,6 +126,9 @@
         }
       }
     },
+    "express-expose": {
+      "version": "0.3.3"
+    },
     "express3-handlebars": {
       "version": "0.1.2",
       "dependencies": {

@@ -1,10 +1,11 @@
 var express = require('express'),
+    expose  = require('express-expose'),
     yui     = require('yui'),
 
     PNM_ENV = yui.YUI.namespace('Env.PNM'),
 
     config = require('./conf/config'),
-    app, hbs, routes;
+    app, hbs, routes, exposedRoutes;
 
 // -- Configure YUI ------------------------------------------------------------
 
@@ -29,9 +30,10 @@ app.set('views', config.dirs.views);
 
 app.enable('strict routing');
 
+app.expose(config.cache.client, 'YUI.Env.PNM.CACHE', 'pnm_env');
+app.expose(config.flickr, 'YUI.Env.PNM.FLICKR', 'pnm_env');
+
 app.locals({
-    pnm_cache  : JSON.stringify(config.cache.client),
-    pnm_flickr : JSON.stringify(config.flickr),
     min        : config.env === 'production' ? '-min' : '',
     typekit    : config.typekit,
     yui_config : JSON.stringify(config.yui.client),
@@ -61,11 +63,29 @@ if (app.get('env') === 'development') {
 
 // -- Routes -------------------------------------------------------------------
 
-routes = require('./lib/routes');
+routes        = require('./lib/routes');
+exposedRoutes = [];
 
-app.get('/',            routes.index);
-app.get('/places/:id/', routes.places);
-app.get('/photos/:id/', routes.photos);
+function exposeRoute(name) {
+    var args = [].slice.call(arguments, 1),
+        routes, route;
+
+    app.get.apply(app, args);
+
+    routes = app.routes.get;
+    route  = routes[routes.length -1];
+
+    exposedRoutes.push({
+        name : name,
+        path : route.path,
+        keys : route.keys,
+        regex: route.regexp.toString()
+    });
+}
+
+exposeRoute('index',  '/',            routes.index);
+exposeRoute('places', '/places/:id/', routes.places);
+exposeRoute('photos', '/photos/:id/', routes.photos);
 
 app.get('/combo',        routes.combo.pub);
 app.get('/shared/combo', routes.combo.shared);
@@ -74,6 +94,8 @@ app.get('/templates.js', routes.templates);
 // Catch-all route to dynamically figure out the place based on text.
 // **Note:** This needs to be the last route.
 app.get('/:place', routes.places.lookup('/places/'));
+
+app.expose(exposedRoutes, 'YUI.Env.PNM.ROUTES', 'pnm_env');
 
 // -- Exports ------------------------------------------------------------------
 

@@ -12,6 +12,12 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     titleTemplate : Templates['title'],
     headerTemplate: Templates['header'],
 
+    routeCallbacks: {
+        index : 'locate',
+        places: ['handlePlace', 'showGrid'],
+        photos: ['handlePhoto', 'showLightbox']
+    },
+
     views: {
         grid: {
             type    : 'PNM.GridView',
@@ -176,16 +182,8 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 }, {
 
     ATTRS: {
-        place : {value: new Place()},
-        photos: {value: new Photos()},
-
-        routes: {
-            value: [
-                {path: '/',            callbacks: 'locate'},
-                {path: '/places/:id/', callbacks: ['handlePlace', 'showGrid']},
-                {path: '/photos/:id/', callbacks: ['handlePhoto', 'showLightbox']}
-            ]
-        }
+        place : {valueFn: function () { return new Place(); }},
+        photos: {valueFn: function () { return new Photos(); }}
     }
 
 });
