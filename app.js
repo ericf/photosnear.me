@@ -64,7 +64,7 @@ if (app.get('env') === 'development') {
 // -- Routes -------------------------------------------------------------------
 
 routes        = require('./lib/routes');
-exposedRoutes = [];
+exposedRoutes = {};
 
 function exposeRoute(name) {
     var args = [].slice.call(arguments, 1),
@@ -75,12 +75,11 @@ function exposeRoute(name) {
     routes = app.routes.get;
     route  = routes[routes.length -1];
 
-    exposedRoutes.push({
-        name : name,
+    exposedRoutes[name] = {
         path : route.path,
         keys : route.keys,
         regex: route.regexp.toString()
-    });
+    };
 }
 
 exposeRoute('index',  '/',            routes.index);

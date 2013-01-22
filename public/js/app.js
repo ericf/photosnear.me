@@ -12,11 +12,11 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     titleTemplate : Templates['title'],
     headerTemplate: Templates['header'],
 
-    routeCallbacks: {
-        index : 'locate',
-        places: ['handlePlace', 'showGrid'],
-        photos: ['handlePhoto', 'showLightbox']
-    },
+    namedRoutes: [
+        {name: 'index',  callbacks: 'locate'},
+        {name: 'places', callbacks: ['handlePlace', 'showGrid']},
+        {name: 'photos', callbacks: ['handlePhoto', 'showLightbox']}
+    ],
 
     views: {
         grid: {

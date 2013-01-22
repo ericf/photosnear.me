@@ -61,8 +61,9 @@
             serverRouting: true
         });
 
-        Y.each(routes, function (route) {
-            app.route(route.path, app.routeCallbacks[route.name]);
+        Y.Array.each(app.namedRoutes, function (route, i) {
+            app.route(routes[route.name].path, route.callbacks);
+            app.get('routes')[i].name = route.name;
         });
 
         if (viewName) {
