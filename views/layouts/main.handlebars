@@ -47,7 +47,7 @@
             photo  = new Y.PNM.Photo(data.photo ? Y.JSON.parse(data.photo) : {}),
 
             routes   = PNMEnv.ROUTES,
-            viewName = PNMEnv.VIEW,
+            viewName = PNMEnv.VIEW.name,
             app;
 
         app = new Y.PNM.App({

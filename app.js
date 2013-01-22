@@ -5,7 +5,7 @@ var express = require('express'),
     PNM_ENV = yui.YUI.namespace('Env.PNM'),
 
     config = require('./conf/config'),
-    app, hbs, routes, exposedRoutes;
+    app, hbs, middleware, routes, exposedRoutes;
 
 // -- Configure YUI ------------------------------------------------------------
 
@@ -63,6 +63,7 @@ if (app.get('env') === 'development') {
 
 // -- Routes -------------------------------------------------------------------
 
+middleware    = require('./lib/middleware');
 routes        = require('./lib/routes');
 exposedRoutes = {};
 
@@ -82,9 +83,21 @@ function exposeRoute(name) {
     };
 }
 
-exposeRoute('index',  '/',            routes.index);
-exposeRoute('places', '/places/:id/', routes.places);
-exposeRoute('photos', '/photos/:id/', routes.photos);
+exposeRoute('index',  '/', routes.index);
+
+exposeRoute('places', '/places/:id/', [
+    routes.places.load,
+    middleware.exposeData('place', 'photos'),
+    middleware.exposeView('grid'),
+    routes.places.render
+]);
+
+exposeRoute('photos', '/photos/:id/', [
+    routes.photos.load,
+    middleware.exposeData('place', 'photo'),
+    middleware.exposeView('lightbox'),
+    routes.photos.render
+]);
 
 app.get('/combo',        routes.combo.pub);
 app.get('/shared/combo', routes.combo.shared);
