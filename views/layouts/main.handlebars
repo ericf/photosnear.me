@@ -41,15 +41,16 @@
 
         var PNMEnv = YUI.namespace('Env.PNM'),
             data   = YUI.namespace('Env.PNM.DATA'),
-
-            place  = new Y.PNM.Place(data.place ? Y.JSON.parse(data.place) : {}),
-            photos = new Y.PNM.Photos({items: data.photos ? Y.JSON.parse(data.photos) : []}),
-            photo  = new Y.PNM.Photo(data.photo ? Y.JSON.parse(data.photo) : {}),
-
             routes = PNMEnv.ROUTES,
             view   = PNMEnv.VIEW,
-            app;
+            app, place, photos, photo;
 
+        // Re-hydrate models.
+        place  = new Y.PNM.Place(data.place ? Y.JSON.parse(data.place) : {});
+        photos = new Y.PNM.Photos({items: data.photos ? Y.JSON.parse(data.photos) : []});
+        photo  = new Y.PNM.Photo(data.photo ? Y.JSON.parse(data.photo) : {});
+
+        // Create app.
         app = new Y.PNM.App({
             place : place,
             photos: photos,
@@ -61,11 +62,13 @@
             serverRouting: true
         });
 
+        // Setup routes.
         Y.Array.each(app.namedRoutes, function (route, i) {
             app.route(routes[route.name].path, route.callbacks);
             app.get('routes')[i].name = route.name;
         });
 
+        // Re-hydrate view.
         if (view) {
             app.showContent(Y.one('#main .' + view.name), {
                 view: {
