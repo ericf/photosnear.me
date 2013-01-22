@@ -1,11 +1,11 @@
 {{#if nav}}
 <ul class="lightbox-nav layout">
   {{#if nav.prev}}
-    <li class="prev"><a href="/photos/{{nav.prev}}/">« Previous</a></li>
+    <li class="prev"><a href='{{pathTo "photos" nav.prev}}'>« Previous</a></li>
   {{/if}}
 
   {{#if nav.next}}
-    <li class="next"><a href="/photos/{{nav.next}}/">Next »</a></li>
+    <li class="next"><a href='{{pathTo "photos" nav.next}}'>Next »</a></li>
   {{/if}}
 </ul>
 {{/if}}

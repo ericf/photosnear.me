@@ -89,7 +89,7 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
             var place = new Place(res.coords);
             place.load(function () {
                 self.set('place', place);
-                self.navigate('/places/' + place.get('id') + '/', {replace: true});
+                self.navigateToRoute('places', place, {replace: true});
             });
         });
     },
@@ -175,8 +175,14 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
         });
     },
 
+    navigateToRoute: function (routeName, context, options) {
+        var path = Y.PNM.Helpers.pathTo(routeName, context);
+        if (!path) { return false; }
+        return this.navigate(path, options);
+    },
+
     navigateToPhoto: function (e) {
-        this.navigate('/photos/' + e.photo.get('id') + '/');
+        this.navigateToRoute('photos', e.photo);
     }
 
 }, {
@@ -201,6 +207,7 @@ Y.namespace('PNM').App = PhotosNearMe;
         "pnm-no-location-view",
         'pnm-photos',
         'pnm-place',
+        'pnm-helpers',
         'pnm-templates'
     ]
 });

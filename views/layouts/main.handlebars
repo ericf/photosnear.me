@@ -50,6 +50,11 @@
         photos = new Y.PNM.Photos({items: data.photos ? Y.JSON.parse(data.photos) : []});
         photo  = new Y.PNM.Photo(data.photo ? Y.JSON.parse(data.photo) : {});
 
+        // Register template helpers.
+        Y.Object.each(Y.PNM.Helpers, function (helper, name) {
+            Y.Handlebars.registerHelper(name, helper);
+        });
+
         // Create app.
         app = new Y.PNM.App({
             place : place,

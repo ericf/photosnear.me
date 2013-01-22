@@ -5,7 +5,7 @@
     </a>
 
   {{#if place}}
-    <a href="/places/{{place.id}}/">
+    <a href='{{pathTo "places" place}}'>
         Photos Near <span id="location">{{place.text}}</span>
     </a>
   {{else}}

@@ -70,6 +70,13 @@
                         "pnm-photo",
                         "yql"
                     ]
+                },
+
+                "pnm-helpers": {
+                    "path"    : "helpers.js",
+                    "requires": [
+                        "array-extras"
+                    ]
                 }
             },
 
@@ -121,6 +128,7 @@
                         "pnm-no-location-view",
                         "pnm-photos",
                         "pnm-place",
+                        "pnm-helpers",
                         "pnm-templates"
                     ]
                 }

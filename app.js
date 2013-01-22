@@ -107,6 +107,7 @@ app.get('/templates.js', routes.templates);
 // **Note:** This needs to be the last route.
 app.get('/:place', routes.places.lookup('/places/'));
 
+PNM_ENV.ROUTES = exposedRoutes;
 app.expose(exposedRoutes, 'YUI.Env.PNM.ROUTES', 'pnm_env');
 
 // -- Exports ------------------------------------------------------------------
