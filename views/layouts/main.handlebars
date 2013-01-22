@@ -46,8 +46,8 @@
             photos = new Y.PNM.Photos({items: data.photos ? Y.JSON.parse(data.photos) : []}),
             photo  = new Y.PNM.Photo(data.photo ? Y.JSON.parse(data.photo) : {}),
 
-            routes   = PNMEnv.ROUTES,
-            viewName = PNMEnv.VIEW.name,
+            routes = PNMEnv.ROUTES,
+            view   = PNMEnv.VIEW,
             app;
 
         app = new Y.PNM.App({
@@ -66,10 +66,10 @@
             app.get('routes')[i].name = route.name;
         });
 
-        if (viewName) {
-            app.showContent(Y.one('#main .' + viewName), {
+        if (view) {
+            app.showContent(Y.one('#main .' + view.name), {
                 view: {
-                    name: viewName,
+                    name: view.name,
 
                     config: {
                         place : place,
