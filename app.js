@@ -83,7 +83,7 @@ function exposeRoute(name) {
     };
 }
 
-exposeRoute('index',  '/', routes.index);
+exposeRoute('index', '/', routes.index);
 
 exposeRoute('places', '/places/:id/', [
     routes.places.load,
