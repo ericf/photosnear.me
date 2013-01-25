@@ -34,18 +34,22 @@ Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
 
         var photo    = Y.merge(results.photo),
             location = photo.location,
-            country  = location.country,
-            region   = location.region,
+            country, region, locality;
+
+        if (location) {
+            country  = location.country;
+            region   = location.region;
             locality = location.locality;
 
-        photo.location = {
-            woeid    : location.woeid,
-            latitude : location.latitude,
-            longitude: location.longitude,
-            country  : country && country.content,
-            region   : region && region.content,
-            locality : locality && locality.content
-        };
+            photo.location = {
+                woeid    : location.woeid,
+                latitude : location.latitude,
+                longitude: location.longitude,
+                country  : country && country.content,
+                region   : region && region.content,
+                locality : locality && locality.content
+            };
+        }
 
         return photo;
     },

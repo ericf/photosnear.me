@@ -126,9 +126,12 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
         photo = new Photo(params);
         photo.load(function () {
-            // Use the photo's location if we do not have a loaded place.
-            if (self.get('place').isNew()) {
-                self.set('place', photo.get('location'));
+            var photoPlace = photo.get('location');
+
+            // Use the photo's location if the app does not have a loaded place,
+            // or the photo doesn't have a location.
+            if (self.get('place').isNew() || photoPlace.isNew()) {
+                self.set('place', photoPlace);
             }
 
             // Prefer Photo instance already in Photos list.
