@@ -13,7 +13,7 @@ if ('max' in PNM_ENV.CACHE.photos) {
     cache = new Y.CacheOffline(PNM_ENV.CACHE.photos);
 }
 
-Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
+Photos = Y.Base.create('photos', Y.LazyModelList, [Y.ModelSync.YQL], {
 
     model: Y.PNM.Photo,
     cache: cache,
@@ -46,15 +46,15 @@ Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
 
     getPrev: function (photo) {
         // Check that the photo is in the list first.
-        if (photo && this.getByClientId(photo.get('clientId'))) {
-            return this.item(this.indexOf(photo) - 1);
+        if (photo && this.getById(photo.get('id'))) {
+            return this.revive(this.indexOf(photo) - 1);
         }
     },
 
     getNext: function (photo) {
         // Check that the photo is in the list first.
-        if (photo && this.getByClientId(photo.get('clientId'))) {
-            return this.item(this.indexOf(photo) + 1);
+        if (photo && this.getById(photo.get('id'))) {
+            return this.revive(this.indexOf(photo) + 1);
         }
     }
 
@@ -66,7 +66,7 @@ Y.namespace('PNM').Photos = Photos;
     requires: [
         'cache-offline',
         'gallery-model-sync-yql',
-        'model-list',
+        'lazy-model-list',
         'pnm-photo',
         'yql'
     ]

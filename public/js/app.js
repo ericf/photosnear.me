@@ -119,7 +119,7 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
             self   = this;
 
         if (photo) {
-            req.photo = photo;
+            req.photo = photos.revive(photo);
             next();
             return;
         }
