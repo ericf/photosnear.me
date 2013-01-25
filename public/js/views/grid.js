@@ -51,7 +51,7 @@ GridView = Y.Base.create('gridView', Y.View, [], {
 
         content = this.template({
             photos: photos.map(function (photo) {
-                return photo.getAttrs(['id', 'title', 'thumbUrl']);
+                return photo.getAttrs(['id', 'title', 'thumbURL']);
             })
         }, {
             partials: {'grid-photo': this.photoTemplate}
@@ -84,7 +84,7 @@ GridView = Y.Base.create('gridView', Y.View, [], {
         var fragment = Y.one(Y.config.doc.createDocumentFragment());
 
         Y.Array.each(photos, function (photo) {
-            var photoAttrs = photo.getAttrs(['id', 'title', 'thumbUrl']);
+            var photoAttrs = photo.getAttrs(['id', 'title', 'thumbURL']);
             fragment.append(this.photoTemplate(photoAttrs));
         }, this);
 

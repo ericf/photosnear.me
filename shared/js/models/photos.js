@@ -2,8 +2,7 @@ YUI.add('pnm-photos', function (Y) {
 
 var PNM_ENV = YUI.namespace('Env.PNM'),
 
-    Lang  = Y.Lang,
-    Photo = Y.PNM.Photo,
+    Lang = Y.Lang,
     Photos, cache;
 
 // Create model cache. Server uses a strict maximum number of entries which is
@@ -16,7 +15,7 @@ if ('max' in PNM_ENV.CACHE.photos) {
 
 Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
 
-    model: Photo,
+    model: Y.PNM.Photo,
     cache: cache,
     query: 'SELECT {attrs} FROM flickr.photos.search({start},{num}) ' +
                 'WHERE api_key={api_key} ' +
@@ -33,17 +32,16 @@ Photos = Y.Base.create('photos', Y.ModelList, [Y.ModelSync.YQL], {
             start  : options.start || 0,
             num    : options.num || 30,
             woeid  : options.place.get('id'),
-            attrs  : Photo.YQL_ATTRS
+            attrs  : this.model.YQL_ATTRS
         });
     },
 
     parse: function (results) {
-        if (Lang.isArray(results)) {
-            return results;
-        }
+        var photos     = results.photo,
+            modelProto = this.model.prototype;
 
-        var photos = results ? results.photo : [];
-        return Lang.isArray(photos) ? photos : [photos];
+        Lang.isArray(photos) || (photos = [photos]);
+        return Y.Array.map(photos, modelProto.parse, modelProto);
     },
 
     getPrev: function (photo) {

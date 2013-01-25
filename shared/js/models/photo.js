@@ -16,10 +16,12 @@ if ('max' in PNM_ENV.CACHE.photo) {
 
 Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
 
-    cache  : cache,
-    query  : 'SELECT {attrs} FROM flickr.photos.info WHERE api_key={api_key} AND photo_id={id}',
-    imgUrl : 'http://farm{farm}.static.flickr.com/{server}/{id}_{secret}_{size}.jpg',
-    pageUrl: 'http://www.flickr.com/photos/{user}/{id}/',
+    cache    : cache,
+    query    : 'SELECT {attrs} FROM flickr.photos.info WHERE api_key={api_key} AND photo_id={id}',
+    imgURL   : 'http://farm{farm}.static.flickr.com/{server}/{id}_{secret}_{size}.jpg',
+    htmlURL  : 'http://www.flickr.com/photo.gne?id={id}',
+    thumbSize: 'q',
+    largeSize: 'z',
 
     buildQuery: function () {
         return Lang.sub(this.query, {
@@ -32,38 +34,64 @@ Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
     parse: function (results) {
         if (!results) { return; }
 
-        var photo    = Y.merge(results.photo),
-            location = photo.location,
-            country, region, locality;
+        // Support being called as a utility or parsing a YQL response.
+        var photo = 'photo' in results ? results.photo : results;
 
-        if (location) {
-            country  = location.country;
-            region   = location.region;
-            locality = location.locality;
-
-            photo.location = {
-                woeid    : location.woeid,
-                latitude : location.latitude,
-                longitude: location.longitude,
-                country  : country && country.content,
-                region   : region && region.content,
-                locality : locality && locality.content
-            };
-        }
-
-        return photo;
+        return Y.mix({
+            id      : photo.id,
+            title   : photo.title,
+            location: this.parseLocation(photo)
+        }, this.parseURLs(photo));
     },
 
-    getImgUrl: function (size) {
-        var attrs = this.getAttrs(['id', 'farm', 'server', 'secret']),
-            url   = Lang.sub(this.imgUrl, Y.merge(attrs, {size: size}));
+    parseLocation: function (photoData) {
+        var location = photoData && photoData.location,
+            country, region, locality;
 
-        // Append dynamic flag "zz=1" if we are generating the URL.
-        if (size === 'z') {
-            url += '?zz=1';
+        if (!location) { return null; }
+
+        country  = location.country;
+        region   = location.region;
+        locality = location.locality;
+
+        return  {
+            woeid    : location.woeid,
+            latitude : location.latitude,
+            longitude: location.longitude,
+            country  : country && country.content,
+            region   : region && region.content,
+            locality : locality && locality.content
+        };
+    },
+
+    parseURLs: function (photoData) {
+        if (!photoData) { return null; }
+
+        var imgURL  = this.imgURL,
+            pageURL = photoData.urls && photoData.urls.url,
+            thumbURL, largeURL;
+
+        if (Lang.isArray(pageURL)) {
+            pageURL = Y.Array.find(pageURL, function (url) {
+                return url && url.type === 'photopage';
+            });
         }
 
-        return url;
+        pageURL = pageURL && pageURL.type === 'photopage' ?
+                pageURL.content : Lang.sub(this.htmlURL, photoData);
+
+        thumbURL = Lang.sub(imgURL, Y.merge(photoData, {size: this.thumbSize}));
+        largeURL = Lang.sub(imgURL, Y.merge(photoData, {size: this.largeSize}));
+
+        if (this.largeSize === 'z') {
+            largeURL += '?zz=1';
+        }
+
+        return {
+            pageURL : pageURL,
+            thumbURL: thumbURL,
+            largeURL: largeURL
+        };
     },
 
     // Insired by: Lucas Smith
@@ -75,7 +103,7 @@ Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
         Lang.isFunction(callback) || (callback = function () {});
         context || (context = this);
 
-        img.src = this.get('largeUrl');
+        img.src = this.get('largeURL');
 
         if (img.complete) {
             callback.call(context, img[prop] ? img : null);
@@ -83,67 +111,29 @@ Photo = Y.Base.create('photo', Y.Model, [Y.ModelSync.YQL], {
             img.onload  = Y.bind(callback, context, img);
             img.onerror = Y.bind(callback, context, null);
         }
-    },
-
-    toJSON: function () {
-        var data = Photo.superclass.toJSON.apply(this, arguments);
-
-        delete data.thumbUrl;
-        delete data.largeUrl;
-        delete data.pageUrl;
-
-        return data;
     }
 
 }, {
 
     ATTRS: {
-        farm     : {},
-        server   : {},
-        secret   : {},
-        owner    : {},
-        pathalias: {},
-        title    : {},
-        url_sq   : {},
-        url_z    : {},
+        title   : {value: null},
+        thumbURL: {value: null},
+        largeURL: {value: null},
+        pageURL : {value: null},
+
 
         location: {
-            value : {},
+            value : null,
             setter: function (location) {
                 (location instanceof Place) || (location = new Place(location));
                 return location;
-            }
-        },
-
-        thumbUrl: {
-            readOnly: true,
-            getter  : function () {
-                return this.get('url_sq') || this.getImgUrl('s');
-            }
-        },
-
-        largeUrl: {
-            readOnly: true,
-            getter  : function () {
-                return this.get('url_z') || this.getImgUrl('z');
-            }
-        },
-
-        pageUrl: {
-            readOnly: true,
-            getter  : function () {
-                var user = this.get('pathalias') || this.get('owner');
-                return Lang.sub(this.pageUrl, {
-                    id  : this.get('id'),
-                    user: Lang.isString(user) ? user : user.nsid
-                });
             }
         }
     },
 
     YQL_ATTRS: [
-        'id', 'farm', 'server', 'secret', 'owner', 'pathalias', 'title',
-        'location', 'url_sq', 'url_z'
+        'id', 'farm', 'server', 'secret',
+        'title', 'location', 'urls'
     ]
 
 });
