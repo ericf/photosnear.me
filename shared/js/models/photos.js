@@ -13,16 +13,18 @@ if ('max' in PNM_ENV.CACHE.photos) {
     cache = new Y.CacheOffline(PNM_ENV.CACHE.photos);
 }
 
-Photos = Y.Base.create('photos', Y.LazyModelList, [Y.ModelSync.YQL], {
+Photos = Y.Base.create('photos', Y.LazyModelList, [], {
 
     model: Y.PNM.Photo,
     cache: cache,
-    query: 'SELECT {attrs} FROM flickr.photos.search({start},{num}) ' +
-                'WHERE api_key={api_key} ' +
-                'AND safe_search=1 ' +
-                'AND woe_id={woeid} ' +
-                'AND sort="interestingness-desc" ' +
-                'AND extras="path_alias,url_sq,url_z"',
+    url  : 'http://api.flickr.com/services/rest/?method=flickr.photos.search' +
+                '&api_key={api_key}' +
+                '&woe_id={woeid}' +
+                '&per_page={num}' +
+                '&page={page}' +
+                '&safe_search=1' +
+                '&sort=interestingness-desc' +
+                '&format=json',
 
     buildQuery: function (options) {
         options || (options = {});
@@ -30,14 +32,59 @@ Photos = Y.Base.create('photos', Y.LazyModelList, [Y.ModelSync.YQL], {
         return Lang.sub(this.query, {
             api_key: PNM_ENV.FLICKR.api_key || '',
             start  : options.start || 0,
-            num    : options.num || 30,
+            num    : options.num || 60,
             woeid  : options.place.get('id'),
             attrs  : this.model.YQL_ATTRS
         });
     },
 
+    sync: function (action, options, callback) {
+        if (action !== 'read') { return callback('Only "read" is supported.'); }
+
+        console.dir(options);
+
+        var cache = this.cache,
+            num   = options.num || 60,
+            url, hit;
+
+        url = Lang.sub(this.url, {
+            api_key: PNM_ENV.FLICKR.api_key || '',
+            woeid  : options.place.get('id'),
+            num    : num,
+            page   : Math.ceil((options.start || 0) / num) + 1
+        });
+
+        hit = cache && cache.retrieve(url);
+
+        if  (hit) {
+            return callback(null, hit.response);
+        }
+
+        Y.log(url);
+
+        Y.jsonp(url, {
+            format: function (url, proxy) {
+                return url + '&jsoncallback=' + proxy;
+            },
+
+            on: {
+                failure: function () {
+                    callback.apply(null, arguments);
+                },
+
+                success: function (response) {
+                    if (cache && response) {
+                        cache.add(url, response);
+                    }
+
+                    callback(null, response);
+                }
+            }
+        });
+    },
+
     parse: function (results) {
-        var photos     = results.photo,
+        var photos     = results && results.photos && results.photos.photo,
             modelProto = this.model.prototype;
 
         Lang.isArray(photos) || (photos = [photos]);
@@ -65,9 +112,8 @@ Y.namespace('PNM').Photos = Photos;
 }, '0.7.0', {
     requires: [
         'cache-offline',
-        'gallery-model-sync-yql',
+        'jsonp',
         'lazy-model-list',
-        'pnm-photo',
-        'yql'
+        'pnm-photo'
     ]
 });

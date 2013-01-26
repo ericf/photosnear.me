@@ -17,7 +17,7 @@ GridView = Y.Base.create('gridView', Y.View, [], {
     initializer: function (config) {
         var photos = this.get('photos');
 
-        Y.one('body').plug(Y.Plugin.ScrollInfo, {scrollMargin: 250});
+        Y.one('body').plug(Y.Plugin.ScrollInfo, {scrollMargin: 300});
 
         this.publish('more', {preventable: false});
 

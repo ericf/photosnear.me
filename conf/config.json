@@ -65,10 +65,9 @@
                     "path"    : "models/photos.js",
                     "requires": [
                         "cache-offline",
-                        "gallery-model-sync-yql",
+                        "jsonp",
                         "lazy-model-list",
-                        "pnm-photo",
-                        "yql"
+                        "pnm-photo"
                     ]
                 },
 
