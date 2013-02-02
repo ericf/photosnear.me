@@ -58,8 +58,6 @@ Photos = Y.Base.create('photos', Y.LazyModelList, [], {
             return callback(null, hit.response);
         }
 
-        Y.log(url);
-
         Y.jsonp(url, {
             format: function (url, proxy) {
                 return url + '&jsoncallback=' + proxy;
