@@ -75,7 +75,7 @@
 
         // Re-hydrate view.
         if (view) {
-            app.showContent(Y.one('#main .' + view.name), {
+            app.showContent('#main .' + view.name, {
                 view: {
                     name: view.name,
 
@@ -86,7 +86,7 @@
                     }
                 },
 
-                transition: true
+                transition: false
             });
         }
 
