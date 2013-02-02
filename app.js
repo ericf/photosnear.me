@@ -25,7 +25,7 @@ app.set('env', config.env);
 app.set('port', config.port);
 
 app.engine(hbs.extname, hbs.engine);
-app.set('view engine', hbs.extname.substring(1));
+app.set('view engine', hbs.extname);
 app.set('views', config.dirs.views);
 
 app.enable('strict routing');
