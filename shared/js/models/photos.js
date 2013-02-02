@@ -71,6 +71,10 @@ Photos = Y.Base.create('photos', Y.LazyModelList, [], {
                 },
 
                 success: function (response) {
+                    if (response.stat !== 'ok') {
+                        return callback(response.message, response);
+                    }
+
                     if (cache && response) {
                         cache.add(url, response);
                     }
@@ -85,7 +89,10 @@ Photos = Y.Base.create('photos', Y.LazyModelList, [], {
         var photos     = results && results.photos && results.photos.photo,
             modelProto = this.model.prototype;
 
-        Lang.isArray(photos) || (photos = [photos]);
+        if (!Lang.isArray(photos)) {
+            photos = photos ? [photos] : [];
+        }
+
         return Y.Array.map(photos, modelProto.parse, modelProto);
     },
 
