@@ -41,8 +41,6 @@ Photos = Y.Base.create('photos', Y.LazyModelList, [], {
     sync: function (action, options, callback) {
         if (action !== 'read') { return callback('Only "read" is supported.'); }
 
-        console.dir(options);
-
         var cache = this.cache,
             num   = options.num || 60,
             url, hit;
