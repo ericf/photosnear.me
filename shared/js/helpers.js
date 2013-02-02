@@ -32,7 +32,7 @@ Y.namespace('PNM').Helpers = {
     }
 };
 
-}, '0.7.1', {
+}, '0.7.2', {
     requires: [
         'array-extras'
     ]
