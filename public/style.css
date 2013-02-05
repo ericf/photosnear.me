@@ -301,7 +301,8 @@ h1 a:visited {
     color: #75607F;
 }
 
-#no-location {
+.no-location {
+    display: block;
     font-size: 150%;
     text-align: center;
     margin: 0 auto;

@@ -6,7 +6,7 @@ var PNM       = Y.PNM,
 
 NoLocationView = Y.Base.create('noLocationView', Y.View, [], {
 
-    containerTemplate: '<div id="no-location" />',
+    containerTemplate: '<div class="no-location" />',
     template         : Templates['no-location'],
 
     render: function () {
