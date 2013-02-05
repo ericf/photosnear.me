@@ -42,15 +42,18 @@ app.locals({
 
 // -- Middleware ---------------------------------------------------------------
 
+middleware = require('./lib/middleware');
+
 if (app.get('env') === 'development') {
     app.use(express.logger('tiny'));
 }
 
 app.use(express.compress());
 app.use(express.favicon());
+app.use(app.router);
 app.use(express.static(config.dirs.pub));
 app.use(express.static(config.dirs.shared));
-app.use(app.router);
+app.use(middleware.placeLookup('/places/'));
 
 if (app.get('env') === 'development') {
     app.use(express.errorHandler({
@@ -63,7 +66,6 @@ if (app.get('env') === 'development') {
 
 // -- Routes -------------------------------------------------------------------
 
-middleware    = require('./lib/middleware');
 routes        = require('./lib/routes');
 exposedRoutes = {};
 
@@ -102,10 +104,6 @@ exposeRoute('photos', '/photos/:id/', [
 app.get('/combo',        routes.combo.pub);
 app.get('/shared/combo', routes.combo.shared);
 app.get('/templates.js', routes.templates);
-
-// Catch-all route to dynamically figure out the place based on text.
-// **Note:** This needs to be the last route.
-app.get('/:place', routes.places.lookup('/places/'));
 
 PNM_ENV.ROUTES = exposedRoutes;
 app.expose(exposedRoutes, 'YUI.Env.PNM.ROUTES', 'pnm_env');
