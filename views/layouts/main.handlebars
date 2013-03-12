@@ -37,18 +37,11 @@
     </script>
 
     <script>
-    YUI().use('pnm-app', 'json-parse', 'ios-oc-fix', function (Y) {
+    YUI().use('pnm-app', 'ios-oc-fix', function (Y) {
 
         var PNMEnv = YUI.namespace('Env.PNM'),
-            data   = YUI.namespace('Env.PNM.DATA'),
             routes = PNMEnv.ROUTES,
-            view   = PNMEnv.VIEW,
-            app, place, photos, photo;
-
-        // Re-hydrate models.
-        place  = new Y.PNM.Place(data.place ? Y.JSON.parse(data.place) : {});
-        photos = new Y.PNM.Photos({items: data.photos ? Y.JSON.parse(data.photos) : []});
-        photo  = new Y.PNM.Photo(data.photo ? Y.JSON.parse(data.photo) : {});
+            app;
 
         // Register template helpers.
         Y.Object.each(Y.PNM.Helpers, function (helper, name) {
@@ -57,9 +50,6 @@
 
         // Create app.
         app = new Y.PNM.App({
-            place : place,
-            photos: photos,
-
             container    : '#wrap',
             viewContainer: '#main',
 
@@ -73,34 +63,13 @@
             app.get('routes')[i].name = route.name;
         });
 
-        // Re-hydrate view.
-        if (view) {
-            app.showContent('#main .' + view.name, {
-                view: {
-                    name: view.name,
-
-                    config: {
-                        place : place,
-                        photos: photos,
-                        photo : photo
-                    }
-                },
-
-                transition: false
-            });
-        }
-
         // Determine if the user needs to be located. When the app is saved to
         // the home screen in iOS, always route to "/"" so geolocation lookup
         // is preformed.
-        if ((photo.isNew() && place.isNew()) || Y.config.win.navigator.standalone) {
+        if (Y.config.win.navigator.standalone) {
             app.locate();
         } else {
-            app.render();
-
-            if (photos.isEmpty()) {
-                app.loadPhotos();
-            }
+            app.render({rendered: true}).dispatch();
         }
 
     });

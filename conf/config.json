@@ -122,6 +122,7 @@
                         "app-content",
                         "app-transitions",
                         "gallery-geo",
+                        "json-parse",
                         "pnm-grid-view",
                         "pnm-lightbox-view",
                         "pnm-no-location-view",
