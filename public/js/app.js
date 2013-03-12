@@ -52,14 +52,20 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
         this.on('lightboxView:next', this.navigateToPhoto);
     },
 
-    render: function () {
+    render: function (options) {
         PhotosNearMe.superclass.render.apply(this, arguments);
 
-        var place     = this.get('place'),
-            placeText = place.toString(),
-            container = this.get('container'),
-            doc       = Y.config.doc,
-            placeData, content;
+        options = (options || {});
+
+        var container, content, doc, place, placeData, placeText;
+
+        // No need to re-render the initial server rendering.
+        if (options.rendered) { return this; }
+
+        doc       = Y.config.doc;
+        container = this.get('container');
+        place     = this.get('place');
+        placeText = place.toString();
 
         placeData = place.isNew() ? null : {
             id  : place.get('id'),
