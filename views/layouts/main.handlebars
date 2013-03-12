@@ -43,11 +43,6 @@
             routes = PNMEnv.ROUTES,
             app;
 
-        // Register template helpers.
-        Y.Object.each(Y.PNM.Helpers, function (helper, name) {
-            Y.Handlebars.registerHelper(name, helper);
-        });
-
         // Create app.
         app = new Y.PNM.App({
             container    : '#wrap',

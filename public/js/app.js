@@ -4,12 +4,21 @@ var PNM     = Y.PNM,
     PNMEnv  = YUI.namespace('Env.PNM'),
     PNMData = YUI.namespace('Env.PNM.DATA'),
 
-    Photo     = PNM.Photo,
-    Photos    = PNM.Photos,
-    Place     = PNM.Place,
+    Photo  = PNM.Photo,
+    Photos = PNM.Photos,
+    Place  = PNM.Place,
+
+    Helpers   = PNM.Helpers,
     Templates = PNM.Templates,
+
     PhotosNearMe;
 
+// Register template helpers.
+Y.Object.each(Helpers, function (helper, name) {
+    Y.Handlebars.registerHelper(name, helper);
+});
+
+// Define App.
 PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
     titleTemplate : Templates['title'],
@@ -215,7 +224,7 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     },
 
     navigateToRoute: function (routeName, context, options) {
-        var path = Y.PNM.Helpers.pathTo(routeName, context);
+        var path = Helpers.pathTo(routeName, context);
         if (!path) { return false; }
         return this.navigate(path, options);
     },
