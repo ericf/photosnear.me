@@ -1,12 +1,24 @@
 YUI.add('pnm-app', function (Y) {
 
-var PNM       = Y.PNM,
-    Photo     = PNM.Photo,
-    Photos    = PNM.Photos,
-    Place     = PNM.Place,
+var PNM     = Y.PNM,
+    PNMEnv  = YUI.namespace('Env.PNM'),
+    PNMData = YUI.namespace('Env.PNM.DATA'),
+
+    Photo  = PNM.Photo,
+    Photos = PNM.Photos,
+    Place  = PNM.Place,
+
+    Helpers   = PNM.Helpers,
     Templates = PNM.Templates,
+
     PhotosNearMe;
 
+// Register template helpers.
+Y.Object.each(Helpers, function (helper, name) {
+    Y.Handlebars.registerHelper(name, helper);
+});
+
+// Define App.
 PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
     titleTemplate : Templates['title'],
@@ -52,14 +64,20 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
         this.on('lightboxView:next', this.navigateToPhoto);
     },
 
-    render: function () {
+    render: function (options) {
         PhotosNearMe.superclass.render.apply(this, arguments);
 
-        var place     = this.get('place'),
-            placeText = place.toString(),
-            container = this.get('container'),
-            doc       = Y.config.doc,
-            placeData, content;
+        options = (options || {});
+
+        var container, content, doc, place, placeData, placeText;
+
+        // No need to re-render the initial server rendering.
+        if (options.rendered) { return this; }
+
+        doc       = Y.config.doc;
+        container = this.get('container');
+        place     = this.get('place');
+        placeText = place.toString();
 
         placeData = place.isNew() ? null : {
             id  : place.get('id'),
@@ -142,20 +160,47 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     },
 
     showGrid: function (req) {
-        this.showView('grid', {
-            photos: req.photos
-        }, function (grid) {
-            grid.resetUI();
-        });
+        var rendered = this.get('viewContainer').one('.grid'),
+            config   = {photos: req.photos};
+
+        if (rendered) {
+            this.showContent(rendered, {
+                view: {
+                    name  : 'grid',
+                    config: config
+                },
+
+                transition: false
+            });
+        } else {
+            this.showView('grid', config, function (grid) {
+                grid.resetUI();
+            });
+        }
     },
 
     showLightbox: function (req) {
-        this.showView('lightbox', {
+        var rendered = this.get('viewContainer').one('.lightbox'),
+            config;
+
+        config = {
             photo : req.photo,
             photos: this.get('photos')
-        }, {
-            update: true
-        });
+        };
+
+        if (rendered) {
+            this.showContent(rendered, {
+                view: {
+                    name  : 'lightbox',
+                    config: config
+                },
+
+                update    : true,
+                transition: false
+            });
+        } else {
+            this.showView('lightbox', config, {update: true});
+        }
     },
 
     loadPhotos: function () {
@@ -179,20 +224,43 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     },
 
     navigateToRoute: function (routeName, context, options) {
-        var path = Y.PNM.Helpers.pathTo(routeName, context);
+        var path = Helpers.pathTo(routeName, context);
         if (!path) { return false; }
         return this.navigate(path, options);
     },
 
     navigateToPhoto: function (e) {
         this.navigateToRoute('photos', e.photo);
+    },
+
+    rehydrateData: function (key) {
+        var data = PNMData[key];
+
+        if (typeof data === 'string') {
+            try {
+                data = Y.JSON.parse(data);
+            } catch (ex) {
+                data = null;
+            }
+        }
+
+        return data;
     }
 
 }, {
 
     ATTRS: {
-        place : {valueFn: function () { return new Place(); }},
-        photos: {valueFn: function () { return new Photos(); }}
+        place : {
+            valueFn: function () {
+                return new Place(this.rehydrateData('place'));
+            }
+        },
+
+        photos: {
+            valueFn: function () {
+                return new Photos({items: this.rehydrateData('photos')});
+            }
+        }
     }
 
 });
@@ -205,6 +273,7 @@ Y.namespace('PNM').App = PhotosNearMe;
         'app-content',
         'app-transitions',
         'gallery-geo',
+        'json-parse',
         'pnm-grid-view',
         'pnm-lightbox-view',
         "pnm-no-location-view",
