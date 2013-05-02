@@ -1,16 +1,13 @@
-var fs   = require('fs'),
-    path = require('path'),
+var path = require('path'),
     Y    = require('yui/oop'),
 
-    CONFIG_FILE = 'config.json',
-    NODE_ENV    = process.env.NODE_ENV,
-    PORT        = process.env.PORT,
+    NODE_ENV = process.env.NODE_ENV,
+    PORT     = process.env.PORT,
 
     appRoot      = process.cwd(),
-    configFile   = path.join(__dirname, CONFIG_FILE),
     isProduction = NODE_ENV === 'production',
     yuiFilter    = isProduction ? 'min' : 'raw',
-    config;
+    config       = require('./config.json');
 
 // Poor-mans object clone.
 function clone(config) {
@@ -20,21 +17,6 @@ function clone(config) {
 // Wrap crazy YUI API.
 function mix(config, overrides) {
     return Y.mix(config, overrides, true, null, 0, true);
-}
-
-if (fs.existsSync(configFile)) {
-    try {
-        config = JSON.parse(fs.readFileSync(configFile, 'utf8'));
-    } catch (e) {
-        console.error('Could not parse config file.');
-    }
-} else {
-    console.error('Could not read config file: ' + configFile);
-}
-
-// Quit if we cannot process the config file.
-if (!config) {
-    process.exit(1);
 }
 
 config.env  = NODE_ENV || 'development';

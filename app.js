@@ -1,4 +1,5 @@
-var express = require('express'),
+var combo   = require('combohandler'),
+    express = require('express'),
     state   = require('express-state'),
     yui     = require('yui'),
 
@@ -53,6 +54,7 @@ if (app.get('env') === 'development') {
 app.use(express.compress());
 app.use(express.favicon());
 app.use(app.router);
+app.use(middleware.slash());
 app.use(express.static(config.dirs.pub));
 app.use(express.static(config.dirs.shared));
 app.use(middleware.placeLookup('/places/'));
@@ -103,8 +105,16 @@ exposeRoute('photos', '/photos/:id/', [
     routes.photos.render
 ]);
 
-app.get('/combo',        routes.combo.pub);
-app.get('/shared/combo', routes.combo.shared);
+app.get('/combo', [
+    combo.combine({rootPath: config.dirs.pub_js}),
+    combo.respond
+]);
+
+app.get('/shared/combo', [
+    combo.combine({rootPath: config.dirs.shared_js}),
+    combo.respond
+]);
+
 app.get('/templates.js', routes.templates);
 
 PNM_ENV.ROUTES = exposedRoutes;

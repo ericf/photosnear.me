@@ -4,8 +4,10 @@
 
     "dirs": {
         "pub"      : "public/",
+        "pub_js"   : "public/js/",
         "views"    : "views/",
         "shared"   : "shared/",
+        "shared_js": "shared/js/",
         "templates": "shared/templates/"
     },
 
