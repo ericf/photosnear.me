@@ -1,4 +1,4 @@
-var hbs = require('../hbs');
+var hbs = require('../lib/hbs');
 
 module.exports = function (req, res, next) {
     hbs.loadPartials({

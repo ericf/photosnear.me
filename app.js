@@ -45,7 +45,7 @@ app.locals({
 
 // -- Middleware ---------------------------------------------------------------
 
-middleware = require('./lib/middleware');
+middleware = require('./middleware');
 
 if (app.get('env') === 'development') {
     app.use(express.logger('tiny'));
@@ -70,7 +70,7 @@ if (app.get('env') === 'development') {
 
 // -- Routes -------------------------------------------------------------------
 
-routes        = require('./lib/routes');
+routes        = require('./routes');
 exposedRoutes = {};
 
 function exposeRoute(name) {
