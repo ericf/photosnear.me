@@ -26,18 +26,6 @@ Photos = Y.Base.create('photos', Y.LazyModelList, [], {
                 '&sort=interestingness-desc' +
                 '&format=json',
 
-    buildQuery: function (options) {
-        options || (options = {});
-
-        return Lang.sub(this.query, {
-            api_key: PNM_ENV.FLICKR.api_key || '',
-            start  : options.start || 0,
-            num    : options.num || 60,
-            woeid  : options.place.get('id'),
-            attrs  : this.model.YQL_ATTRS
-        });
-    },
-
     sync: function (action, options, callback) {
         if (action !== 'read') { return callback('Only "read" is supported.'); }
 
