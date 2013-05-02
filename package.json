@@ -16,6 +16,6 @@
         "express"            : "3.1.x",
         "express-expose"     : "0.3.x",
         "express3-handlebars": "latest",
-        "yui"                : "3.8.x"
+        "yui"                : "3.10.0"
     }
 }
