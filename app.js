@@ -1,5 +1,5 @@
 var express = require('express'),
-    expose  = require('express-expose'),
+    state   = require('express-state'),
     yui     = require('yui'),
 
     PNM_ENV = yui.YUI.namespace('Env.PNM'),
@@ -23,6 +23,8 @@ hbs = require('./lib/hbs');
 app.set('name', config.name);
 app.set('env', config.env);
 app.set('port', config.port);
+app.set('state local', 'pnm_env');
+app.set('state namespace', 'YUI.Env.PNM');
 
 app.engine(hbs.extname, hbs.engine);
 app.set('view engine', hbs.extname);
@@ -30,13 +32,13 @@ app.set('views', config.dirs.views);
 
 app.enable('strict routing');
 
-app.expose(config.cache.client, 'YUI.Env.PNM.CACHE', 'pnm_env');
-app.expose(config.flickr, 'YUI.Env.PNM.FLICKR', 'pnm_env');
+app.expose(config.cache.client, 'CACHE');
+app.expose(config.flickr, 'FLICKR');
+app.expose(config.yui.client, 'window.YUI_config', 'yui_config');
 
 app.locals({
     min        : config.env === 'production' ? '-min' : '',
     typekit    : config.typekit,
-    yui_config : JSON.stringify(config.yui.client),
     yui_version: config.yui.version
 });
 
@@ -106,7 +108,7 @@ app.get('/shared/combo', routes.combo.shared);
 app.get('/templates.js', routes.templates);
 
 PNM_ENV.ROUTES = exposedRoutes;
-app.expose(exposedRoutes, 'YUI.Env.PNM.ROUTES', 'pnm_env');
+app.expose(exposedRoutes, 'ROUTES');
 
 // -- Exports ------------------------------------------------------------------
 

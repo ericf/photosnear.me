@@ -14,7 +14,7 @@
     "dependencies": {
         "combohandler"       : "latest",
         "express"            : "3.1.x",
-        "express-expose"     : "0.3.x",
+        "express-state"      : "latest",
         "express3-handlebars": "latest",
         "yui"                : "3.10.0"
     }

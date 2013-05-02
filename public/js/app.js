@@ -231,20 +231,6 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
     navigateToPhoto: function (e) {
         this.navigateToRoute('photos', e.photo);
-    },
-
-    rehydrateData: function (key) {
-        var data = PNMData[key];
-
-        if (typeof data === 'string') {
-            try {
-                data = Y.JSON.parse(data);
-            } catch (ex) {
-                data = null;
-            }
-        }
-
-        return data;
     }
 
 }, {
@@ -252,13 +238,13 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     ATTRS: {
         place : {
             valueFn: function () {
-                return new Place(this.rehydrateData('place'));
+                return new Place(PNMData.place);
             }
         },
 
         photos: {
             valueFn: function () {
-                return new Photos({items: this.rehydrateData('photos')});
+                return new Photos({items: PNMData.photos});
             }
         }
     }
