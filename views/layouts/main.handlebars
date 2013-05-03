@@ -29,15 +29,14 @@
         </div>
     </div>
 
-    <script src="http://yui.yahooapis.com/{{yui_version}}/build/yui/yui{{min}}.js"></script>
-    <script>
-        {{{yui_config}}}
+    {{#yui_seed}}<script src="{{{src}}}"></script>{{/yui_seed}}
 
+    <script>
         {{{pnm_env}}}
     </script>
 
     <script>
-    YUI().use('pnm-app', 'ios-oc-fix', function (Y) {
+    YUI({{{yui_config}}}).use('pnm-app', 'ios-oc-fix', function (Y) {
 
         var PNMEnv = YUI.namespace('Env.PNM'),
             routes = PNMEnv.ROUTES,
