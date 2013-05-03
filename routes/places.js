@@ -1,7 +1,6 @@
-var Y = require('yui').use('parallel', 'pnm-place', 'pnm-photo', 'pnm-photos');
-
 exports.load = function (req, res, next) {
-    var place    = new Y.PNM.Place({id: req.params.id}),
+    var Y        = req.app.yui.use('parallel', 'pnm-place', 'pnm-photo', 'pnm-photos');
+        place    = new Y.PNM.Place({id: req.params.id}),
         photos   = new Y.PNM.Photos(),
         requests = new Y.Parallel();
 

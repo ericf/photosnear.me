@@ -1,7 +1,6 @@
-var Y = require('yui').use('pnm-photo');
-
 exports.load = function (req, res, next) {
-    var photo = new Y.PNM.Photo({id: req.params.id}),
+    var Y = req.app.yui.use('pnm-photo'),
+        photo = new Y.PNM.Photo({id: req.params.id}),
         place;
 
     photo.load(function () {
@@ -13,6 +12,7 @@ exports.load = function (req, res, next) {
 };
 
 exports.render = function (req, res) {
+    var Y = req.app.yui.use();
     res.render(res.view, {
         located: true,
 

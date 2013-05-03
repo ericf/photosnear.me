@@ -1,6 +1,9 @@
-var hbs = require('../lib/hbs');
+var hbs;
 
 module.exports = function (req, res, next) {
+
+    hbs = hbs || require('../lib/hbs')(req.app);
+
     hbs.loadPartials({
         cache      : req.app.enabled('view cache'),
         precompiled: true
