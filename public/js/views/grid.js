@@ -119,6 +119,7 @@ GridView = Y.Base.create('gridView', Y.View, [], {
 Y.namespace('PNM').GridView = GridView;
 
 }, '0.7.2', {
+    affinity: 'client',
     requires: [
         'node-style',
         'node-scroll-info',
