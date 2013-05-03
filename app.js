@@ -1,12 +1,14 @@
 var combo   = require('combohandler'),
     express = require('express'),
     state   = require('express-state'),
+    myui    = require('modown-yui'),
+    Locator = require('modown-locator'),
     yui     = require('yui'),
 
     PNM_ENV = yui.YUI.namespace('Env.PNM'),
 
     config = require('./conf/config'),
-    app, hbs, middleware, routes, exposedRoutes;
+    app, hbs, middleware, routes, exposedRoutes, locator;
 
 // -- Configure YUI ------------------------------------------------------------
 
@@ -43,82 +45,94 @@ app.locals({
     yui_version: config.yui.version
 });
 
-// -- Middleware ---------------------------------------------------------------
+// -- Locator and plugins ------------------------------------------------------
 
-middleware = require('./middleware');
+locator = new Locator({
+    buildDirectory: 'build'
+});
+locator.plug(app.yui.plugin({
+    registerGroup: true
+}));
+locator.parseBundle(__dirname, {}).then(function (have) {
 
-if (app.get('env') === 'development') {
-    app.use(express.logger('tiny'));
-}
+    // -- Middleware ---------------------------------------------------------------
 
-app.use(express.compress());
-app.use(express.favicon());
-app.use(app.router);
-app.use(middleware.slash());
-app.use(express.static(config.dirs.pub));
-app.use(express.static(config.dirs.shared));
-app.use(middleware.placeLookup('/places/'));
+    middleware = require('./middleware');
 
-if (app.get('env') === 'development') {
-    app.use(express.errorHandler({
-        dumpExceptions: true,
-        showStack     : true
-    }));
-} else {
-    app.use(express.errorHandler());
-}
+    if (app.get('env') === 'development') {
+        app.use(express.logger('tiny'));
+    }
 
-// -- Routes -------------------------------------------------------------------
+    app.use(express.compress());
+    app.use(express.favicon());
+    app.use(app.router);
+    app.use(middleware.slash());
+    app.use(express.static(config.dirs.pub));
+    app.use(express.static(config.dirs.shared));
+    app.use(middleware.placeLookup('/places/'));
 
-routes        = require('./routes');
-exposedRoutes = {};
+    if (app.get('env') === 'development') {
+        app.use(express.errorHandler({
+            dumpExceptions: true,
+            showStack     : true
+        }));
+    } else {
+        app.use(express.errorHandler());
+    }
 
-function exposeRoute(name) {
-    var args = [].slice.call(arguments, 1),
-        routes, route;
+    // -- Routes -------------------------------------------------------------------
 
-    app.get.apply(app, args);
+    routes        = require('./routes');
+    exposedRoutes = {};
 
-    routes = app.routes.get;
-    route  = routes[routes.length -1];
+    function exposeRoute(name) {
+        var args = [].slice.call(arguments, 1),
+            routes, route;
 
-    exposedRoutes[name] = {
-        path : route.path,
-        keys : route.keys,
-        regex: route.regexp.toString()
-    };
-}
+        app.get.apply(app, args);
 
-exposeRoute('index', '/', routes.index);
+        routes = app.routes.get;
+        route  = routes[routes.length -1];
 
-exposeRoute('places', '/places/:id/', [
-    routes.places.load,
-    middleware.exposeData('place', 'photos'),
-    middleware.exposeView('grid'),
-    routes.places.render
-]);
+        exposedRoutes[name] = {
+            path : route.path,
+            keys : route.keys,
+            regex: route.regexp.toString()
+        };
+    }
 
-exposeRoute('photos', '/photos/:id/', [
-    routes.photos.load,
-    middleware.exposeData('place', 'photo'),
-    middleware.exposeView('lightbox'),
-    routes.photos.render
-]);
+    exposeRoute('index', '/', routes.index);
 
-app.get('/combo', [
-    combo.combine({rootPath: config.dirs.pub_js}),
-    combo.respond
-]);
+    exposeRoute('places', '/places/:id/', [
+        routes.places.load,
+        middleware.exposeData('place', 'photos'),
+        middleware.exposeView('grid'),
+        routes.places.render
+    ]);
 
-app.get('/shared/combo', [
-    combo.combine({rootPath: config.dirs.shared_js}),
-    combo.respond
-]);
+    exposeRoute('photos', '/photos/:id/', [
+        routes.photos.load,
+        middleware.exposeData('place', 'photo'),
+        middleware.exposeView('lightbox'),
+        routes.photos.render
+    ]);
 
-app.get('/templates.js', routes.templates);
+    app.get('/combo', [
+        combo.combine({rootPath: config.dirs.pub_js}),
+        combo.respond
+    ]);
 
-PNM_ENV.ROUTES = exposedRoutes;
-app.expose(exposedRoutes, 'ROUTES');
+    app.get('/shared/combo', [
+        combo.combine({rootPath: config.dirs.shared_js}),
+        combo.respond
+    ]);
+
+    app.get('/templates.js', routes.templates);
+
+    PNM_ENV.ROUTES = exposedRoutes;
+    app.expose(exposedRoutes, 'ROUTES');
+
+});
 
 // -- Exports ------------------------------------------------------------------
 
