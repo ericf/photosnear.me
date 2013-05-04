@@ -1,27 +1,14 @@
-var combo   = require('combohandler'),
-    express = require('express'),
+var express = require('express'),
     state   = require('express-state'),
     myui    = require('modown-yui'),
     Locator = require('modown-locator'),
-    yui     = require('yui'),
 
-    PNM_ENV = yui.YUI.namespace('Env.PNM'),
-
-    config = require('./conf/config'),
-    app, hbs, middleware, routes, exposedRoutes, locator;
-
-// -- Configure YUI ------------------------------------------------------------
-
-// Applies config to shared YUI instance.
-yui.getInstance().applyConfig(config.yui.server);
-
-PNM_ENV.CACHE  = config.cache.server;
-PNM_ENV.FLICKR = config.flickr;
+    config  = require('./conf/config'),
+    PNM_ENV, app, hbs, middleware, routes, exposedRoutes, locator;
 
 // -- Configure App ------------------------------------------------------------
 
 app = express();
-hbs = require('./lib/hbs');
 
 app.set('name', config.name);
 app.set('env', config.env);
@@ -29,21 +16,20 @@ app.set('port', config.port);
 app.set('state local', 'pnm_env');
 app.set('state namespace', 'YUI.Env.PNM');
 
-app.engine(hbs.extname, hbs.engine);
-app.set('view engine', hbs.extname);
-app.set('views', config.dirs.views);
-
 app.enable('strict routing');
 
 app.expose(config.cache.client, 'CACHE');
 app.expose(config.flickr, 'FLICKR');
-app.expose(config.yui.client, 'window.YUI_config', 'yui_config');
 
 app.locals({
-    min        : config.env === 'production' ? '-min' : '',
-    typekit    : config.typekit,
-    yui_version: config.yui.version
+    typekit: config.typekit
 });
+
+// -- Configure YUI ------------------------------------------------------------
+
+PNM_ENV = app.yui.YUI.namespace('Env.PNM'),
+PNM_ENV.CACHE  = config.cache.server;
+PNM_ENV.FLICKR = config.flickr;
 
 // -- Locator and plugins ------------------------------------------------------
 
@@ -51,11 +37,42 @@ locator = new Locator({
     buildDirectory: 'build'
 });
 locator.plug(app.yui.plugin({
-    registerGroup: true
+    registerGroup: true,
+    registerServerModules: true
 }));
 locator.parseBundle(__dirname, {}).then(function (have) {
 
-    // -- Middleware ---------------------------------------------------------------
+    // custom modules should be registered manually or by adding a build.json
+    // to build them during boot, which is also supported in express-yui
+    app.yui.applyConfig({
+        modules: {
+            "ios-oc-fix": "/vendor/ios-orientationchange-fix.js",
+            "pnm-templates": {
+                "fullpath": "/templates.js",
+                "requires": ["handlebars-base"]
+            }
+        }
+    });
+
+    app.configure('development', function () {
+        app.yui.debugMode();
+        app.yui.serveCoreFromAppOrigin();
+    });
+    app.configure('production', function () {
+        app.yui.serveCoreFromCDN();
+    });
+
+    app.yui.serveGroupFromAppOrigin('photosnearme');
+    app.yui.serveCombinedFromAppOrigin();
+
+    // -- Views ----------------------------------------------------------------
+
+    hbs = require('./lib/hbs')(app);
+    app.engine(hbs.extname, hbs.engine);
+    app.set('view engine', hbs.extname);
+    app.set('views', config.dirs.views);
+
+    // -- Middleware -----------------------------------------------------------
 
     middleware = require('./middleware');
 
@@ -67,8 +84,8 @@ locator.parseBundle(__dirname, {}).then(function (have) {
     app.use(express.favicon());
     app.use(app.router);
     app.use(middleware.slash());
+    app.use(myui.static());
     app.use(express.static(config.dirs.pub));
-    app.use(express.static(config.dirs.shared));
     app.use(middleware.placeLookup('/places/'));
 
     if (app.get('env') === 'development') {
@@ -101,9 +118,10 @@ locator.parseBundle(__dirname, {}).then(function (have) {
         };
     }
 
-    exposeRoute('index', '/', routes.index);
+    exposeRoute('index', '/', myui.expose(), routes.index);
 
     exposeRoute('places', '/places/:id/', [
+        myui.expose(),
         routes.places.load,
         middleware.exposeData('place', 'photos'),
         middleware.exposeView('grid'),
@@ -111,20 +129,11 @@ locator.parseBundle(__dirname, {}).then(function (have) {
     ]);
 
     exposeRoute('photos', '/photos/:id/', [
+        myui.expose(),
         routes.photos.load,
         middleware.exposeData('place', 'photo'),
         middleware.exposeView('lightbox'),
         routes.photos.render
-    ]);
-
-    app.get('/combo', [
-        combo.combine({rootPath: config.dirs.pub_js}),
-        combo.respond
-    ]);
-
-    app.get('/shared/combo', [
-        combo.combine({rootPath: config.dirs.shared_js}),
-        combo.respond
     ]);
 
     app.get('/templates.js', routes.templates);
