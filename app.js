@@ -57,6 +57,8 @@ locator.parseBundle(__dirname, {}).then(function (have) {
     app.configure('development', function () {
         app.yui.debugMode();
         app.yui.serveCoreFromAppOrigin();
+        // watching for changes in yui modules
+        locator.watch(__dirname);
     });
     app.configure('production', function () {
         app.yui.serveCoreFromCDN();
