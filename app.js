@@ -85,7 +85,7 @@ function exposeRoute(name) {
     exposedRoutes[name] = {
         path : route.path,
         keys : route.keys,
-        regex: route.regexp.toString()
+        regex: route.regexp
     };
 }
 
