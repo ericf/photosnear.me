@@ -111,9 +111,9 @@
       "resolved": "https://registry.npmjs.org/express-slash/-/express-slash-0.2.0.tgz"
     },
     "express-state": {
-      "version": "0.0.1",
-      "from": "express-state@0.0.1",
-      "resolved": "https://registry.npmjs.org/express-state/-/express-state-0.0.1.tgz"
+      "version": "0.0.3",
+      "from": "express-state@0.0.3",
+      "resolved": "https://registry.npmjs.org/express-state/-/express-state-0.0.3.tgz"
     },
     "express3-handlebars": {
       "version": "0.4.1",
