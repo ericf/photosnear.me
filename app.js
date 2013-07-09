@@ -35,11 +35,7 @@ PNM_ENV.FLICKR = config.flickr;
 // to build them during boot, which is also supported in express-yui
 app.yui.applyConfig({
     modules: {
-        "ios-oc-fix": "/vendor/ios-orientationchange-fix.js",
-        "pnm-templates": {
-            "fullpath": "/templates.js",
-            "requires": ["handlebars-base"]
-        }
+        "ios-oc-fix": "/vendor/ios-orientationchange-fix.js"
     }
 });
 

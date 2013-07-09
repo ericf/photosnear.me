@@ -9,10 +9,6 @@
         "templates": "shared/templates/"
     },
 
-    "layouts": {
-        "main": "main"
-    },
-
     "flickr": {
         "api_key": "0984607e2222db7a1be6a5692741ca08"
     },
