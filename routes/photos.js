@@ -13,7 +13,11 @@ exports.load = function (req, res, next) {
 
 exports.render = function (req, res) {
     var Y = req.app.yui.use();
-    res.render(res.view, {
+    res.expose(req.place, 'DATA.place');
+    res.expose(req.photo, 'DATA.photo');
+    res.expose({name: 'lightbox'}, 'VIEW');
+
+    res.render('lightbox', {
         located: true,
 
         place: {

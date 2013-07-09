@@ -1,16 +1,14 @@
 YUI.add('pnm-place', function (Y) {
 
-var PNM_ENV = YUI.namespace('Env.PNM'),
-
-    Lang = Y.Lang,
+var Lang = Y.Lang,
     Place, cache;
 
 // Create model cache. Server uses a strict maximum number of entries which is
 // not a supported attribute by `CacheOffline`.
-if ('max' in PNM_ENV.CACHE.place) {
-    cache = new Y.Cache(PNM_ENV.CACHE.place);
+if ('max' in PNM.CACHE.place) {
+    cache = new Y.Cache(PNM.CACHE.place);
 } else {
-    cache = new Y.CacheOffline(PNM_ENV.CACHE.place);
+    cache = new Y.CacheOffline(PNM.CACHE.place);
 }
 
 Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
@@ -37,7 +35,7 @@ Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
 
             // Assume we at least have a lat/lon.
             return Lang.sub(this.queries.placeFromLatLon, {
-                api_key  : PNM_ENV.FLICKR.api_key || '',
+                api_key  : PNM.FLICKR.api_key || '',
                 latitude : this.get('latitude'),
                 longitude: this.get('longitude'),
                 attrs    : Place.YQL_ATTRS
@@ -98,7 +96,7 @@ Place = Y.Base.create('place', Y.Model, [Y.ModelSync.YQL], {
 
 Y.namespace('PNM').Place = Place;
 
-}, '0.7.2', {
+}, '0.9.0', {
     requires: [
         'cache-offline',
         'gallery-model-sync-yql',

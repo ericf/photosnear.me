@@ -105,7 +105,7 @@ LightboxView = Y.Base.create('lightboxView', Y.View, [], {
 
 Y.namespace('PNM').LightboxView = LightboxView;
 
-}, '0.7.2', {
+}, '0.9.0', {
     affinity: 'client',
     requires: [
         'event-key',

@@ -2,7 +2,7 @@
     "name"       : "photosnearme",
     "description": "Photos Near Me",
     "homepage"   : "http://photosnear.me/",
-    "version"    : "0.8.0",
+    "version"    : "0.9.0",
     "author"     : "Eric Ferraiuolo <eferraiuolo@gmail.com> (http://github.com/ericf)",
     "private"    : true,
 
@@ -13,16 +13,13 @@
 
     "dependencies": {
         "combohandler"       : "0.2.x",
-        "express"            : "3.2.x",
+        "express"            : "3.3.x",
         "express-slash"      : "latest",
         "express-state"      : "latest",
         "express3-handlebars": "latest",
         "express-yui"        : "latest",
         "locator"            : "latest",
         "locator-handlebars" : "latest",
-        "yui"                : "~3.10.0"
-    },
-    "modown": {
-        "ruleset": "touchdown-package"
+        "yui"                : "3.10.x"
     }
 }

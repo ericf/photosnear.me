@@ -31,39 +31,31 @@
 
     <script>
     {{{state}}}
-    app.yui.use(function (Y) {
+    app.yui.use('pnm-app', 'ios-oc-fix', function (Y) {
 
-        var routes = app.PNM.ROUTES;
+        var routes = PNM.ROUTES;
+            obj = new Y.PNM.App({
+            container    : '#wrap',
+            viewContainer: '#main',
 
-        // preparing the Env variable before loading any app specific code
-        YUI.Env.PNM = app.PNM;
-
-        Y.use('pnm-app', 'ios-oc-fix', function () {
-
-            var obj = new Y.PNM.App({
-                container    : '#wrap',
-                viewContainer: '#main',
-
-                transitions  : true,
-                serverRouting: true
-            });
-
-            // Setup routes.
-            Y.Array.each(obj.namedRoutes, function (route, i) {
-                obj.route(routes[route.name].path, route.callbacks);
-                obj.get('routes')[i].name = route.name;
-            });
-
-            // Determine if the user needs to be located. When the app is saved to
-            // the home screen in iOS, always route to "/"" so geolocation lookup
-            // is preformed.
-            if (Y.config.win.navigator.standalone) {
-                obj.locate();
-            } else {
-                obj.render({rendered: true}).dispatch();
-            }
-
+            transitions  : true,
+            serverRouting: true
         });
+
+        // Setup routes.
+        Y.Array.each(obj.namedRoutes, function (route, i) {
+            obj.route(routes[route.name].path, route.callbacks);
+            obj.get('routes')[i].name = route.name;
+        });
+
+        // Determine if the user needs to be located. When the app is saved to
+        // the home screen in iOS, always route to "/"" so geolocation lookup
+        // is preformed.
+        if (Y.config.win.navigator.standalone) {
+            obj.locate();
+        } else {
+            obj.render({rendered: true}).dispatch();
+        }
 
     });
     </script>

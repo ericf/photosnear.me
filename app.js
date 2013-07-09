@@ -5,7 +5,7 @@ var express = require('express'),
     LocatorHandlebars = require('locator-handlebars'),
 
     config  = require('./conf/config'),
-    PNM_ENV, app, middleware, routes, exposedRoutes, locator;
+    app, middleware, routes, exposedRoutes, locator;
 
 // -- Configure App ------------------------------------------------------------
 
@@ -14,10 +14,11 @@ app = express();
 app.set('name', config.name);
 app.set('env', config.env);
 app.set('port', config.port);
-app.set('state namespace', 'app.PNM');
+app.set('state namespace', 'PNM');
 
 app.enable('strict routing');
 
+app.expose({}, 'DATA');
 app.expose(config.cache.client, 'CACHE');
 app.expose(config.flickr, 'FLICKR');
 
@@ -27,9 +28,9 @@ app.locals({
 
 // -- Configure YUI ------------------------------------------------------------
 
-PNM_ENV = app.yui.YUI.namespace('Env.PNM'),
-PNM_ENV.CACHE  = config.cache.server;
-PNM_ENV.FLICKR = config.flickr;
+global.PNM = {};
+PNM.CACHE  = config.cache.server;
+PNM.FLICKR = config.flickr;
 
 // custom modules should be registered manually or by adding a build.json
 // to build them during boot, which is also supported in express-yui
@@ -92,7 +93,7 @@ function exposeRoute(name) {
     exposedRoutes[name] = {
         path : route.path,
         keys : route.keys,
-        regex: route.regexp.toString()
+        regex: route.regexp
     };
 }
 
@@ -101,20 +102,16 @@ exposeRoute('index', '/', myui.expose(), routes.index);
 exposeRoute('places', '/places/:id/', [
     myui.expose(),
     routes.places.load,
-    middleware.exposeData('place', 'photos'),
-    middleware.exposeView('grid'),
     routes.places.render
 ]);
 
 exposeRoute('photos', '/photos/:id/', [
     myui.expose(),
     routes.photos.load,
-    middleware.exposeData('place', 'photo'),
-    middleware.exposeView('lightbox'),
     routes.photos.render
 ]);
 
-PNM_ENV.ROUTES = exposedRoutes;
+PNM.ROUTES = exposedRoutes;
 app.expose(exposedRoutes, 'ROUTES');
 
 // -- Locator and plugins ------------------------------------------------------
@@ -127,7 +124,7 @@ new Locator({
         registerGroup: true,
         registerServerModules: true
     }))
-    .parseBundle(__dirname, {}).then(function (have) {
+    .parseBundle(__dirname, {}).then(function () {
 
         app.yui.use('pnm-helpers');
 

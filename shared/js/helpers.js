@@ -1,14 +1,12 @@
 YUI.add('pnm-helpers', function (Y) {
 
-var PNM_ENV = YUI.namespace('Env.PNM');
-
-    regexPathParam = /([:*])([\w\-]+)?/g;
+var regexPathParam = /([:*])([\w\-]+)?/g;
 
 Y.namespace('PNM').Helpers = {
     pathTo: function (routeName, context) {
         context || (context = this);
 
-        var route = PNM_ENV.ROUTES[routeName],
+        var route = PNM.ROUTES[routeName],
             path, keys;
 
         if (!route) { return ''; }
@@ -34,7 +32,7 @@ Y.namespace('PNM').Helpers = {
 
 Y.Handlebars.registerHelper('pathTo', Y.PNM.Helpers.pathTo);
 
-}, '0.7.2', {
+}, '0.9.0', {
     requires: [
         'handlebars-base',
         'array-extras'

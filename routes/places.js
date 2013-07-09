@@ -24,7 +24,11 @@ exports.load = function (req, res, next) {
 };
 
 exports.render = function (req, res) {
-    res.render(res.view, {
+    res.expose(req.place, 'DATA.place');
+    res.expose(req.photos, 'DATA.photos');
+    res.expose({name: 'grid'}, 'VIEW');
+
+    res.render('grid', {
         located: true,
 
         place: {
