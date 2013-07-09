@@ -33,14 +33,13 @@
     <script>
         {{{yui_config}}}
 
-        {{{pnm_env}}}
+        {{{state}}}
     </script>
 
     <script>
     YUI().use('pnm-app', 'ios-oc-fix', function (Y) {
 
-        var PNMEnv = YUI.namespace('Env.PNM'),
-            routes = PNMEnv.ROUTES,
+        var routes = PNM.ROUTES,
             app;
 
         // Create app.

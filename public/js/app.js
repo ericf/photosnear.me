@@ -1,15 +1,11 @@
 YUI.add('pnm-app', function (Y) {
 
-var PNM     = Y.PNM,
-    PNMEnv  = YUI.namespace('Env.PNM'),
-    PNMData = YUI.namespace('Env.PNM.DATA'),
+var Photo  = Y.PNM.Photo,
+    Photos = Y.PNM.Photos,
+    Place  = Y.PNM.Place,
 
-    Photo  = PNM.Photo,
-    Photos = PNM.Photos,
-    Place  = PNM.Place,
-
-    Helpers   = PNM.Helpers,
-    Templates = PNM.Templates,
+    Helpers   = Y.PNM.Helpers,
+    Templates = Y.PNM.Templates,
 
     PhotosNearMe;
 
@@ -238,20 +234,20 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
     ATTRS: {
         place : {
             valueFn: function () {
-                return new Place(PNMData.place);
+                return new Place(PNM.DATA.place);
             }
         },
 
         photos: {
             valueFn: function () {
-                return new Photos({items: PNMData.photos});
+                return new Photos({items: PNM.DATA.photos});
             }
         }
     }
 
 });
 
-Y.namespace('PNM').App = PhotosNearMe;
+Y.PNM.App = PhotosNearMe;
 
 }, '0.7.2', {
     requires: [

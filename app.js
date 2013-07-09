@@ -3,18 +3,19 @@ var combo   = require('combohandler'),
     state   = require('express-state'),
     yui     = require('yui'),
 
-    PNM_ENV = yui.YUI.namespace('Env.PNM'),
-
     config = require('./conf/config'),
     app, hbs, middleware, routes, exposedRoutes;
+
+// Setup global PNM namespace
+global.PNM = {};
 
 // -- Configure YUI ------------------------------------------------------------
 
 // Applies config to shared YUI instance.
 yui.getInstance().applyConfig(config.yui.server);
 
-PNM_ENV.CACHE  = config.cache.server;
-PNM_ENV.FLICKR = config.flickr;
+PNM.CACHE  = config.cache.server;
+PNM.FLICKR = config.flickr;
 
 // -- Configure App ------------------------------------------------------------
 
@@ -24,8 +25,7 @@ hbs = require('./lib/hbs');
 app.set('name', config.name);
 app.set('env', config.env);
 app.set('port', config.port);
-app.set('state local', 'pnm_env');
-app.set('state namespace', 'YUI.Env.PNM');
+app.set('state namespace', 'PNM');
 
 app.engine(hbs.extname, hbs.engine);
 app.set('view engine', hbs.extname);
@@ -72,6 +72,11 @@ if (app.get('env') === 'development') {
 
 routes        = require('./routes');
 exposedRoutes = {};
+PNM.ROUTES    = exposedRoutes;
+
+// Expose routes to client.
+app.expose(exposedRoutes, 'ROUTES');
+app.expose({}, 'DATA');
 
 function exposeRoute(name) {
     var args = [].slice.call(arguments, 1),
@@ -93,15 +98,11 @@ exposeRoute('index', '/', routes.index);
 
 exposeRoute('places', '/places/:id/', [
     routes.places.load,
-    middleware.exposeData('place', 'photos'),
-    middleware.exposeView('grid'),
     routes.places.render
 ]);
 
 exposeRoute('photos', '/photos/:id/', [
     routes.photos.load,
-    middleware.exposeData('place', 'photo'),
-    middleware.exposeView('lightbox'),
     routes.photos.render
 ]);
 
@@ -116,9 +117,6 @@ app.get('/shared/combo', [
 ]);
 
 app.get('/templates.js', routes.templates);
-
-PNM_ENV.ROUTES = exposedRoutes;
-app.expose(exposedRoutes, 'ROUTES');
 
 // -- Exports ------------------------------------------------------------------
 

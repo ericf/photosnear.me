@@ -1,16 +1,14 @@
 YUI.add('pnm-photos', function (Y) {
 
-var PNM_ENV = YUI.namespace('Env.PNM'),
-
-    Lang = Y.Lang,
+var Lang = Y.Lang,
     Photos, cache;
 
 // Create model cache. Server uses a strict maximum number of entries which is
 // not a supported attribute by `CacheOffline`.
-if ('max' in PNM_ENV.CACHE.photos) {
-    cache = new Y.Cache(PNM_ENV.CACHE.photos);
+if ('max' in PNM.CACHE.photos) {
+    cache = new Y.Cache(PNM.CACHE.photos);
 } else {
-    cache = new Y.CacheOffline(PNM_ENV.CACHE.photos);
+    cache = new Y.CacheOffline(PNM.CACHE.photos);
 }
 
 Photos = Y.Base.create('photos', Y.LazyModelList, [], {
@@ -34,7 +32,7 @@ Photos = Y.Base.create('photos', Y.LazyModelList, [], {
             url, hit;
 
         url = Lang.sub(this.url, {
-            api_key: PNM_ENV.FLICKR.api_key || '',
+            api_key: PNM.FLICKR.api_key || '',
             woeid  : options.place.get('id'),
             num    : num,
             page   : Math.ceil((options.start || 0) / num) + 1
