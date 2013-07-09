@@ -9,7 +9,7 @@ var PNM     = Y.PNM,
     Place  = PNM.Place,
 
     Helpers   = PNM.Helpers,
-    Templates = PNM.Templates,
+    Templates = Y.Template._cache,
 
     PhotosNearMe;
 
@@ -21,8 +21,8 @@ Y.Object.each(Helpers, function (helper, name) {
 // Define App.
 PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
-    titleTemplate : Templates['title'],
-    headerTemplate: Templates['header'],
+    titleTemplate : Templates['photosnearme/partials/title'],
+    headerTemplate: Templates['photosnearme/partials/header'],
 
     namedRoutes: [
         {name: 'index',  callbacks: 'locate'},
@@ -267,6 +267,7 @@ Y.namespace('PNM').App = PhotosNearMe;
         'pnm-photos',
         'pnm-place',
         'pnm-helpers',
-        'pnm-templates'
+        'photosnearme-partials-title',
+        'photosnearme-partials-header'
     ]
 });

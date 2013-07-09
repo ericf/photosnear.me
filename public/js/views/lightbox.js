@@ -1,13 +1,13 @@
 YUI.add('pnm-lightbox-view', function (Y) {
 
 var PNM       = Y.PNM,
-    Templates = PNM.Templates,
+    Templates = Y.Template._cache,
     LightboxView;
 
 LightboxView = Y.Base.create('lightboxView', Y.View, [], {
 
     containerTemplate: '<div class="lightbox" />',
-    template         : Templates['lightbox'],
+    template         : Templates['photosnearme/partials/lightbox'],
 
     events: {
         '.photo img': {click: 'toggleInfo'}
@@ -109,8 +109,8 @@ Y.namespace('PNM').LightboxView = LightboxView;
     affinity: 'client',
     requires: [
         'event-key',
-        'pnm-templates',
         'transition',
-        'view'
+        'view',
+        'photosnearme-partials-lightbox'
     ]
 });

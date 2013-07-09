@@ -1,14 +1,14 @@
 YUI.add('pnm-grid-view', function (Y) {
 
 var PNM       = Y.PNM,
-    Templates = PNM.Templates,
+    Templates = Y.Template._cache,
     GridView;
 
 GridView = Y.Base.create('gridView', Y.View, [], {
 
     containerTemplate: '<div class="grid" />',
-    template         : Templates['grid'],
-    photoTemplate    : Templates['grid-photo'],
+    template         : Templates['photosnearme/partials/grid'],
+    photoTemplate    : Templates['photosnearme/partials/grid-photo'],
 
     events: {
         '.photo a': {click: 'select'}
@@ -123,7 +123,8 @@ Y.namespace('PNM').GridView = GridView;
     requires: [
         'node-style',
         'node-scroll-info',
-        'pnm-templates',
-        'view'
+        'view',
+        'photosnearme-partials-grid',
+        'photosnearme-partials-grid-photo'
     ]
 });

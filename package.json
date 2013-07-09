@@ -17,9 +17,10 @@
         "express-slash"      : "latest",
         "express-state"      : "latest",
         "express3-handlebars": "latest",
-        "modown-locator"     : "latest",
-        "modown-yui"         : "latest",
-        "yui"                : "3.10.0"
+        "express-yui"        : "latest",
+        "locator"            : "latest",
+        "locator-handlebars" : "latest",
+        "yui"                : "~3.10.0"
     },
     "modown": {
         "ruleset": "touchdown-package"

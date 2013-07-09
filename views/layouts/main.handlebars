@@ -29,42 +29,41 @@
         </div>
     </div>
 
-    {{#yui_seed}}<script src="{{{src}}}"></script>{{/yui_seed}}
-
     <script>
-        {{{pnm_env}}}
-    </script>
+    {{{state}}}
+    app.yui.use(function (Y) {
 
-    <script>
-    YUI({{{yui_config}}}).use('pnm-app', 'ios-oc-fix', function (Y) {
+        var routes = app.PNM.ROUTES;
 
-        var PNMEnv = YUI.namespace('Env.PNM'),
-            routes = PNMEnv.ROUTES,
-            app;
+        // preparing the Env variable before loading any app specific code
+        YUI.Env.PNM = app.PNM;
 
-        // Create app.
-        app = new Y.PNM.App({
-            container    : '#wrap',
-            viewContainer: '#main',
+        Y.use('pnm-app', 'ios-oc-fix', function () {
 
-            transitions  : true,
-            serverRouting: true
+            var obj = new Y.PNM.App({
+                container    : '#wrap',
+                viewContainer: '#main',
+
+                transitions  : true,
+                serverRouting: true
+            });
+
+            // Setup routes.
+            Y.Array.each(obj.namedRoutes, function (route, i) {
+                obj.route(routes[route.name].path, route.callbacks);
+                obj.get('routes')[i].name = route.name;
+            });
+
+            // Determine if the user needs to be located. When the app is saved to
+            // the home screen in iOS, always route to "/"" so geolocation lookup
+            // is preformed.
+            if (Y.config.win.navigator.standalone) {
+                obj.locate();
+            } else {
+                obj.render({rendered: true}).dispatch();
+            }
+
         });
-
-        // Setup routes.
-        Y.Array.each(app.namedRoutes, function (route, i) {
-            app.route(routes[route.name].path, route.callbacks);
-            app.get('routes')[i].name = route.name;
-        });
-
-        // Determine if the user needs to be located. When the app is saved to
-        // the home screen in iOS, always route to "/"" so geolocation lookup
-        // is preformed.
-        if (Y.config.win.navigator.standalone) {
-            app.locate();
-        } else {
-            app.render({rendered: true}).dispatch();
-        }
 
     });
     </script>

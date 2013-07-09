@@ -32,8 +32,11 @@ Y.namespace('PNM').Helpers = {
     }
 };
 
+Y.Handlebars.registerHelper('pathTo', Y.PNM.Helpers.pathTo);
+
 }, '0.7.2', {
     requires: [
+        'handlebars-base',
         'array-extras'
     ]
 });
