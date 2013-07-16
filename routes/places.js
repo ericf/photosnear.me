@@ -28,7 +28,7 @@ exports.render = function (req, res) {
     res.expose(req.photos, 'DATA.photos');
     res.expose({name: 'grid'}, 'VIEW');
 
-    res.render('grid', {
+    res.render('grid-page', {
         located: true,
 
         place: {

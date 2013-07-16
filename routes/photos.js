@@ -17,7 +17,7 @@ exports.render = function (req, res) {
     res.expose(req.photo, 'DATA.photo');
     res.expose({name: 'lightbox'}, 'VIEW');
 
-    res.render('lightbox', {
+    res.render('lightbox-page', {
         located: true,
 
         place: {

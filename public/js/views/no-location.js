@@ -7,7 +7,7 @@ var PNM       = Y.PNM,
 NoLocationView = Y.Base.create('noLocationView', Y.View, [], {
 
     containerTemplate: '<div class="no-location" />',
-    template         : Templates['photosnearme/partials/no-location'],
+    template         : Templates['photosnearme/no-location'],
 
     render: function () {
         this.get('container').setHTML(this.template());
@@ -22,7 +22,7 @@ Y.namespace('PNM').NoLocationView = NoLocationView;
     affinity: 'client',
     requires: [
         'view',
-        'photosnearme-partials-no-location'
+        'photosnearme-templates-no-location'
     ]
 });
 

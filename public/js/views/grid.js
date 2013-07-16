@@ -7,8 +7,8 @@ var PNM       = Y.PNM,
 GridView = Y.Base.create('gridView', Y.View, [], {
 
     containerTemplate: '<div class="grid" />',
-    template         : Templates['photosnearme/partials/grid'],
-    photoTemplate    : Templates['photosnearme/partials/grid-photo'],
+    template         : Templates['photosnearme/grid'],
+    photoTemplate    : Templates['photosnearme/grid-photo'],
 
     events: {
         '.photo a': {click: 'select'}
@@ -49,9 +49,7 @@ GridView = Y.Base.create('gridView', Y.View, [], {
             container = this.get('container'),
             content;
 
-        content = this.template({photos: photos.toJSON()}, {
-            partials: {'grid-photo': this.photoTemplate}
-        });
+        content = this.template({photos: photos.toJSON()});
 
         container.setHTML(content);
         this.listNode = container.one('ul');
@@ -124,7 +122,7 @@ Y.namespace('PNM').GridView = GridView;
         'node-style',
         'node-scroll-info',
         'view',
-        'photosnearme-partials-grid',
-        'photosnearme-partials-grid-photo'
+        'photosnearme-templates-grid',
+        'photosnearme-templates-grid-photo'
     ]
 });

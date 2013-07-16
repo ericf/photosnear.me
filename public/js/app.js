@@ -17,8 +17,8 @@ Y.Object.each(Helpers, function (helper, name) {
 // Define App.
 PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
-    titleTemplate : Templates['photosnearme/partials/title'],
-    headerTemplate: Templates['photosnearme/partials/header'],
+    titleTemplate : Templates['photosnearme/title'],
+    headerTemplate: Templates['photosnearme/header'],
 
     namedRoutes: [
         {name: 'index',  callbacks: 'locate'},
@@ -263,7 +263,7 @@ Y.PNM.App = PhotosNearMe;
         'pnm-photos',
         'pnm-place',
         'pnm-helpers',
-        'photosnearme-partials-title',
-        'photosnearme-partials-header'
+        'photosnearme-templates-title',
+        'photosnearme-templates-header'
     ]
 });

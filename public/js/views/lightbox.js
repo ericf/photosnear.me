@@ -7,7 +7,7 @@ var PNM       = Y.PNM,
 LightboxView = Y.Base.create('lightboxView', Y.View, [], {
 
     containerTemplate: '<div class="lightbox" />',
-    template         : Templates['photosnearme/partials/lightbox'],
+    template         : Templates['photosnearme/lightbox'],
 
     events: {
         '.photo img': {click: 'toggleInfo'}
@@ -111,6 +111,6 @@ Y.namespace('PNM').LightboxView = LightboxView;
         'event-key',
         'transition',
         'view',
-        'photosnearme-partials-lightbox'
+        'photosnearme-templates-lightbox'
     ]
 });
