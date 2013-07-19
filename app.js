@@ -34,14 +34,6 @@ global.PNM = {};
 PNM.CACHE  = config.cache.server;
 PNM.FLICKR = config.flickr;
 
-// Custom modules should be registered manually, or by adding a `build.json` to
-// build them during bootup. Both of which express-yui supports.
-app.yui.applyConfig({
-    modules: {
-        "ios-oc-fix": "/vendor/ios-orientationchange-fix.js"
-    }
-});
-
 if (app.get('env') === 'development') {
     app.yui.debugMode({filter: 'raw'});
     app.yui.setCoreFromAppOrigin();
