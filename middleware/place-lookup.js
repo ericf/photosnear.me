@@ -1,8 +1,7 @@
-var Y = require('yui').use('pnm-place');
-
 module.exports = function placeLookup(rootPath) {
     return function (req, res) {
-        var place     = new Y.PNM.Place(),
+        var Y         = req.app.yui.use('pnm-place'),
+            place     = new Y.PNM.Place(),
             placeText = req.url.split('/')[1];
 
         place.load({text: placeText}, function () {

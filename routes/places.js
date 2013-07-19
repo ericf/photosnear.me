@@ -1,6 +1,9 @@
-var Y = require('yui').use('parallel', 'pnm-place', 'pnm-photo', 'pnm-photos');
+var Y;
 
 exports.load = function (req, res, next) {
+    // Load YUI modules, once.
+    Y || (Y = req.app.yui.use('parallel', 'pnm-place', 'pnm-photo', 'pnm-photos'));
+
     var place    = new Y.PNM.Place({id: req.params.id}),
         photos   = new Y.PNM.Photos(),
         requests = new Y.Parallel();
@@ -29,7 +32,7 @@ exports.render = function (req, res) {
     res.expose(req.photos, 'DATA.photos');
     res.expose({name: 'grid'}, 'VIEW');
 
-    res.render('grid', {
+    res.render('grid-page', {
         located: true,
 
         place: {

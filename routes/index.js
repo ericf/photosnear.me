@@ -1,9 +1,8 @@
 module.exports = {
-    photos   : require('./photos'),
-    places   : require('./places'),
-    templates: require('./templates'),
+    photos: require('./photos'),
+    places: require('./places'),
 
     index: function (req, res, next) {
-        res.render('index', {located: false});
+        res.render('index-page', {located: false});
     }
 };

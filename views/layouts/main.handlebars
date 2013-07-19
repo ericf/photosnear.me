@@ -25,24 +25,17 @@
         </div>
 
         <div id="main" class="layout">
-            {{{body}}}
+            {{{outlet}}}
         </div>
     </div>
 
-    <script src="http://yui.yahooapis.com/{{yui_version}}/build/yui/yui{{min}}.js"></script>
     <script>
-        {{{yui_config}}}
+    {{{state}}}
+    app.yui.use('pnm-app', 'ios-oc-fix', function (Y) {
 
-        {{{state}}}
-    </script>
-
-    <script>
-    YUI().use('pnm-app', 'ios-oc-fix', function (Y) {
-
-        var routes = PNM.ROUTES,
+        var routeConfigs = PNM.ROUTES,
             app;
 
-        // Create app.
         app = new Y.PNM.App({
             container    : '#wrap',
             viewContainer: '#main',
@@ -53,8 +46,11 @@
 
         // Setup routes.
         Y.Array.each(app.namedRoutes, function (route, i) {
-            app.route(routes[route.name].path, route.callbacks);
-            app.get('routes')[i].name = route.name;
+            var routeConfig = routeConfigs[route.name];
+            if (routeConfig) {
+                app.route(routeConfig.path, route.callbacks);
+                app.get('routes')[i].name = route.name;
+            }
         });
 
         // Determine if the user needs to be located. When the app is saved to

@@ -1,14 +1,14 @@
 YUI.add('pnm-grid-view', function (Y) {
 
 var PNM       = Y.PNM,
-    Templates = PNM.Templates,
+    Templates = Y.Template._cache,
     GridView;
 
 GridView = Y.Base.create('gridView', Y.View, [], {
 
     containerTemplate: '<div class="grid" />',
-    template         : Templates['grid'],
-    photoTemplate    : Templates['grid-photo'],
+    template         : Templates['photosnearme/grid'],
+    photoTemplate    : Templates['photosnearme/grid-photo'],
 
     events: {
         '.photo a': {click: 'select'}
@@ -49,9 +49,7 @@ GridView = Y.Base.create('gridView', Y.View, [], {
             container = this.get('container'),
             content;
 
-        content = this.template({photos: photos.toJSON()}, {
-            partials: {'grid-photo': this.photoTemplate}
-        });
+        content = this.template({photos: photos.toJSON()});
 
         container.setHTML(content);
         this.listNode = container.one('ul');
@@ -119,10 +117,12 @@ GridView = Y.Base.create('gridView', Y.View, [], {
 Y.namespace('PNM').GridView = GridView;
 
 }, '0.9.0', {
+    affinity: 'client',
     requires: [
         'node-style',
         'node-scroll-info',
-        'pnm-templates',
-        'view'
+        'view',
+        'photosnearme-templates-grid',
+        'photosnearme-templates-grid-photo'
     ]
 });

@@ -1,49 +1,45 @@
-var combo   = require('combohandler'),
-    express = require('express'),
-    state   = require('express-state'),
-    yui     = require('yui'),
+var express           = require('express'),
+    state             = require('express-state'),
+    expyui            = require('express-yui'),
+    Locator           = require('locator'),
+    LocatorHandlebars = require('locator-handlebars'),
 
-    config = require('./conf/config'),
-    app, hbs, middleware, routes, exposedRoutes;
-
-// Setup global PNM namespace
-global.PNM = {};
-
-// -- Configure YUI ------------------------------------------------------------
-
-// Applies config to shared YUI instance.
-yui.getInstance().applyConfig(config.yui.server);
-
-PNM.CACHE  = config.cache.server;
-PNM.FLICKR = config.flickr;
+    config  = require('./conf/config'),
+    app, middleware, routes, exposedRoutes, locator;
 
 // -- Configure App ------------------------------------------------------------
 
 app = express();
-hbs = require('./lib/hbs');
 
 app.set('name', config.name);
 app.set('env', config.env);
 app.set('port', config.port);
+app.set('view', app.yui.view({defaultLayout: 'main'}));
 app.set('state namespace', 'PNM');
-
-app.engine(hbs.extname, hbs.engine);
-app.set('view engine', hbs.extname);
-app.set('views', config.dirs.views);
 
 app.enable('strict routing');
 
+app.expose({}, 'DATA');
 app.expose(config.cache.client, 'CACHE');
 app.expose(config.flickr, 'FLICKR');
-app.expose(config.yui.client, 'window.YUI_config', 'yui_config');
 
 app.locals({
-    min        : config.env === 'production' ? '-min' : '',
-    typekit    : config.typekit,
-    yui_version: config.yui.version
+    typekit: config.typekit
 });
 
-// -- Middleware ---------------------------------------------------------------
+// -- Configure YUI ------------------------------------------------------------
+
+// Global PNM env config.
+global.PNM = {};
+PNM.CACHE  = config.cache.server;
+PNM.FLICKR = config.flickr;
+
+if (app.get('env') === 'development') {
+    app.yui.debugMode({filter: 'raw'});
+    app.yui.setCoreFromAppOrigin();
+}
+
+// -- Middleware -----------------------------------------------------------
 
 middleware = require('./middleware');
 
@@ -53,10 +49,11 @@ if (app.get('env') === 'development') {
 
 app.use(express.compress());
 app.use(express.favicon());
+app.use(middleware.exposeYUI(expyui));
 app.use(app.router);
 app.use(middleware.slash());
+app.use(expyui.static());
 app.use(express.static(config.dirs.pub));
-app.use(express.static(config.dirs.shared));
 app.use(middleware.placeLookup('/places/'));
 
 if (app.get('env') === 'development') {
@@ -72,11 +69,6 @@ if (app.get('env') === 'development') {
 
 routes        = require('./routes');
 exposedRoutes = {};
-PNM.ROUTES    = exposedRoutes;
-
-// Expose routes to client.
-app.expose(exposedRoutes, 'ROUTES');
-app.expose({}, 'DATA');
 
 function exposeRoute(name) {
     var args = [].slice.call(arguments, 1),
@@ -106,17 +98,24 @@ exposeRoute('photos', '/photos/:id/', [
     routes.photos.render
 ]);
 
-app.get('/combo', [
-    combo.combine({rootPath: config.dirs.pub_js}),
-    combo.respond
-]);
+PNM.ROUTES = exposedRoutes;
+app.expose(exposedRoutes, 'ROUTES');
 
-app.get('/shared/combo', [
-    combo.combine({rootPath: config.dirs.shared_js}),
-    combo.respond
-]);
+// -- Locator and plugins ------------------------------------------------------
 
-app.get('/templates.js', routes.templates);
+locator = new Locator({buildDirectory: 'build'})
+    .plug(LocatorHandlebars.yui())
+    .plug(app.yui.plugin({
+        registerGroup        : true,
+        registerServerModules: true
+    }));
+
+locator.parseBundle(__dirname, {}).then(function () {
+    app.yui.use('pnm-helpers');
+}, function (err) {
+    console.error(err);
+    console.error(err.stack);
+});
 
 // -- Exports ------------------------------------------------------------------
 
