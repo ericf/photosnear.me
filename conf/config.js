@@ -4,18 +4,8 @@ var path = require('path'),
     NODE_ENV = process.env.NODE_ENV,
     PORT     = process.env.PORT,
 
-    appRoot      = process.cwd(),
-    config       = require('./config.json');
-
-// Poor-mans object clone.
-function clone(config) {
-    return JSON.parse(JSON.stringify(config));
-}
-
-// Wrap crazy YUI API.
-function mix(config, overrides) {
-    return Y.mix(config, overrides, true, null, 0, true);
-}
+    appRoot = process.cwd(),
+    config  = require('./config.json');
 
 config.env  = NODE_ENV || 'development';
 config.port = PORT || config.port;

@@ -12,11 +12,9 @@
     },
 
     "dependencies": {
-        "combohandler"       : "0.2.x",
         "express"            : "3.3.x",
         "express-slash"      : "latest",
         "express-state"      : "latest",
-        "express3-handlebars": "latest",
         "express-yui"        : "latest",
         "locator"            : "latest",
         "locator-handlebars" : "latest",

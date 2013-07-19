@@ -1,5 +1,5 @@
 exports.load = function (req, res, next) {
-    var Y = req.app.yui.use('pnm-photo'),
+    var Y     = req.app.yui.use('pnm-photo'),
         photo = new Y.PNM.Photo({id: req.params.id}),
         place;
 
@@ -13,6 +13,7 @@ exports.load = function (req, res, next) {
 
 exports.render = function (req, res) {
     var Y = req.app.yui.use();
+
     res.expose(req.place, 'DATA.place');
     res.expose(req.photo, 'DATA.photo');
     res.expose({name: 'lightbox'}, 'VIEW');
