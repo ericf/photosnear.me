@@ -1,7 +1,7 @@
-var express = require('express'),
-    state   = require('express-state'),
-    myui    = require('express-yui'),
-    Locator = require('locator'),
+var express           = require('express'),
+    state             = require('express-state'),
+    expyui            = require('express-yui'),
+    Locator           = require('locator'),
     LocatorHandlebars = require('locator-handlebars'),
 
     config  = require('./conf/config'),
@@ -14,6 +14,7 @@ app = express();
 app.set('name', config.name);
 app.set('env', config.env);
 app.set('port', config.port);
+app.set('view', app.yui.view({defaultLayout: 'main'}));
 app.set('state namespace', 'PNM');
 
 app.enable('strict routing');
@@ -28,28 +29,23 @@ app.locals({
 
 // -- Configure YUI ------------------------------------------------------------
 
+// Global PNM env config.
 global.PNM = {};
 PNM.CACHE  = config.cache.server;
 PNM.FLICKR = config.flickr;
 
-// custom modules should be registered manually or by adding a build.json
-// to build them during boot, which is also supported in express-yui
+// Custom modules should be registered manually, or by adding a `build.json` to
+// build them during bootup. Both of which express-yui supports.
 app.yui.applyConfig({
     modules: {
         "ios-oc-fix": "/vendor/ios-orientationchange-fix.js"
     }
 });
 
-app.configure('development', function () {
-    app.yui.debugMode();
+if (app.get('env') === 'development') {
+    app.yui.debugMode({filter: 'raw'});
     app.yui.setCoreFromAppOrigin();
-});
-
-// -- Views ----------------------------------------------------------------
-
-app.set('view', app.yui.view({
-    defaultLayout: 'main'
-}));
+}
 
 // -- Middleware -----------------------------------------------------------
 
@@ -61,9 +57,10 @@ if (app.get('env') === 'development') {
 
 app.use(express.compress());
 app.use(express.favicon());
+app.use(middleware.exposeYUI(expyui));
 app.use(app.router);
 app.use(middleware.slash());
-app.use(myui.static());
+app.use(expyui.static());
 app.use(express.static(config.dirs.pub));
 app.use(middleware.placeLookup('/places/'));
 
@@ -97,16 +94,14 @@ function exposeRoute(name) {
     };
 }
 
-exposeRoute('index', '/', myui.expose(), routes.index);
+exposeRoute('index', '/', routes.index);
 
 exposeRoute('places', '/places/:id/', [
-    myui.expose(),
     routes.places.load,
     routes.places.render
 ]);
 
 exposeRoute('photos', '/photos/:id/', [
-    myui.expose(),
     routes.photos.load,
     routes.photos.render
 ]);
@@ -116,24 +111,19 @@ app.expose(exposedRoutes, 'ROUTES');
 
 // -- Locator and plugins ------------------------------------------------------
 
-new Locator({
-    buildDirectory: 'build'
-})
+locator = new Locator({buildDirectory: 'build'})
     .plug(LocatorHandlebars.yui())
     .plug(app.yui.plugin({
-        registerGroup: true,
+        registerGroup        : true,
         registerServerModules: true
-    }))
-    .parseBundle(__dirname, {}).then(function () {
+    }));
 
-        app.yui.use('pnm-helpers');
-
-        // the app is ready to receive traffic
-
-    }, function (err) {
-        console.error(err);
-        console.error(err.stack);
-    });
+locator.parseBundle(__dirname, {}).then(function () {
+    app.yui.use('pnm-helpers');
+}, function (err) {
+    console.error(err);
+    console.error(err.stack);
+});
 
 // -- Exports ------------------------------------------------------------------
 
