@@ -115,6 +115,7 @@ locator = new Locator({buildDirectory: 'build'})
 
 locator.parseBundle(__dirname, {}).then(function () {
     app.yui.use('pnm-helpers');
+    app.emit('ready');
 }, function (err) {
     console.error(err);
     console.error(err.stack);
