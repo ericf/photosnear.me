@@ -98,7 +98,7 @@ Photos = Y.Base.create('photos', Y.LazyModelList, [], {
 
 Y.namespace('PNM').Photos = Photos;
 
-}, '0.9.0', {
+}, '0.10.0', {
     requires: [
         'cache-offline',
         'jsonp',

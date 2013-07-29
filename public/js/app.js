@@ -249,7 +249,7 @@ PhotosNearMe = Y.Base.create('photosNearMe', Y.App, [], {
 
 Y.PNM.App = PhotosNearMe;
 
-}, '0.9.0', {
+}, '0.10.0', {
     affinity: 'client',
     requires: [
         'app-base',

@@ -18,7 +18,7 @@ NoLocationView = Y.Base.create('noLocationView', Y.View, [], {
 
 Y.namespace('PNM').NoLocationView = NoLocationView;
 
-}, '0.9.0', {
+}, '0.10.0', {
     affinity: 'client',
     requires: [
         'view',
