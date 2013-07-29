@@ -5,7 +5,7 @@ var express           = require('express'),
     LocatorHandlebars = require('locator-handlebars'),
 
     config  = require('./conf/config'),
-    app, middleware, routes, exposedRoutes, locator;
+    app, isDevelopment, middleware, routes, exposedRoutes, locator;
 
 // -- Configure App ------------------------------------------------------------
 
@@ -27,6 +27,8 @@ app.locals({
     typekit: config.typekit
 });
 
+isDevelopment = isDevelopment;
+
 // -- Configure YUI ------------------------------------------------------------
 
 // Global PNM env config.
@@ -34,29 +36,30 @@ global.PNM = {};
 PNM.CACHE  = config.cache.server;
 PNM.FLICKR = config.flickr;
 
-if (app.get('env') === 'development') {
-    app.yui.debugMode({filter: 'raw'});
-    app.yui.setCoreFromAppOrigin();
-}
-
 // -- Middleware -----------------------------------------------------------
 
 middleware = require('./middleware');
 
-if (app.get('env') === 'development') {
+if (isDevelopment) {
     app.use(express.logger('tiny'));
 }
 
 app.use(express.compress());
 app.use(express.favicon());
-app.use(middleware.exposeYUI(expyui));
+app.use(expyui.expose());
+
+if (isDevelopment) {
+    app.yui.setCoreFromAppOrigin();
+    app.use(expyui.debug({filter: 'raw'}));
+}
+
 app.use(app.router);
 app.use(middleware.slash());
 app.use(expyui.static());
 app.use(express.static(config.dirs.pub));
 app.use(middleware.placeLookup('/places/'));
 
-if (app.get('env') === 'development') {
+if (isDevelopment) {
     app.use(express.errorHandler({
         dumpExceptions: true,
         showStack     : true

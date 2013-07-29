@@ -18,6 +18,6 @@
         "express-yui"        : "latest",
         "locator"            : "latest",
         "locator-handlebars" : "latest",
-        "yui"                : "3.10.x"
+        "yui"                : "3.11.x"
     }
 }
