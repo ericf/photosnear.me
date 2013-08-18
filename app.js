@@ -1,5 +1,6 @@
 var express           = require('express'),
-    state             = require('express-state'),
+    expmap            = require('express-map'),
+    expstate          = require('express-state'),
     expyui            = require('express-yui'),
     Locator           = require('locator'),
     LocatorHandlebars = require('locator-handlebars'),
@@ -10,6 +11,10 @@ var express           = require('express'),
 // -- Configure App ------------------------------------------------------------
 
 app = express();
+
+expstate.extend(app);
+expmap.extend(app);
+expyui.extend(app);
 
 app.set('name', config.name);
 app.set('env', config.env);
@@ -70,39 +75,27 @@ if (isDevelopment) {
 
 // -- Routes -------------------------------------------------------------------
 
-routes        = require('./routes');
-exposedRoutes = {};
+routes = require('./routes');
 
-function exposeRoute(name) {
-    var args = [].slice.call(arguments, 1),
-        routes, route;
-
-    app.get.apply(app, args);
-
-    routes = app.routes.get;
-    route  = routes[routes.length -1];
-
-    exposedRoutes[name] = {
-        path : route.path,
-        keys : route.keys,
-        regex: route.regexp
-    };
+function mapRoute(name, path, callbacks) {
+    app.get(path, callbacks);
+    app.map(path, name);
 }
 
-exposeRoute('index', '/', routes.index);
+mapRoute('index', '/', routes.index);
 
-exposeRoute('places', '/places/:id/', [
+mapRoute('places', '/places/:id/', [
     routes.places.load,
     routes.places.render
 ]);
 
-exposeRoute('photos', '/photos/:id/', [
+mapRoute('photos', '/photos/:id/', [
     routes.photos.load,
     routes.photos.render
 ]);
 
-PNM.ROUTES = exposedRoutes;
-app.expose(exposedRoutes, 'ROUTES');
+PNM.ROUTES = {routes: app.getRouteMap()};
+app.exposeRoutes('ROUTES');
 
 // -- Locator and plugins ------------------------------------------------------
 

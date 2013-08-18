@@ -6,7 +6,7 @@ Y.namespace('PNM').Helpers = {
     pathTo: function (routeName, context) {
         context || (context = this);
 
-        var route = PNM.ROUTES[routeName],
+        var route = PNM.ROUTES.routes[routeName],
             path, keys;
 
         if (!route) { return ''; }

@@ -46,7 +46,7 @@
 
         // Setup routes.
         Y.Array.each(app.namedRoutes, function (route, i) {
-            var routeConfig = routeConfigs[route.name];
+            var routeConfig = routeConfigs.routes[route.name];
             if (routeConfig) {
                 app.route(routeConfig.path, route.callbacks);
                 app.get('routes')[i].name = route.name;
